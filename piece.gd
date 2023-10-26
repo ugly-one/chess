@@ -3,6 +3,8 @@ extends Sprite2D
 signal moved
 
 var isMoving = false
+
+# I think I can simplify the move now - we do not need those 2 properties perhaps
 var start_pos
 var start_event_pos
 
@@ -18,8 +20,6 @@ func _input(event):
 		and isMoving):
 			isMoving = false
 			moved.emit(self, position)
-			# make sure that the dropped piece lands in the middle of a field
-			# TODO
 			
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if get_rect().has_point(to_local(event.position)):
