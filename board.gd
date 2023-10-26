@@ -29,7 +29,6 @@ func add_piece(texture_path, y, x):
 	var piece = load("res://piece.tscn").instantiate()
 	var texture = load(texture_path)
 	piece.set_texture(texture)
-	piece.position.x = x * 40 + 20
-	piece.position.y = y * 40 + 20
+	piece.set_chess_position(x, y)
 	
 	add_child(piece)

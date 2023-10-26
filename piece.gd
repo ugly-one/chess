@@ -8,10 +8,6 @@ var isMoving = false
 var start_pos
 var start_event_pos
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
 func _input(event):
 	
 	if (event is InputEventMouseButton 
@@ -31,6 +27,9 @@ func _input(event):
 		var vector = event.position - start_event_pos
 		position = start_pos + vector
 
+func set_chess_position(x, y):
+	position.x = x * 40 + 20
+	position.y = y * 40 + 20
 
 func get_centered_position(position: Vector2) -> Vector2:
 	var column = int(position.x) / 40
