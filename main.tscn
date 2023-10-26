@@ -1,9 +1,20 @@
 [gd_scene load_steps=3 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
-[ext_resource type="Script" path="res://main.gd" id="1_r2mvt"]
+
+[sub_resource type="GDScript" id="GDScript_5hfv5"]
+script/source = "extends Node2D
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
 
 [node name="main" type="Node2D"]
-script = ExtResource("1_r2mvt")
+script = SubResource("GDScript_5hfv5")
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]
