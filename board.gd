@@ -2,6 +2,7 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+
 	# add black pieces
 	add_piece("res://black_rook.svg", 0, 0)
 	add_piece("res://black_knight.svg", 0, 1)
@@ -34,8 +35,8 @@ func add_piece(texture_path, y, x):
 	piece.set_texture(texture)
 	piece.position.x = x * 40 + 20
 	piece.position.y = y * 40 + 20
-	piece.moved.connect(on_piece_moved)
 	
+	piece.moved.connect(on_piece_moved)
 	add_child(piece)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -45,7 +46,7 @@ func _process(delta):
 func place(piece, position):
 	var newPosition = get_centered_position(position)
 	if (newPosition == Vector2.ZERO):
-		piece.position = Vector2(20, 20)
+		piece.position = piece.start_pos
 	else:
 		piece.position = newPosition
 
