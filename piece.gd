@@ -19,7 +19,7 @@ func _input(event):
 		and event.button_index == MOUSE_BUTTON_LEFT
 		and isMoving):
 			isMoving = false
-			moved.emit(self, position)
+			drop()
 			
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if get_rect().has_point(to_local(event.position)):
@@ -30,3 +30,18 @@ func _input(event):
 	if event is InputEventMouseMotion && isMoving:
 		var vector = event.position - start_event_pos
 		position = start_pos + vector
+
+
+func get_centered_position(position: Vector2) -> Vector2:
+	var column = int(position.x) / 40
+	var row = int(position.y) / 40
+	if (row < 0 || row > 7 || column < 0 || column > 7):
+		return Vector2.ZERO
+	return Vector2(column * 40 + 20, row * 40 + 20)
+	
+func drop():
+	var newPosition = get_centered_position(position)
+	if (newPosition == Vector2.ZERO):
+		position = start_pos
+	else:
+		position = newPosition

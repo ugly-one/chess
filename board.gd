@@ -32,19 +32,4 @@ func add_piece(texture_path, y, x):
 	piece.position.x = x * 40 + 20
 	piece.position.y = y * 40 + 20
 	
-	piece.moved.connect(on_piece_moved)
 	add_child(piece)
-
-func get_centered_position(position: Vector2) -> Vector2:
-	var column = int(position.x) / 40
-	var row = int(position.y) / 40
-	if (row < 0 || row > 7 || column < 0 || column > 7):
-		return Vector2.ZERO
-	return Vector2(column * 40 + 20, row * 40 + 20)
-	
-func on_piece_moved(piece, position):
-	var newPosition = get_centered_position(position)
-	if (newPosition == Vector2.ZERO):
-		piece.position = piece.start_pos
-	else:
-		piece.position = newPosition
