@@ -3,10 +3,8 @@ extends Sprite2D
 signal moved
 
 var isMoving = false
-
-# I think I can simplify the move now - we do not need those 2 properties perhaps
+var fieldSize = 40
 var start_pos
-var start_event_pos
 
 func _input(event):
 	
@@ -21,22 +19,32 @@ func _input(event):
 		if get_rect().has_point(to_local(event.position)):
 			isMoving = true
 			start_pos = position
-			start_event_pos = event.position
 
 	if event is InputEventMouseMotion && isMoving:
-		var vector = event.position - start_event_pos
+		var vector = event.position - start_pos
 		position = start_pos + vector
 
 func set_chess_position(x, y):
-	position.x = x * 40 + 20
-	position.y = y * 40 + 20
+	position.x = x * fieldSize + fieldSize/2
+	position.y = y * fieldSize + fieldSize/2
 
 func get_centered_position(position: Vector2) -> Vector2:
-	var column = int(position.x) / 40
-	var row = int(position.y) / 40
+	var column = int(position.x) / fieldSize
+	var row = int(position.y) / fieldSize
 	if (row < 0 || row > 7 || column < 0 || column > 7):
 		return Vector2.ZERO
-	return Vector2(column * 40 + 20, row * 40 + 20)
+		
+	# check if this is a valid move
+	var previousColumn = int(start_pos.x) / fieldSize
+	var previousRow = int(start_pos.y) / fieldSize
+	
+	# move as white pawn
+	if (column != previousColumn):
+		return Vector2.ZERO
+	if (previousRow - 1 != row):
+		return Vector2.ZERO
+	
+	return Vector2(column * fieldSize + fieldSize/2, row * fieldSize + fieldSize/2)
 	
 func drop():
 	var newPosition = get_centered_position(position)
