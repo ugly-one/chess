@@ -25,13 +25,13 @@ func _input(event):
 		var x: int = position.x / 40
 		@warning_ignore("narrowing_conversion")
 		var y: int = position.y / 40
+		
+		#perhaps this logic could be moved away from here
 		if (x < 0 || x > 7 || y < 0 || y > 7):
 			position = startingPosition
 			return
 
 		var new_position = Vector2(x, y)
-		move(new_position)
-		
 		var old_x :int = startingPosition.x / 40
 		var old_y :int = startingPosition.y / 40
 		var current_position = Vector2(old_x, old_y)
