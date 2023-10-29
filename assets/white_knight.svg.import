@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mrstdbjqp5y0"
-path="res://.godot/imported/black_pawn.svg-a0bc19b1fc94241f224481b6b08ad935.ctex"
+uid="uid://cxy4k74iym2sp"
+path="res://.godot/imported/white_knight.svg-40d7727defa93871b9b82512a3e2c53e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://black_pawn.svg"
-dest_files=["res://.godot/imported/black_pawn.svg-a0bc19b1fc94241f224481b6b08ad935.ctex"]
+source_file="res://assets/white_knight.svg"
+dest_files=["res://.godot/imported/white_knight.svg-40d7727defa93871b9b82512a3e2c53e.ctex"]
 
 [params]
 

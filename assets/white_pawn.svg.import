@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drtmcnavu62tb"
-path="res://.godot/imported/white_king.svg-644b0db42b494d8b2a8b32c7f2808bc2.ctex"
+uid="uid://661cya6jbuvk"
+path="res://.godot/imported/white_pawn.svg-437b3b0beff6fe0d7b6d093c34ca1edd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://white_king.svg"
-dest_files=["res://.godot/imported/white_king.svg-644b0db42b494d8b2a8b32c7f2808bc2.ctex"]
+source_file="res://assets/white_pawn.svg"
+dest_files=["res://.godot/imported/white_pawn.svg-437b3b0beff6fe0d7b6d093c34ca1edd.ctex"]
 
 [params]
 

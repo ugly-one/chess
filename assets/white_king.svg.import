@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://tn4ilnvyxgwc"
-path="res://.godot/imported/black_king.svg-575cf4c819f0ab37093620e1e9b77bc7.ctex"
+uid="uid://drtmcnavu62tb"
+path="res://.godot/imported/white_king.svg-25385174ab2147b40fc05b611c69b70e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://black_king.svg"
-dest_files=["res://.godot/imported/black_king.svg-575cf4c819f0ab37093620e1e9b77bc7.ctex"]
+source_file="res://assets/white_king.svg"
+dest_files=["res://.godot/imported/white_king.svg-25385174ab2147b40fc05b611c69b70e.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://661cya6jbuvk"
-path="res://.godot/imported/white_pawn.svg-4dae2377df5e25565d9d85c649cf06ae.ctex"
+uid="uid://cdaica524gsf2"
+path="res://.godot/imported/black_queen.svg-e3ace47f6f1c4aa688aab1170a7d3d77.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://white_pawn.svg"
-dest_files=["res://.godot/imported/white_pawn.svg-4dae2377df5e25565d9d85c649cf06ae.ctex"]
+source_file="res://assets/black_queen.svg"
+dest_files=["res://.godot/imported/black_queen.svg-e3ace47f6f1c4aa688aab1170a7d3d77.ctex"]
 
 [params]
 

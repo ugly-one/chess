@@ -1,7 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://bkhd73xvy336m"]
+[gd_scene load_steps=4 format=3 uid="uid://batgad2ml26sc"]
 
 [ext_resource type="Script" path="res://piece.gd" id="1_5kdi4"]
+[ext_resource type="Texture2D" uid="uid://mrstdbjqp5y0" path="res://assets/black_pawn.svg" id="2_7giyi"]
 
-[node name="piece" type="Sprite2D"]
-position = Vector2(319, 102)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pv3gf"]
+size = Vector2(40, 40)
+
+[node name="piece" type="StaticBody2D"]
+input_pickable = true
 script = ExtResource("1_5kdi4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1.78814e-06, 1.07288e-06)
+scale = Vector2(0.888889, 0.888889)
+texture = ExtResource("2_7giyi")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_pv3gf")
+
+[connection signal="mouse_shape_entered" from="." to="." method="_on_mouse_shape_entered"]
+[connection signal="mouse_shape_exited" from="." to="." method="_on_mouse_shape_exited"]
