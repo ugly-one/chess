@@ -1,22 +1,42 @@
 extends StaticBody2D
 
 signal dropped
-signal lifted
 
 var can_drag = false
 var dragging = false
+var startingPosition
 
+@export var texture_a: Texture
+@onready var sprite_2d = %Sprite2D
 
+func _ready():
+	sprite_2d.texture = texture_a
+	
 func _input(event):
 			
 	if can_drag && event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = true
-		lifted.emit(self)
+		startingPosition = position
 		
 	elif dragging && event is InputEventMouseButton and event.is_released and event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = false
-		dropped.emit(self)
-			
+		# make sure the piece is corrently placed within the board
+		@warning_ignore("narrowing_conversion")
+		var x: int = position.x / 40
+		@warning_ignore("narrowing_conversion")
+		var y: int = position.y / 40
+		if (x < 0 || x > 7 || y < 0 || y > 7):
+			position = startingPosition
+			return
+
+		var new_position = Vector2(x, y)
+		move(new_position)
+		
+		var old_x :int = startingPosition.x / 40
+		var old_y :int = startingPosition.y / 40
+		var current_position = Vector2(old_x, old_y)
+		dropped.emit(current_position, new_position)
+
 	elif event is InputEventMouseMotion && dragging:
 		position = event.position
 
@@ -29,3 +49,7 @@ func _on_mouse_shape_exited(_shape_idx):
 	if dragging: 
 		return
 	can_drag = false
+
+func move(new_position: Vector2):
+	position.x = new_position.x * 40 + 20
+	position.y = new_position.y * 40 + 20

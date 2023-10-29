@@ -1,16 +1,42 @@
-[gd_scene load_steps=4 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=9 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
-[ext_resource type="Script" path="res://board.gd" id="2_alnbc"]
-[ext_resource type="PackedScene" uid="uid://batgad2ml26sc" path="res://piece.tscn" id="3_qjoti"]
+[ext_resource type="Script" path="res://pawn.gd" id="2_ihwxx"]
+[ext_resource type="Texture2D" uid="uid://dy6meu3wvafaw" path="res://assets/white_bishop.svg" id="3_kqvix"]
+[ext_resource type="PackedScene" uid="uid://cjhgrgxbs3ab7" path="res://piece.tscn" id="3_n8kn4"]
+[ext_resource type="Texture2D" uid="uid://mrstdbjqp5y0" path="res://assets/black_pawn.svg" id="4_pr0jx"]
+[ext_resource type="Script" path="res://pawnMovement.gd" id="5_q0ysq"]
+[ext_resource type="Script" path="res://bishop.gd" id="6_cd0ga"]
+[ext_resource type="Script" path="res://bishopMovement.gd" id="7_6ed2y"]
 
 [node name="main" type="Node2D"]
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]
-script = ExtResource("2_alnbc")
 
-[node name="piece" parent="." instance=ExtResource("3_qjoti")]
-position = Vector2(100, 60)
+[node name="pawn" type="Node2D" parent="." node_paths=PackedStringArray("movement")]
+script = ExtResource("2_ihwxx")
+movement = NodePath("pawnMovement")
 
-[connection signal="dropped" from="piece" to="board" method="_on_piece_dropped"]
-[connection signal="lifted" from="piece" to="board" method="_on_piece_lifted"]
+[node name="piece" parent="pawn" instance=ExtResource("3_n8kn4")]
+unique_name_in_owner = true
+position = Vector2(221, 220)
+texture_a = ExtResource("4_pr0jx")
+
+[node name="pawnMovement" type="Node2D" parent="pawn"]
+unique_name_in_owner = true
+script = ExtResource("5_q0ysq")
+
+[node name="bishop" type="Node2D" parent="." node_paths=PackedStringArray("movement")]
+script = ExtResource("6_cd0ga")
+movement = NodePath("bishopMovement")
+
+[node name="piece" parent="bishop" instance=ExtResource("3_n8kn4")]
+position = Vector2(141, 141)
+texture_a = ExtResource("3_kqvix")
+
+[node name="bishopMovement" type="Node2D" parent="bishop"]
+unique_name_in_owner = true
+script = ExtResource("7_6ed2y")
+
+[connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
+[connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
