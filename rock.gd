@@ -1,12 +1,11 @@
 extends Node2D
 
 @export var player: Enums.Player = Enums.Player.WHITE
-
 signal moved
 
 func _ready():
-	var black_texture: CompressedTexture2D = preload("res://assets/black_pawn.svg")
-	var white_texture: CompressedTexture2D = preload("res://assets/white_pawn.svg")
+	var black_texture: CompressedTexture2D = preload("res://assets/black_rock.svg")
+	var white_texture: CompressedTexture2D = preload("res://assets/white_rock.svg")
 	if (player == Enums.Player.WHITE):
 		$piece.set_texture(white_texture)
 	else:
@@ -23,19 +22,10 @@ func _on_piece_dropped(current_position:Vector2, new_position: Vector2):
 
 func can_move(current_position: Vector2, new_position: Vector2) -> bool:
 	if (current_position.y == new_position.y):
-		return false
-	if (new_position.x != current_position.x):
-		return false
-	if (player == Enums.Player.WHITE):
-		if (new_position.y + 1 == current_position.y):
-			return true
-		else: 
-			return false
-	else :
-		if (new_position.y - 1 == current_position.y):
-			return true
-		else:
-			return false
+		return true
+	if (new_position.x == current_position.x):
+		return true
+	return false
 
 func enable():
 	$piece.enabled = true

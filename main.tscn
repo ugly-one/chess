@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=10 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
+[ext_resource type="Script" path="res://main.gd" id="1_ci57b"]
 [ext_resource type="Script" path="res://pawn.gd" id="2_ihwxx"]
 [ext_resource type="PackedScene" uid="uid://cjhgrgxbs3ab7" path="res://piece.tscn" id="3_n8kn4"]
 [ext_resource type="Script" path="res://rock.gd" id="5_i502s"]
@@ -10,6 +11,7 @@
 [ext_resource type="Script" path="res://queen.gd" id="8_d75je"]
 
 [node name="main" type="Node2D"]
+script = ExtResource("1_ci57b")
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]
 
@@ -51,9 +53,15 @@ script = ExtResource("8_d75je")
 [node name="piece" parent="queen" instance=ExtResource("3_n8kn4")]
 position = Vector2(220, 61)
 
+[connection signal="moved" from="pawn" to="." method="_on_pawn_moved"]
 [connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
+[connection signal="moved" from="bishop" to="." method="_on_bishop_moved"]
 [connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
+[connection signal="moved" from="rock" to="." method="_on_rock_moved"]
 [connection signal="dropped" from="rock/piece" to="rock" method="_on_piece_dropped"]
+[connection signal="moved" from="knight" to="." method="_on_knight_moved"]
 [connection signal="dropped" from="knight/piece" to="knight" method="_on_piece_dropped"]
+[connection signal="moved" from="king" to="." method="_on_king_moved"]
 [connection signal="dropped" from="king/piece" to="king" method="_on_piece_dropped"]
+[connection signal="moved" from="queen" to="." method="_on_queen_moved"]
 [connection signal="dropped" from="queen/piece" to="queen" method="_on_piece_dropped"]

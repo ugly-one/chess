@@ -2,6 +2,7 @@ extends StaticBody2D
 
 signal dropped
 
+var enabled = true
 var can_drag = false
 var dragging = false
 var startingPosition
@@ -40,7 +41,7 @@ func _input(event):
 		position = event.position
 
 func _on_mouse_shape_entered(_shape_idx):
-	if dragging: 
+	if dragging or (!enabled): 
 		return
 	can_drag = true
 
@@ -55,3 +56,11 @@ func move(new_position: Vector2):
 	
 func set_texture(texture: Texture):
 	sprite_2d.texture = texture
+
+func enable():
+	enabled = true
+	pass
+
+func disable():
+	enabled = false
+	pass
