@@ -16,7 +16,7 @@ func _on_piece_dropped(current_position:Vector2, new_position: Vector2):
 		$piece.move(current_position)
 	else:
 		$piece.move(new_position)
-	pass # Replace with function body.
+	pass
 
 func can_move(current_position: Vector2, new_position: Vector2) -> bool:
 	var move_vector = abs(new_position-current_position)
