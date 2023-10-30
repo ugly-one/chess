@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=8 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
 [ext_resource type="Script" path="res://pawn.gd" id="2_ihwxx"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://rock.gd" id="5_i502s"]
 [ext_resource type="Script" path="res://bishop.gd" id="6_cd0ga"]
 [ext_resource type="Script" path="res://knight.gd" id="6_hkapw"]
+[ext_resource type="Script" path="res://king.gd" id="7_rttpp"]
 
 [node name="main" type="Node2D"]
 
@@ -37,7 +38,13 @@ script = ExtResource("6_hkapw")
 [node name="piece" parent="knight" instance=ExtResource("3_n8kn4")]
 position = Vector2(100, 260)
 
+[node name="king" type="Node2D" parent="."]
+script = ExtResource("7_rttpp")
+
+[node name="piece" parent="king" instance=ExtResource("3_n8kn4")]
+
 [connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
 [connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
 [connection signal="dropped" from="rock/piece" to="rock" method="_on_piece_dropped"]
 [connection signal="dropped" from="knight/piece" to="knight" method="_on_piece_dropped"]
+[connection signal="dropped" from="king/piece" to="king" method="_on_piece_dropped"]
