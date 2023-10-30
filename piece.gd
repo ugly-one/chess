@@ -6,11 +6,10 @@ var can_drag = false
 var dragging = false
 var startingPosition
 
-@export var texture_a: Texture
 @onready var sprite_2d = %Sprite2D
 
 func _ready():
-	sprite_2d.texture = texture_a
+	pass
 	
 func _input(event):
 			
@@ -53,3 +52,6 @@ func _on_mouse_shape_exited(_shape_idx):
 func move(new_position: Vector2):
 	position.x = new_position.x * 40 + 20
 	position.y = new_position.y * 40 + 20
+	
+func set_texture(texture: Texture):
+	sprite_2d.texture = texture
