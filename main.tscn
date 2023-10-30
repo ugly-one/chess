@@ -25,6 +25,7 @@ position = Vector2(141, 141)
 
 [node name="rock" type="Node2D" parent="."]
 script = ExtResource("5_i502s")
+player = 1
 
 [node name="piece" parent="rock" instance=ExtResource("3_n8kn4")]
 position = Vector2(60, 61)
