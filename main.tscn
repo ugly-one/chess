@@ -43,11 +43,13 @@ position = Vector2(100, 260)
 script = ExtResource("7_rttpp")
 
 [node name="piece" parent="king" instance=ExtResource("3_n8kn4")]
+position = Vector2(61, 181)
 
 [node name="queen" type="Node2D" parent="."]
 script = ExtResource("8_d75je")
 
 [node name="piece" parent="queen" instance=ExtResource("3_n8kn4")]
+position = Vector2(220, 61)
 
 [connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
 [connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
