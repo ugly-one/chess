@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=7 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
 [ext_resource type="Script" path="res://pawn.gd" id="2_ihwxx"]
 [ext_resource type="PackedScene" uid="uid://cjhgrgxbs3ab7" path="res://piece.tscn" id="3_n8kn4"]
 [ext_resource type="Script" path="res://rock.gd" id="5_i502s"]
 [ext_resource type="Script" path="res://bishop.gd" id="6_cd0ga"]
+[ext_resource type="Script" path="res://knight.gd" id="6_hkapw"]
 
 [node name="main" type="Node2D"]
 
@@ -30,6 +31,13 @@ player = 1
 [node name="piece" parent="rock" instance=ExtResource("3_n8kn4")]
 position = Vector2(60, 61)
 
+[node name="knight" type="Node2D" parent="."]
+script = ExtResource("6_hkapw")
+
+[node name="piece" parent="knight" instance=ExtResource("3_n8kn4")]
+position = Vector2(100, 260)
+
 [connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
 [connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
 [connection signal="dropped" from="rock/piece" to="rock" method="_on_piece_dropped"]
+[connection signal="dropped" from="knight/piece" to="knight" method="_on_piece_dropped"]
