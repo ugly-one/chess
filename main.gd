@@ -15,21 +15,10 @@ func _on_piece_moved():
 				child.enable()
 			else:
 				child.disable()
-	
+
+
 func _on_pawn_moved():
 	_on_piece_moved()
-	
-func _on_bishop_moved():
-	_on_piece_moved()
 
-func _on_rock_moved():
-	_on_piece_moved()
-
-func _on_knight_moved():
-	_on_piece_moved()
-
-func _on_king_moved():
-	_on_piece_moved()
-
-func _on_queen_moved():
+func _on_rook_moved():
 	_on_piece_moved()

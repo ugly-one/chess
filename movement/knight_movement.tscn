@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bn6gsuk0o0o1k"]
+
+[ext_resource type="Script" path="res://movement/knight_movement.gd" id="1_tqrrs"]
+
+[node name="knight_movement" type="Node2D"]
+script = ExtResource("1_tqrrs")

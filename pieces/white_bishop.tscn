@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://bvkm35wt5oehp"]
+
+[ext_resource type="PackedScene" uid="uid://cxdda8ba8ejd3" path="res://piece.tscn" id="1_afdnl"]
+[ext_resource type="PackedScene" uid="uid://dmjjd2d2cnpo7" path="res://movement/bishop_movement.tscn" id="2_7jacb"]
+[ext_resource type="Texture2D" uid="uid://dy6meu3wvafaw" path="res://assets/white_bishop.svg" id="3_y12c7"]
+
+[node name="piece" node_paths=PackedStringArray("movement") instance=ExtResource("1_afdnl")]
+movement = NodePath("bishop_movement")
+
+[node name="bishop_movement" parent="." index="1" instance=ExtResource("2_7jacb")]
+
+[node name="Sprite2D" type="Sprite2D" parent="." index="2"]
+texture = ExtResource("3_y12c7")

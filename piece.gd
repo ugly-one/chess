@@ -1,13 +1,14 @@
 extends StaticBody2D
 
 signal dropped
+signal moved
 
 var enabled = true
 var can_drag = false
 var dragging = false
 var startingPosition
-
-@onready var sprite_2d = %Sprite2D
+@export var movement: Movement
+@export var player: Enums.Player
 
 func _ready():
 	pass
@@ -35,10 +36,19 @@ func _input(event):
 		var old_x :int = startingPosition.x / 40
 		var old_y :int = startingPosition.y / 40
 		var current_position = Vector2(old_x, old_y)
-		dropped.emit(current_position, new_position)
+		move2(current_position, new_position)
 
 	elif event is InputEventMouseMotion && dragging:
 		position = event.position
+
+func move2(current_position:Vector2, new_position: Vector2):
+	var can_move = movement.can_move(current_position, new_position, player)
+	if (can_move == false):
+		move(current_position)
+	else:
+		move(new_position)
+		moved.emit()
+	pass
 
 func _on_mouse_shape_entered(_shape_idx):
 	if dragging or (!enabled): 
@@ -54,13 +64,8 @@ func move(new_position: Vector2):
 	position.x = new_position.x * 40 + 20
 	position.y = new_position.y * 40 + 20
 	
-func set_texture(texture: Texture):
-	sprite_2d.texture = texture
-
 func enable():
 	enabled = true
-	pass
 
 func disable():
 	enabled = false
-	pass

@@ -1,67 +1,17 @@
-[gd_scene load_steps=10 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=5 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
 [ext_resource type="Script" path="res://main.gd" id="1_ci57b"]
-[ext_resource type="Script" path="res://pawn.gd" id="2_ihwxx"]
-[ext_resource type="PackedScene" uid="uid://cjhgrgxbs3ab7" path="res://piece.tscn" id="3_n8kn4"]
-[ext_resource type="Script" path="res://rock.gd" id="5_i502s"]
-[ext_resource type="Script" path="res://bishop.gd" id="6_cd0ga"]
-[ext_resource type="Script" path="res://knight.gd" id="6_hkapw"]
-[ext_resource type="Script" path="res://king.gd" id="7_rttpp"]
-[ext_resource type="Script" path="res://queen.gd" id="8_d75je"]
+[ext_resource type="PackedScene" uid="uid://dkbtaprjfa3jl" path="res://pieces/black_bishop.tscn" id="4_iv26b"]
+[ext_resource type="PackedScene" uid="uid://bvkm35wt5oehp" path="res://pieces/white_bishop.tscn" id="10_pjwdq"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_ci57b")
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]
 
-[node name="pawn" type="Node2D" parent="."]
-script = ExtResource("2_ihwxx")
-player = 1
+[node name="white_bishop" parent="." instance=ExtResource("10_pjwdq")]
+position = Vector2(180, 221)
 
-[node name="piece" parent="pawn" instance=ExtResource("3_n8kn4")]
-position = Vector2(221, 220)
-
-[node name="bishop" type="Node2D" parent="."]
-script = ExtResource("6_cd0ga")
-
-[node name="piece" parent="bishop" instance=ExtResource("3_n8kn4")]
-position = Vector2(141, 141)
-
-[node name="rock" type="Node2D" parent="."]
-script = ExtResource("5_i502s")
-player = 1
-
-[node name="piece" parent="rock" instance=ExtResource("3_n8kn4")]
-position = Vector2(60, 61)
-
-[node name="knight" type="Node2D" parent="."]
-script = ExtResource("6_hkapw")
-
-[node name="piece" parent="knight" instance=ExtResource("3_n8kn4")]
-position = Vector2(100, 260)
-
-[node name="king" type="Node2D" parent="."]
-script = ExtResource("7_rttpp")
-
-[node name="piece" parent="king" instance=ExtResource("3_n8kn4")]
-position = Vector2(61, 181)
-
-[node name="queen" type="Node2D" parent="."]
-script = ExtResource("8_d75je")
-
-[node name="piece" parent="queen" instance=ExtResource("3_n8kn4")]
-position = Vector2(220, 61)
-
-[connection signal="moved" from="pawn" to="." method="_on_pawn_moved"]
-[connection signal="dropped" from="pawn/piece" to="pawn" method="_on_piece_dropped"]
-[connection signal="moved" from="bishop" to="." method="_on_bishop_moved"]
-[connection signal="dropped" from="bishop/piece" to="bishop" method="_on_piece_dropped"]
-[connection signal="moved" from="rock" to="." method="_on_rock_moved"]
-[connection signal="dropped" from="rock/piece" to="rock" method="_on_piece_dropped"]
-[connection signal="moved" from="knight" to="." method="_on_knight_moved"]
-[connection signal="dropped" from="knight/piece" to="knight" method="_on_piece_dropped"]
-[connection signal="moved" from="king" to="." method="_on_king_moved"]
-[connection signal="dropped" from="king/piece" to="king" method="_on_piece_dropped"]
-[connection signal="moved" from="queen" to="." method="_on_queen_moved"]
-[connection signal="dropped" from="queen/piece" to="queen" method="_on_piece_dropped"]
+[node name="black_bishop" parent="." instance=ExtResource("4_iv26b")]
+position = Vector2(100, 180)

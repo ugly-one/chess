@@ -1,18 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjhgrgxbs3ab7"]
+[gd_scene load_steps=3 format=3 uid="uid://cxdda8ba8ejd3"]
 
-[ext_resource type="Script" path="res://piece.gd" id="1_3q54o"]
+[ext_resource type="Script" path="res://piece.gd" id="1_4imls"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pv3gf"]
 size = Vector2(40, 40)
 
 [node name="piece" type="StaticBody2D"]
 input_pickable = true
-script = ExtResource("1_3q54o")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-unique_name_in_owner = true
-position = Vector2(1.78814e-06, 1.07288e-06)
-scale = Vector2(0.888889, 0.888889)
+script = ExtResource("1_4imls")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_pv3gf")
