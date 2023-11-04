@@ -18,14 +18,28 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	var children = get_children()
 	# disable dropping pieces on top of your own pieces
 	var illegalMove = false
+	
 	for child in children:
 		if ("player" in child):
 			if (child.player == piece.player and new_position == child.chessPosition):
-				piece.move(current_position)
 				illegalMove = true
+				
 	if illegalMove:
+		piece.move(current_position)
 		return
-	
+		
+	# disable dropping pieces if their path to the destination is not clear
+	var path: Array[Vector2]
+	path = get_fields_on_path(current_position, new_position, children)
+	for child in children:
+		if ("player" in child):
+			if (path.has(child.chessPosition)):
+				illegalMove = true
+				
+	if illegalMove:
+		piece.move(current_position)
+		return
+		
 	#accept the move
 	piece.move(new_position)
 	
@@ -42,3 +56,34 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 				child.enable()
 			else:
 				child.disable()
+
+func get_fields_on_path(start: Vector2, end: Vector2, children: Array[Node]) -> Array[Vector2]:
+	var path: Array[Vector2]
+	if (abs( start - end ) == Vector2(1,0) || abs(start - end) == Vector2(0,1)):
+		# if we're moving only one field - no path to check
+		return path
+		
+	var diff = end - start
+	
+	if (diff.x == 0 || diff.y == 0):
+		var fieldsInBetween = diff.length()
+		var field = start
+		for i in fieldsInBetween - 1:
+			field = Vector2(field + diff.normalized())
+			path.append(field)
+		return path
+	
+	if (abs(diff.x) == abs(diff.y)):
+		var xDirection = sign(diff.x)
+		var yDirection = sign(diff.y)
+		
+		var fieldsInBetween = abs(start.x - end.x)
+		print(fieldsInBetween)
+		var field = start
+		for i in fieldsInBetween - 1:
+			field = Vector2(field + Vector2(xDirection,yDirection))
+			path.append(field)
+		return path
+	
+#	print(fieldsInBetween)
+	return path
