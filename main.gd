@@ -11,6 +11,7 @@ func _ready():
 		piece.connect("dropped", _on_piece_dropped)
 	for piece in black_pieces:
 		add_child(piece)
+		piece.disable()
 		piece.connect("dropped", _on_piece_dropped)
 
 func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Vector2):

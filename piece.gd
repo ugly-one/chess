@@ -8,6 +8,7 @@ var can_drag = false
 var dragging = false
 var startingPosition
 var texture
+var player # this is needed to be exposed so the board know which player owns this piece
 @export var movement: Movement
 @onready var sprite_2d = %Sprite2D
 
@@ -17,6 +18,7 @@ func _ready():
 	
 func init(movement: Movement):
 	self.movement = movement
+	self.player = movement.player
 	self.texture = movement.get_texture()
 	
 func _input(event):
