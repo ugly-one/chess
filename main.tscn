@@ -1,17 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=3 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
 [ext_resource type="Script" path="res://main.gd" id="1_ci57b"]
-[ext_resource type="PackedScene" uid="uid://dkbtaprjfa3jl" path="res://pieces/black_bishop.tscn" id="4_iv26b"]
-[ext_resource type="PackedScene" uid="uid://bvkm35wt5oehp" path="res://pieces/white_bishop.tscn" id="10_pjwdq"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_ci57b")
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]
-
-[node name="white_bishop" parent="." instance=ExtResource("10_pjwdq")]
-position = Vector2(180, 221)
-
-[node name="black_bishop" parent="." instance=ExtResource("4_iv26b")]
-position = Vector2(100, 180)

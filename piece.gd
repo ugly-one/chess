@@ -1,4 +1,5 @@
 extends StaticBody2D
+class_name Piece
 
 signal dropped
 signal moved
@@ -7,11 +8,17 @@ var enabled = true
 var can_drag = false
 var dragging = false
 var startingPosition
+var texture
 @export var movement: Movement
-@export var player: Enums.Player
+@onready var sprite_2d = %Sprite2D
 
 func _ready():
+	sprite_2d.texture = texture
 	pass
+	
+func init(movement: Movement):
+	self.movement = movement
+	self.texture = movement.get_texture()
 	
 func _input(event):
 			
@@ -42,7 +49,7 @@ func _input(event):
 		position = event.position
 
 func move2(current_position:Vector2, new_position: Vector2):
-	var can_move = movement.can_move(current_position, new_position, player)
+	var can_move = movement.can_move(current_position, new_position)
 	if (can_move == false):
 		move(current_position)
 	else:

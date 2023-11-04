@@ -1,6 +1,9 @@
 extends Movement
+class_name PawnMovement
 
-func can_move(current_position: Vector2, new_position: Vector2, player: Enums.Player) -> bool:
+var player: Enums.Player
+
+func can_move(current_position: Vector2, new_position: Vector2) -> bool:
 	if (current_position.y == new_position.y):
 		return false
 	if (new_position.x != current_position.x):
@@ -15,3 +18,6 @@ func can_move(current_position: Vector2, new_position: Vector2, player: Enums.Pl
 			return true
 		else:
 			return false
+
+func get_texture():
+	return _get_texture(player, "pawn")
