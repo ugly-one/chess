@@ -30,7 +30,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 		
 	# disable dropping pieces if their path to the destination is not clear
 	var path: Array[Vector2]
-	path = get_fields_on_path(current_position, new_position, children)
+	path = get_fields_on_path(current_position, new_position)
 	for child in children:
 		if ("player" in child):
 			if (path.has(child.chessPosition)):
@@ -57,7 +57,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 			else:
 				child.disable()
 
-func get_fields_on_path(start: Vector2, end: Vector2, children: Array[Node]) -> Array[Vector2]:
+func get_fields_on_path(start: Vector2, end: Vector2) -> Array[Vector2]:
 	var path: Array[Vector2]
 	if (abs( start - end ) == Vector2(1,0) || abs(start - end) == Vector2(0,1)):
 		# if we're moving only one field - no path to check
@@ -78,12 +78,10 @@ func get_fields_on_path(start: Vector2, end: Vector2, children: Array[Node]) -> 
 		var yDirection = sign(diff.y)
 		
 		var fieldsInBetween = abs(start.x - end.x)
-		print(fieldsInBetween)
 		var field = start
 		for i in fieldsInBetween - 1:
 			field = Vector2(field + Vector2(xDirection,yDirection))
 			path.append(field)
 		return path
 	
-#	print(fieldsInBetween)
 	return path
