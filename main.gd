@@ -39,8 +39,20 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	if illegalMove:
 		piece.move(current_position)
 		return
-		
+	
+	# TODO support en passant
+	# TODO make moves, that expose current's player king to be under attack, illegal
+	
 	#accept the move
+	
+	# TODO detect if current player took a piece
+	for child in children:
+		if ("player" in child):
+			if (child.chessPosition == new_position):
+				if (child.player == getOpositePlayer(currentPlayer)):
+					child.queue_free()
+					print("KILL!")
+	
 	piece.move(new_position)
 	
 	# switch the current player
@@ -57,6 +69,12 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 			else:
 				child.disable()
 
+func getOpositePlayer(player):
+	if (player == Enums.Player.WHITE):
+		return Enums.Player.BLACK
+	else:
+		return Enums.Player.WHITE
+		
 func get_fields_on_path(start: Vector2, end: Vector2) -> Array[Vector2]:
 	var path: Array[Vector2]
 	if (abs( start - end ) == Vector2(1,0) || abs(start - end) == Vector2(0,1)):
