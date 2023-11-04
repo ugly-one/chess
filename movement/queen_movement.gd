@@ -3,7 +3,7 @@ class_name QueenMovement
 
 var player: Enums.Player
 
-func can_move(current_position: Vector2, new_position: Vector2) -> bool:
+func can_move(new_position: Vector2) -> bool:
 	var move_vector = abs(new_position-current_position)
 	if (move_vector.x == move_vector.y):
 		return true

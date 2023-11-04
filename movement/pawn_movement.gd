@@ -3,7 +3,7 @@ class_name PawnMovement
 
 var player: Enums.Player
 
-func can_move(current_position: Vector2, new_position: Vector2) -> bool:
+func can_move(new_position: Vector2) -> bool:
 	if (current_position.y == new_position.y):
 		return false
 	if (new_position.x != current_position.x):

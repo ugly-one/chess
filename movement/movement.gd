@@ -5,7 +5,7 @@ class_name Movement
 var moved: bool = false
 var current_position: Vector2
 
-func can_move(_current_position: Vector2, _new_position: Vector2) -> bool:
+func can_move(_new_position: Vector2) -> bool:
 	return false
 
 func _get_texture(player: Enums.Player, piece):

@@ -21,7 +21,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	
 	for child in children:
 		if ("player" in child):
-			if (child.player == piece.player and new_position == child.chessPosition):
+			if (child.player == piece.player and new_position == child.movement.current_position):
 				illegalMove = true
 				
 	if illegalMove:
@@ -33,7 +33,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	path = get_fields_on_path(current_position, new_position)
 	for child in children:
 		if ("player" in child):
-			if (path.has(child.chessPosition)):
+			if (path.has(child.movement.current_position)):
 				illegalMove = true
 				
 	if illegalMove:
@@ -48,7 +48,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	# TODO detect if current player took a piece
 	for child in children:
 		if ("player" in child):
-			if (child.chessPosition == new_position):
+			if (child.movement.current_position == new_position):
 				if (child.player == getOpositePlayer(currentPlayer)):
 					child.queue_free()
 					print("KILL!")
