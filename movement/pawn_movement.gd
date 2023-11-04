@@ -9,6 +9,7 @@ func can_move(new_position: Vector2) -> bool:
 	if (new_position.x != current_position.x):
 		return false
 
+	#TODO add support for taking opponents pieces
 	if (player == Enums.Player.WHITE):
 		if (new_position.y - 1 == current_position.y or (!moved and new_position.y - 2 == current_position.y)):
 			return true

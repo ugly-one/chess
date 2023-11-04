@@ -44,8 +44,7 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	# TODO make moves, that expose current's player king to be under attack, illegal
 	
 	#accept the move
-	
-	# TODO detect if current player took a piece
+
 	for child in children:
 		if ("player" in child):
 			if (child.movement.current_position == new_position):
