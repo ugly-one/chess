@@ -9,6 +9,7 @@ var dragging = false
 var startingPosition
 var texture
 var player # this is needed to be exposed so the board know which player owns this piece
+var chessPosition
 @export var movement: Movement
 @onready var sprite_2d = %Sprite2D
 
@@ -68,6 +69,7 @@ func _on_mouse_shape_exited(_shape_idx):
 	can_drag = false
 
 func move(new_position: Vector2):
+	chessPosition = new_position
 	position.x = new_position.x * 40 + 20
 	position.y = new_position.y * 40 + 20
 	

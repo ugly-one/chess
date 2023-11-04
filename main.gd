@@ -15,13 +15,27 @@ func _ready():
 		piece.connect("dropped", _on_piece_dropped)
 
 func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Vector2):
+	var children = get_children()
+	# disable dropping pieces on top of your own pieces
+	var illegalMove = false
+	for child in children:
+		if ("player" in child):
+			if (child.player == piece.player and new_position == child.chessPosition):
+				piece.move(current_position)
+				illegalMove = true
+	if illegalMove:
+		return
+	
+	#accept the move
 	piece.move(new_position)
+	
+	# switch the current player
 	if currentPlayer == Enums.Player.WHITE:
 		currentPlayer = Enums.Player.BLACK
 	else:
 		currentPlayer = Enums.Player.WHITE
-		
-	var children = get_children()
+	
+	# disable non-active player
 	for child in children:
 		if ("player" in child):
 			if (child.player == currentPlayer):
