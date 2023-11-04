@@ -25,13 +25,13 @@ func init(movement: Movement):
 	self.texture = movement.get_texture()
 	
 func _input(event):
-			
 	if can_drag && event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = true
 		startingPosition = position
 		
 	elif dragging && event is InputEventMouseButton and event.is_released and event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = false
+		can_drag = false
 		# make sure the piece is corrently placed within the board
 		@warning_ignore("narrowing_conversion")
 		var x: int = position.x / 40
@@ -73,9 +73,7 @@ func _on_mouse_shape_exited(_shape_idx):
 func move(new_position: Vector2):
 	if (chessPosition != new_position):
 		movement.moved = true
-		
 	chessPosition = new_position
-	
 	position.x = new_position.x * 40 + 20
 	position.y = new_position.y * 40 + 20
 	
