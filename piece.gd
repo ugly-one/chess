@@ -1,8 +1,7 @@
 extends StaticBody2D
 class_name Piece
 
-signal dropped
-signal moved
+signal dropped(piece: Piece, current_position: Vector2, new_position: Vector2)
 
 var enabled = true
 var can_drag = false
@@ -53,8 +52,7 @@ func move2(current_position:Vector2, new_position: Vector2):
 	if (can_move == false):
 		move(current_position)
 	else:
-		move(new_position)
-		moved.emit()
+		dropped.emit(self, current_position, new_position)
 	pass
 
 func _on_mouse_shape_entered(_shape_idx):

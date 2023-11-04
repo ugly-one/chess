@@ -8,10 +8,13 @@ func _ready():
 	var black_pieces = PieceFactory.createPieces(Enums.Player.BLACK, 7, 6)
 	for piece in white_pieces:
 		add_child(piece)
+		piece.connect("dropped", _on_piece_dropped)
 	for piece in black_pieces:
 		add_child(piece)
+		piece.connect("dropped", _on_piece_dropped)
 
-func _on_piece_moved():
+func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Vector2):
+	piece.move(new_position)
 	if currentPlayer == Enums.Player.WHITE:
 		currentPlayer = Enums.Player.BLACK
 	else:
