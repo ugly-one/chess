@@ -15,6 +15,8 @@ var chessPosition
 
 func _ready():
 	sprite_2d.texture = texture
+	position.x = chessPosition.x * 40 + 20
+	position.y = chessPosition.y * 40 + 20
 	pass
 	
 func init(movement: Movement):
@@ -45,12 +47,12 @@ func _input(event):
 		var old_x :int = startingPosition.x / 40
 		var old_y :int = startingPosition.y / 40
 		var current_position = Vector2(old_x, old_y)
-		move2(current_position, new_position)
+		drop(current_position, new_position)
 
 	elif event is InputEventMouseMotion && dragging:
 		position = event.position
 
-func move2(current_position:Vector2, new_position: Vector2):
+func drop(current_position:Vector2, new_position: Vector2):
 	var can_move = movement.can_move(current_position, new_position)
 	if (can_move == false):
 		move(current_position)
@@ -69,7 +71,11 @@ func _on_mouse_shape_exited(_shape_idx):
 	can_drag = false
 
 func move(new_position: Vector2):
+	if (chessPosition != new_position):
+		movement.moved = true
+		
 	chessPosition = new_position
+	
 	position.x = new_position.x * 40 + 20
 	position.y = new_position.y * 40 + 20
 	
