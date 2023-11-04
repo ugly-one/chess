@@ -52,11 +52,10 @@ func _input(event):
 		position = event.position
 
 func drop(current_position:Vector2, new_position: Vector2):
-	var can_move = movement.can_move(new_position)
-	if (can_move == false):
-		move(current_position)
-	else:
+	if (movement.can_move(new_position)):
 		dropped.emit(self, current_position, new_position)
+	else:
+		move(current_position)
 	pass
 
 func _on_mouse_shape_entered(_shape_idx):
