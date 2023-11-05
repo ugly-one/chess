@@ -1,2 +1,7 @@
-1
-bug where I can move pieces of the same color multiple times
+1. Taking figures by pawns
+2. Castling
+3. En passant
+4. Detecting checks:
+	a) allowing only moves that moves the king out of a check
+	b) not allowing moves that makes the king being checked
+	
