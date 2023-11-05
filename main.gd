@@ -15,6 +15,11 @@ func _ready():
 		piece.connect("dropped", _on_piece_dropped)
 
 func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Vector2):
+	
+	if (!piece.movement.can_move(new_position)):
+		piece.move(current_position)
+		return
+	
 	var children = get_children()
 	# disable dropping pieces on top of your own pieces
 	var illegalMove = false

@@ -46,17 +46,10 @@ func _input(event):
 		var old_x :int = startingPosition.x / 40
 		var old_y :int = startingPosition.y / 40
 		var current_position = Vector2(old_x, old_y)
-		drop(current_position, new_position)
+		dropped.emit(self, current_position, new_position)
 
 	elif event is InputEventMouseMotion && dragging:
 		position = event.position
-
-func drop(current_position:Vector2, new_position: Vector2):
-	if (movement.can_move(new_position)):
-		dropped.emit(self, current_position, new_position)
-	else:
-		move(current_position)
-	pass
 
 func _on_mouse_shape_entered(_shape_idx):
 	if dragging or (!enabled): 
