@@ -12,6 +12,10 @@ static func createPieces2(player: Enums.Player, backRow, frontRow):
 	pieces.append(rock)
 	var rock2 = createRock(player, Vector2(7,backRow))
 	pieces.append(rock2)
+	var knight = createKnight(player, Vector2(1,backRow))
+	pieces.append(knight)
+	var knight2 = createKnight(player, Vector2(6,backRow))
+	pieces.append(knight2)
 	return pieces
 	
 static func createPieces(player: Enums.Player, backRow, frontRow) -> Array[Piece]:
@@ -20,10 +24,7 @@ static func createPieces(player: Enums.Player, backRow, frontRow) -> Array[Piece
 	pieces.append(king)
 	var queen = createQueen(player, Vector2(4,backRow))
 	pieces.append(queen)
-	var knight = createKnight(player, Vector2(1,backRow))
-	pieces.append(knight)
-	var knight2 = createKnight(player, Vector2(6,backRow))
-	pieces.append(knight2)
+
 	for i in range(0, 8):
 		var pawn = createPawn(player, Vector2(i,frontRow))
 		pieces.append(pawn)
@@ -56,10 +57,9 @@ static func createRock(player: Enums.Player, pos):
 	var script = load("res://movement/RockMovement.cs")
 	return createPiece_2(player, script, pos)
 
-static func createKnight(player: Enums.Player, pos) -> Piece:
-	var movement = preload("res://movement/knight_movement.tscn").instantiate()
-	movement.current_position = pos
-	return createPiece(player, movement)
+static func createKnight(player: Enums.Player, pos):
+	var script = load("res://movement/KnightMovement.cs")
+	return createPiece_2(player, script, pos)
 	
 static func createPawn(player: Enums.Player, pos) -> Piece:
 	var movement = preload("res://movement/pawn_movement.tscn").instantiate()
