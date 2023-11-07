@@ -6,7 +6,7 @@ public partial class Piece : StaticBody2D
 	public delegate void DroppedEventHandler();
 
 	public Movement movement;
-	public Player Player;
+	public Player player;
 	private Texture2D Texture;
 	private bool canDrag;
 	private bool dragging;
@@ -16,7 +16,7 @@ public partial class Piece : StaticBody2D
 	public void Init(Movement movement)
 	{
 		this.movement = movement;
-		this.Player = movement.Player;
+		this.player = movement.Player;
 		this.Texture = movement.GetTexture();
 	}
 
@@ -92,4 +92,8 @@ public partial class Piece : StaticBody2D
 		var position = new Vector2(movement.current_position.X * 40 + 20, movement.current_position.Y * 40 + 20);
 		Position = position;
 	}
+
+
+	public void disable() => Enabled = false;
+	public void enable() => Enabled = true;
 }

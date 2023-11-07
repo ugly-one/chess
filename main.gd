@@ -36,9 +36,7 @@ func _on_piece_dropped(piece, current_position: Vector2, new_position: Vector2):
 			if("player" in piece):
 				if (child.player == piece.player and new_position == child.movement.current_position):
 					illegalMove = true
-			if("Player" in piece):
-				if (child.player == piece.Player and new_position == child.movement.current_position):
-					illegalMove = true
+
 	if illegalMove:
 		piece.move(current_position)
 		return
@@ -66,11 +64,6 @@ func _on_piece_dropped(piece, current_position: Vector2, new_position: Vector2):
 				if (child.player == getOpositePlayer(currentPlayer)):
 					child.queue_free()
 					print("KILL!")
-		if ("Player" in child):
-			if (child.movement.current_position == new_position):
-				if (child.Player == getOpositePlayer(currentPlayer)):
-					child.queue_free()
-					print("KILL!")
 	
 	piece.move(new_position)
 	
@@ -87,11 +80,6 @@ func _on_piece_dropped(piece, current_position: Vector2, new_position: Vector2):
 				child.enable()
 			else:
 				child.disable()
-		if ("Player" in child):
-			if (child.Player == currentPlayer):
-				child.Enabled = true
-			else:
-				child.Enabled = false
 
 func getOpositePlayer(player):
 	if (player == Enums.Player.WHITE):
