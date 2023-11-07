@@ -7,6 +7,9 @@ var current_position: Vector2
 
 func can_move(_new_position: Vector2) -> bool:
 	return false
+	
+func get_possible_moves() -> Array[Vector2]:
+	return []
 
 func _get_texture(player: Enums.Player, piece):
 	var color = "white" if player == Enums.Player.WHITE else "black"

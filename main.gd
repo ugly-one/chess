@@ -13,9 +13,16 @@ func _ready():
 		add_child(piece)
 		piece.disable()
 		piece.connect("dropped", _on_piece_dropped)
-
-func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Vector2):
+		
+	var white_pieces_csharp = PieceFactory.createPieces2(Enums.Player.WHITE, 0, 1)
 	
+	for piece in white_pieces_csharp:
+		add_child(piece)
+		piece.Enabled = true
+		piece.connect("Dropped", _on_piece_dropped)
+
+func _on_piece_dropped(piece, current_position: Vector2, new_position: Vector2):
+
 	if (!piece.movement.can_move(new_position)):
 		piece.move(current_position)
 		return
@@ -26,9 +33,12 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 	
 	for child in children:
 		if ("player" in child):
-			if (child.player == piece.player and new_position == child.movement.current_position):
-				illegalMove = true
-				
+			if("player" in piece):
+				if (child.player == piece.player and new_position == child.movement.current_position):
+					illegalMove = true
+			if("Player" in piece):
+				if (child.player == piece.Player and new_position == child.movement.current_position):
+					illegalMove = true
 	if illegalMove:
 		piece.move(current_position)
 		return
@@ -56,6 +66,11 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 				if (child.player == getOpositePlayer(currentPlayer)):
 					child.queue_free()
 					print("KILL!")
+		if ("Player" in child):
+			if (child.movement.current_position == new_position):
+				if (child.Player == getOpositePlayer(currentPlayer)):
+					child.queue_free()
+					print("KILL!")
 	
 	piece.move(new_position)
 	
@@ -72,6 +87,11 @@ func _on_piece_dropped(piece: Piece, current_position: Vector2, new_position: Ve
 				child.enable()
 			else:
 				child.disable()
+		if ("Player" in child):
+			if (child.Player == currentPlayer):
+				child.Enabled = true
+			else:
+				child.Enabled = false
 
 func getOpositePlayer(player):
 	if (player == Enums.Player.WHITE):
