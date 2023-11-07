@@ -8,6 +8,10 @@ static func createPieces2(player: Enums.Player, backRow, frontRow):
 	pieces.append(bishop)
 	var bishop2 = createBishop(player, Vector2(5,backRow))
 	pieces.append(bishop2)
+	var rock = createRock(player, Vector2(0,backRow))
+	pieces.append(rock)
+	var rock2 = createRock(player, Vector2(7,backRow))
+	pieces.append(rock2)
 	return pieces
 	
 static func createPieces(player: Enums.Player, backRow, frontRow) -> Array[Piece]:
@@ -16,10 +20,6 @@ static func createPieces(player: Enums.Player, backRow, frontRow) -> Array[Piece
 	pieces.append(king)
 	var queen = createQueen(player, Vector2(4,backRow))
 	pieces.append(queen)
-	var rock = createRock(player, Vector2(0,backRow))
-	pieces.append(rock)
-	var rock2 = createRock(player, Vector2(7,backRow))
-	pieces.append(rock2)
 	var knight = createKnight(player, Vector2(1,backRow))
 	pieces.append(knight)
 	var knight2 = createKnight(player, Vector2(6,backRow))
@@ -30,16 +30,15 @@ static func createPieces(player: Enums.Player, backRow, frontRow) -> Array[Piece
 	return pieces
 	
 static func createBishop(player: Enums.Player, pos):
-	var my_csharp_script = load("res://movement/BishopMovement.cs")
-	var bishopMovement = my_csharp_script.new()
-	bishopMovement.current_position = pos
-	return createPiece_2(player, bishopMovement)
+	var script = load("res://movement/BishopMovement.cs")
+	return createPiece_2(player, script, pos)
 
-static func createPiece_2(player, movement):
+static func createPiece_2(player, script, pos):
+	var movement = script.new()
 	movement.Player = player
+	movement.current_position = pos
 	var piece_scene = preload("res://piece_csharp.tscn")
 	var piece = piece_scene.instantiate()
-#	var piece = load("res://Piece.cs").new()
 	piece.Init(movement)
 	return piece
 
@@ -53,10 +52,9 @@ static func createQueen(player: Enums.Player, pos) -> Piece:
 	movement.current_position = pos
 	return createPiece(player, movement)
 	
-static func createRock(player: Enums.Player, pos) -> Piece:
-	var movement = preload("res://movement/rock_movement.tscn").instantiate()
-	movement.current_position = pos
-	return createPiece(player, movement)
+static func createRock(player: Enums.Player, pos):
+	var script = load("res://movement/RockMovement.cs")
+	return createPiece_2(player, script, pos)
 
 static func createKnight(player: Enums.Player, pos) -> Piece:
 	var movement = preload("res://movement/knight_movement.tscn").instantiate()
