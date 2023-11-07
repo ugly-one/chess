@@ -12,12 +12,6 @@ public partial class BishopMovement : Movement
 		return false;
 	}
 
-	public override Vector2[] get_possible_moves()
-	{
-		// we will need a board size to be able to calculate those
-		throw new NotImplementedException();
-	}
-
 	public override Texture2D GetTexture()
 	{
 		return base.GetTexture(Player, "bishop");

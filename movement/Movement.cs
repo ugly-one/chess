@@ -8,8 +8,6 @@ public abstract partial class Movement : Node
 
 	public abstract bool can_move(Vector2 new_position);
 
-	public abstract Vector2[] get_possible_moves();
-
 	// TODO this should be a static method outside of Movement class
 	internal Texture2D GetTexture(Player player, string piece)
 	{
