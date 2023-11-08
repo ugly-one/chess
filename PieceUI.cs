@@ -9,7 +9,7 @@ public partial class PieceUI : StaticBody2D
 	[Signal]
 	public delegate void LiftedEventHandler(PieceUI piece);
 
-	public movement.Piece Piece;
+	public Piece Piece;
 
 	private Texture2D _texture;
 	private bool _canDrag;
@@ -17,7 +17,7 @@ public partial class PieceUI : StaticBody2D
 	private Vector2 _startingPosition;
 	private bool _enabled;
 	
-	public void Init(movement.Piece piece)
+	public void Init(Piece piece)
 	{
 		Piece = piece;
 		_texture = piece.GetTexture();

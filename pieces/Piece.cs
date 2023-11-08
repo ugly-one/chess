@@ -1,7 +1,5 @@
 using Godot;
 
-namespace Bla.movement;
-
 public abstract partial class Piece : Node
 {
 	public bool Moved;

@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-namespace Bla.movement;
-
 public partial class Pawn : Piece
 {
     public override Texture2D GetTexture()

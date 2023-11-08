@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Bla.movement;
-
 public partial class Rock : Piece
 {
     public override Texture2D GetTexture()

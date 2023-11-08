@@ -12,14 +12,14 @@ public partial class PieceFactory : RefCounted
 		var kingPlacement = new Vector2(4, backRow);
 		var pieces = new List<PieceUI>()
 		{
-			CreatePiece(player, new movement.Rock(), new Vector2(0, backRow)),
-			CreatePiece(player, new movement.Knight(), new Vector2(1, backRow)),
-			CreatePiece(player, new movement.Bishop(), new Vector2(2, backRow)),
-			CreatePiece(player, new movement.Queen(), new Vector2(3, backRow)),
-			CreatePiece(player, new movement.King(), kingPlacement),
-			CreatePiece(player, new movement.Bishop(), new Vector2(5, backRow)),
-			CreatePiece(player, new movement.Knight(), new Vector2(6, backRow)),
-			CreatePiece(player, new movement.Rock(), new Vector2(7, backRow)),
+			CreatePiece(player, new Rock(), new Vector2(0, backRow)),
+			CreatePiece(player, new Knight(), new Vector2(1, backRow)),
+			CreatePiece(player, new Bishop(), new Vector2(2, backRow)),
+			CreatePiece(player, new Queen(), new Vector2(3, backRow)),
+			CreatePiece(player, new King(), kingPlacement),
+			CreatePiece(player, new Bishop(), new Vector2(5, backRow)),
+			CreatePiece(player, new Knight(), new Vector2(6, backRow)),
+			CreatePiece(player, new Rock(), new Vector2(7, backRow)),
 		};
 		pieces.AddRange(CreatePawns(player, frontRow));
 		return (pieces.ToArray(), kingPlacement);
@@ -30,12 +30,12 @@ public partial class PieceFactory : RefCounted
 		var result = new List<PieceUI>();
 		for (var i = 0; i < 8; i++)
 		{
-			result.Add(CreatePiece(player, new movement.Pawn(), new Vector2(i, frontRow)));
+			result.Add(CreatePiece(player, new Pawn(), new Vector2(i, frontRow)));
 		}
 		return result;
 	}
 
-	private PieceUI CreatePiece(Player player, movement.Piece piece, Vector2 position)
+	private PieceUI CreatePiece(Player player, Piece piece, Vector2 position)
 	{
 		piece.Player = player;
 		piece.CurrentPosition = position;

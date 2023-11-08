@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Bla.movement;
 using Godot;
-
-namespace Bla;
 
 public static class Vector2Extention
 {

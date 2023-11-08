@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Bla.movement;
-
 public partial class Queen : Piece
 {
     public override Texture2D GetTexture()

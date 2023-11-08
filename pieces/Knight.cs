@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Godot;
-
-namespace Bla.movement;
 
 public partial class Knight : Piece
 {
