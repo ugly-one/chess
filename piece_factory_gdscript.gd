@@ -1,6 +1,6 @@
 extends Node
 
-class_name PieceFactory
+class_name PieceFactory_gdscript
 
 static func createPieces(player: Enums.Player, backRow, frontRow):
 	var pieces: Array
