@@ -9,7 +9,7 @@ public partial class Queen : Piece
     
     public override Texture2D GetTexture()
     {
-        return base.GetTexture(Player, "queen");
+        return Player.GetTexture("queen");
     }
 
     public override Vector2[] GetMoves(Piece[] pieces)

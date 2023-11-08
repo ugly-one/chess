@@ -10,7 +10,7 @@ public partial class Pawn : Piece
     
     public override Texture2D GetTexture()
     {
-        return base.GetTexture(Player, "pawn");
+        return Player.GetTexture("pawn");
     }
 
     public override Vector2[] GetMoves(Piece[] pieces)

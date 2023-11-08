@@ -5,7 +5,7 @@ public partial class Bishop : Piece
 {
 	public override Texture2D GetTexture()
 	{
-		return base.GetTexture(Player, "bishop");
+		return Player.GetTexture("bishop");
 	}
 
 	public override Vector2[] GetMoves(Piece[] pieces)

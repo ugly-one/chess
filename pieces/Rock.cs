@@ -9,7 +9,7 @@ public partial class Rock : Piece
     
     public override Texture2D GetTexture()
     {
-        return base.GetTexture(Player, "rock");
+        return Player.GetTexture("rock");
     }
     
     public override Vector2[] GetMoves(Piece[] pieces)

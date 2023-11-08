@@ -11,14 +11,6 @@ public abstract partial class Piece : Node
 		Player = player;
 		CurrentPosition = position;
 	}
-	
-	// TODO this should be a static method outside of Movement class
-	internal Texture2D GetTexture(Player player, string piece)
-	{
-		var color = player == Player.WHITE ? "white" : "black";
-		var image = Image.LoadFromFile("res://assets/" + color + "_" + piece + ".svg");
-		return ImageTexture.CreateFromImage(image);
-	}
 
 	public abstract Texture2D GetTexture();
 

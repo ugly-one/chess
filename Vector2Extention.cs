@@ -4,6 +4,13 @@ using Godot;
 
 public static class Vector2Extention
 {
+    public static Texture2D GetTexture(this Player player, string piece)
+    {
+        var color = player == Player.WHITE ? "white" : "black";
+        var image = Image.LoadFromFile("res://assets/" + color + "_" + piece + ".svg");
+        return ImageTexture.CreateFromImage(image);
+    }
+    
     public static Player GetOppositePlayer(this Player player)
     {
         return player == Player.BLACK ? Player.WHITE : Player.BLACK;
