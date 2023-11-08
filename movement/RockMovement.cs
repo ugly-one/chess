@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Godot;
 
@@ -11,7 +10,7 @@ public partial class RockMovement : Movement
         return base.GetTexture(Player, "rock");
     }
     
-    public override Vector2[] GetMoves(Piece[] pieces)
+    public override Vector2[] GetMoves(Movement[] pieces)
     {
         var moves = new List<Vector2>();
         moves.AddRange(CurrentPosition.GetDirection(Vector2.Up, pieces, Player));

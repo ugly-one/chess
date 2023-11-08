@@ -11,7 +11,7 @@ public partial class KingMovement : Movement
         return base.GetTexture(Player, "king");
     }
 
-    public override Vector2[] GetMoves(Piece[] pieces)
+    public override Vector2[] GetMoves(Movement[] pieces)
     {
         // TODO king can step on its own pieces
         return new List<Vector2>()

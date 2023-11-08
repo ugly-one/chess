@@ -11,7 +11,7 @@ public partial class PawnMovement : Movement
         return base.GetTexture(Player, "pawn");
     }
 
-    public override Vector2[] GetMoves(Piece[] pieces)
+    public override Vector2[] GetMoves(Movement[] pieces)
     {
         var moves = new List<Vector2>();
         var direction = Player == Player.WHITE ? Vector2.Up : Vector2.Down;
@@ -42,12 +42,12 @@ public partial class PawnMovement : Movement
         return moves.ToArray();
     }
 
-    private bool IsBlockedByOpponent(Vector2 position, Piece[] pieces)
+    private bool IsBlockedByOpponent(Vector2 position, Movement[] pieces)
     {
-        return pieces.Any(piece => piece.Movement.CurrentPosition == position && Player != piece.Movement.Player);
+        return pieces.Any(piece => piece.CurrentPosition == position && Player != piece.Player);
     }
-    private bool IsBlocked(Vector2 position, Piece[] pieces)
+    private bool IsBlocked(Vector2 position, Movement[] pieces)
     {
-        return pieces.Any(piece => piece.Movement.CurrentPosition == position);
+        return pieces.Any(piece => piece.CurrentPosition == position);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Bla.movement;
 using Godot;
 
 namespace Bla;
@@ -14,7 +15,7 @@ public static class Vector2Extention
     public static IEnumerable<Vector2> GetDirection(
         this Vector2 currentPosition,
         Vector2 step, 
-        IEnumerable<Piece> allPieces,
+        IEnumerable<Movement> allPieces,
         Player player)
     {
         var newPos = currentPosition + step;
@@ -34,11 +35,11 @@ public static class Vector2Extention
         }
     }
     
-    public static bool IsOccupiedBy(this Vector2 position, Player player, IEnumerable<Piece> allPieces)
+    public static bool IsOccupiedBy(this Vector2 position, Player player, IEnumerable<Movement> allPieces)
     {
         foreach (var piece in allPieces)
         {
-            if (position == piece.Movement.CurrentPosition && piece.Movement.Player == player)
+            if (position == piece.CurrentPosition && piece.Player == player)
             {
                 return true;
             }

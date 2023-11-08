@@ -64,7 +64,7 @@ public partial class ChessEngine : Node2D
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 
 		var possibleMoves = piece
-			.Movement.GetMoves(pieces)
+			.Movement.GetMoves(pieces.Select(p => p.Movement).ToArray())
 			.WithinBoard()
 			.Append(piece.Movement.CurrentPosition);
 		
@@ -87,7 +87,7 @@ public partial class ChessEngine : Node2D
 		foreach (var oppositePlayerPiece in oppositePlayerPieces)
 		{
 			var possibleMoves =
-				oppositePlayerPiece.Movement.GetMoves(pieces);
+				oppositePlayerPiece.Movement.GetMoves(pieces.Select(p => p.Movement).ToArray());
 			if (player == Player.WHITE)
 			{
 				if (possibleMoves.Contains(whiteKing))
@@ -120,7 +120,7 @@ public partial class ChessEngine : Node2D
 		// get all possible moves
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 		var possibleMoves = droppedPiece.Movement
-			.GetMoves(pieces)
+			.GetMoves(pieces.Select(p => p.Movement).ToArray())
 			.WithinBoard();
 		
 		// the move is not possible
