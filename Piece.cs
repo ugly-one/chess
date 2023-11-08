@@ -11,7 +11,6 @@ public partial class Piece : StaticBody2D
 
 	public movement.Movement Movement;
 
-	public Player Player;
 	private Texture2D _texture;
 	private bool _canDrag;
 	private bool _dragging;
@@ -21,7 +20,6 @@ public partial class Piece : StaticBody2D
 	public void Init(movement.Movement movement)
 	{
 		Movement = movement;
-		Player = movement.Player;
 		_texture = movement.GetTexture();
 	}
 

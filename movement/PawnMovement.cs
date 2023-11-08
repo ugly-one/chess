@@ -44,7 +44,7 @@ public partial class PawnMovement : Movement
 
     private bool IsBlockedByOpponent(Vector2 position, Piece[] pieces)
     {
-        return pieces.Any(piece => piece.Movement.CurrentPosition == position && Player != piece.Player);
+        return pieces.Any(piece => piece.Movement.CurrentPosition == position && Player != piece.Movement.Player);
     }
     private bool IsBlocked(Vector2 position, Piece[] pieces)
     {

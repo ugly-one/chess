@@ -83,7 +83,7 @@ public partial class ChessEngine : Node2D
 
 	private bool IsKingUnderAttack(Piece[] pieces, Player player)
 	{
-		var oppositePlayerPieces = pieces.Where(p => p.Player != player);
+		var oppositePlayerPieces = pieces.Where(p => p.Movement.Player != player);
 		foreach (var oppositePlayerPiece in oppositePlayerPieces)
 		{
 			var possibleMoves =
@@ -135,7 +135,7 @@ public partial class ChessEngine : Node2D
 		// kill opponents piece if needed
 		foreach (var piece in pieces)
 		{
-			if (piece.Movement.CurrentPosition == newPosition && piece.Player == droppedPiece.Player.GetOppositePlayer())
+			if (piece.Movement.CurrentPosition == newPosition && piece.Movement.Player == droppedPiece.Movement.Player.GetOppositePlayer())
 				piece.QueueFree();
 		}
 		
@@ -156,7 +156,7 @@ public partial class ChessEngine : Node2D
 		currentPlayer = currentPlayer.GetOppositePlayer();
 		foreach (var piece in pieces)
 		{
-			if (piece.Player == currentPlayer)
+			if (piece.Movement.Player == currentPlayer)
 				piece.Enable();
 			else
 				piece.Disable();

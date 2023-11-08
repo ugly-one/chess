@@ -38,7 +38,7 @@ public static class Vector2Extention
     {
         foreach (var piece in allPieces)
         {
-            if (position == piece.Movement.CurrentPosition && piece.Player == player)
+            if (position == piece.Movement.CurrentPosition && piece.Movement.Player == player)
             {
                 return true;
             }

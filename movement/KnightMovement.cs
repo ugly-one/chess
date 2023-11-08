@@ -13,6 +13,7 @@ public partial class KnightMovement : Movement
 
     public override Vector2[] GetMoves(Piece[] pieces)
     {
+        // TODO king can step on its own pieces
         var moves = new List<Vector2>();
         moves.Add(CurrentPosition + Vector2.Up * 2 + Vector2.Right);
         moves.Add(CurrentPosition + Vector2.Right * 2 + Vector2.Up);
