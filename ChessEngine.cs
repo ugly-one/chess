@@ -32,6 +32,7 @@ public partial class ChessEngine : Node2D
 		};
 		return board.GetNode<ColorRect>(letter+number);
 	}
+	
 	public override void _Ready()
 	{
 		board = GetNode("board");
@@ -82,16 +83,20 @@ public partial class ChessEngine : Node2D
 		}
 		highlightedFields.Clear();
 		
+		// get all possible moves
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 		var possibleMoves = droppedPiece.Movement
 			.GetMoves(pieces, droppedPiece.Movement.CurrentPosition)
 			.WithinBoard();
 		
+		// the move is not possible
 		if (!possibleMoves.Contains(newPosition))
 		{
 			droppedPiece.Move(currentPosition);
 			return;
 		}
+		
+		// the move is possible
 		
 		// kill opponents piece if needed
 		foreach (var piece in pieces)
@@ -100,9 +105,11 @@ public partial class ChessEngine : Node2D
 				piece.QueueFree();
 		}
 		
+		// move
 		droppedPiece.Move(newPosition);
+		
+		// swap current player
 		currentPlayer = currentPlayer.GetOppositePlayer();
-
 		foreach (var piece in pieces)
 		{
 			if (piece.Player == currentPlayer)
