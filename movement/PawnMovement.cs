@@ -34,27 +34,30 @@ public partial class PawnMovement : Movement
     public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
     {
         var moves = new List<Vector2>();
-        if (Player == Player.WHITE)
+        var direction = Player == Player.WHITE ? Vector2.Up : Vector2.Down;
+        
+        // one step forward if not blocked
+        var forward = currentPosition + direction;
+        if (!IsBlocked(forward, pieces))
+            moves.Add(forward);
+        
+        // one down/left if there is an opponent's piece
+        var takeLeft = currentPosition + Vector2.Left + direction;
+        if (IsBlockedByOpponent(takeLeft, pieces))
         {
-            // one step forward if not blocked
-            var forward = currentPosition + Vector2.Up;
-            if (!IsBlocked(forward, pieces))
-                moves.Add(forward);
-            
-            // one down/left if there is an opponent's piece
-            var takeLeft = currentPosition + Vector2.Left + Vector2.Up;
-            if (IsBlockedByOpponent(takeLeft, pieces))
-            {
-                moves.Add(takeLeft);
-            }
-            // one down/right if there is an opponent's piece
-            
-            // two steps forward if not moved yet and not blocked
-            if (Moved) return moves.ToArray();
-            var forward2Steps = currentPosition + Vector2.Up + Vector2.Up;
-            if (!IsBlocked(forward2Steps, pieces))
-                moves.Add(forward2Steps);
+            moves.Add(takeLeft);
         }
+        // one down/right if there is an opponent's piece
+        var takeRight = currentPosition + Vector2.Right + direction;
+        if (IsBlockedByOpponent(takeRight, pieces))
+        {
+            moves.Add(takeRight);
+        }
+        // two steps forward if not moved yet and not blocked
+        if (Moved) return moves.ToArray();
+        var forward2Steps = currentPosition + direction + direction;
+        if (!IsBlocked(forward2Steps, pieces))
+            moves.Add(forward2Steps);
 
         return moves.ToArray();
     }
