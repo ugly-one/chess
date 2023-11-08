@@ -56,12 +56,14 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-
 	private void OnPieceLifted(Piece piece)
 	{
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 
-		var possibleMoves = piece.Movement.GetMoves(pieces, piece.Movement.CurrentPosition);
+		var possibleMoves = piece
+			.Movement
+			.GetMoves(pieces, piece.Movement.CurrentPosition)
+			.Where(p => p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8);
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
@@ -79,13 +81,15 @@ public partial class ChessEngine : Node2D
 		}
 		highlightedFields.Clear();
 		
-		if (!droppedPiece.Movement.CanMove(newPosition))
+		var pieces = GetChildren().OfType<Piece>().ToArray();
+		var possibleMoves = droppedPiece.Movement.GetMoves(pieces, droppedPiece.Movement.CurrentPosition);
+		// TODO missing clamping so we don't work with moves that are outside of the board
+		if (!possibleMoves.Contains(newPosition))
 		{
 			droppedPiece.Move(currentPosition);
 			return;
 		}
 		
-		var pieces = GetChildren().OfType<Piece>().ToArray();
 		// disable dropping pieces on top of your own pieces
 		foreach (var piece in pieces)
 		{
