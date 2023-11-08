@@ -60,14 +60,17 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-	private void OnPieceLifted(PieceUI piece)
+	private void OnPieceLifted(PieceUI pieceUI)
 	{
-		var pieces = GetChildren().OfType<PieceUI>().ToArray();
+		var pieces = GetChildren()
+			.OfType<PieceUI>()
+			.Select( ui => ui.Piece)
+			.ToArray();
 
-		var possibleMoves = piece
-			.Piece.GetMoves(pieces.Select(p => p.Piece).ToArray())
+		var possibleMoves = pieceUI
+			.Piece.GetMoves(pieces)
 			.WithinBoard()
-			.Append(piece.Piece.CurrentPosition);
+			.Append(pieceUI.Piece.CurrentPosition);
 		
 		// check if current player king is under attack
 		var bla = IsKingUnderAttack(pieces, currentPlayer);
@@ -82,13 +85,13 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-	private bool IsKingUnderAttack(PieceUI[] pieces, Player player)
+	private bool IsKingUnderAttack(Piece[] pieces, Player player)
 	{
-		var oppositePlayerPieces = pieces.Where(p => p.Piece.Player != player);
+		var oppositePlayerPieces = pieces.Where(p => p.Player != player);
 		foreach (var oppositePlayerPiece in oppositePlayerPieces)
 		{
 			var possibleMoves =
-				oppositePlayerPiece.Piece.GetMoves(pieces.Select(p => p.Piece).ToArray());
+				oppositePlayerPiece.GetMoves(pieces);
 			if (player == Player.WHITE)
 			{
 				if (possibleMoves.Contains(whiteKing.CurrentPosition))
