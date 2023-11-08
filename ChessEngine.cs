@@ -93,17 +93,17 @@ public partial class ChessEngine : Node2D
 			droppedPiece.Move(currentPosition);
 			return;
 		}
-		
-		// disable dropping pieces if their path to the destination is not clear
-		var path = currentPosition.GetFieldsOnPathTo(newPosition);
-		foreach (var piece in pieces)
-		{
-			if (path.Contains(piece.Movement.CurrentPosition))
-			{
-				droppedPiece.Move(currentPosition);
-				return;
-			}
-		}
+		//
+		// // disable dropping pieces if their path to the destination is not clear
+		// var path = currentPosition.GetFieldsOnPathTo(newPosition);
+		// foreach (var piece in pieces)
+		// {
+		// 	if (path.Contains(piece.Movement.CurrentPosition))
+		// 	{
+		// 		droppedPiece.Move(currentPosition);
+		// 		return;
+		// 	}
+		// }
 		
 		// kill opponents piece if needed
 		foreach (var piece in pieces)

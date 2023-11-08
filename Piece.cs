@@ -59,11 +59,6 @@ public partial class Piece : StaticBody2D
 			_canDrag = false;
 			var x = (int) Position.X / 40;
 			var y = (int) Position.Y / 40;
-			if (x < 0 || x > 7 || y < 0 || y > 7)
-			{
-				Position = _startingPosition;
-				return;
-			}
 			var newPosition = new Vector2(x, y);
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
