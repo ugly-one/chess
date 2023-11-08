@@ -7,7 +7,7 @@ public abstract partial class Movement : Node
 	public bool Moved;
 	public Vector2 CurrentPosition;
 	public Player Player;
-
+	
 	// TODO this should be a static method outside of Movement class
 	internal Texture2D GetTexture(Player player, string piece)
 	{

@@ -13,6 +13,7 @@ public partial class KingMovement : Movement
 
     public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
     {
+        // TODO king can step on its own pieces
         return new List<Vector2>()
         {
             currentPosition + Vector2.Up,

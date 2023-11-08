@@ -10,7 +10,8 @@ public partial class ChessEngine : Node2D
 	private Player currentPlayer = Player.WHITE;
 	private Node board;
 	private Dictionary<ColorRect, Color> highlightedFields = new Dictionary<ColorRect, Color>();
-	
+	private Vector2 whiteKing;
+	private Vector2 blackKing;
 	private ColorRect GetField(Vector2 position)
 	{
 		var number = 8 - position.Y;
@@ -37,9 +38,10 @@ public partial class ChessEngine : Node2D
 	{
 		board = GetNode("board");
 		var pieceFactory = new PieceFactory();
-		var whitePieces = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
-		var blackPieces = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
-
+		var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
+		var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
+		this.whiteKing = whiteKing;
+		this.blackKing = blackKing;
 		foreach (var piece in whitePieces)
 		{
 			AddChild(piece);
@@ -66,14 +68,46 @@ public partial class ChessEngine : Node2D
 			.WithinBoard()
 			.Append(piece.Movement.CurrentPosition);
 		
+		// check if current player king is under attack
+		var bla = IsKingUnderAttack(pieces, currentPlayer);
+		
+		// if the king is under attack, let's try to make a move and see if the king is still under attack
+		
+		GD.Print(bla);
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
 			GetField(possibleMove).Color = Colors.Pink;
-			GD.Print(possibleMove);
 		}
 	}
-	
+
+	private bool IsKingUnderAttack(Piece[] pieces, Player player)
+	{
+		var oppositePlayerPieces = pieces.Where(p => p.Player != player);
+		foreach (var oppositePlayerPiece in oppositePlayerPieces)
+		{
+			var possibleMoves =
+				oppositePlayerPiece.Movement.GetMoves(pieces, oppositePlayerPiece.Movement.CurrentPosition);
+			if (player == Player.WHITE)
+			{
+				if (possibleMoves.Contains(whiteKing))
+				{
+					GD.Print("WHITE KING UNDER FIRE");
+					return true;
+				}
+			}
+			else
+			{
+				if (possibleMoves.Contains(blackKing))
+				{
+					GD.Print("BLACK KING UNDER FIRE");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private void PieceOnDropped(Piece droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
@@ -108,6 +142,16 @@ public partial class ChessEngine : Node2D
 		// move
 		droppedPiece.Move(newPosition);
 		
+		// keep track where the king is
+		if (currentPosition == whiteKing)
+		{
+			whiteKing = newPosition;
+		}
+		else if (currentPosition == blackKing)
+		{
+			blackKing = newPosition;
+		}
+		
 		// swap current player
 		currentPlayer = currentPlayer.GetOppositePlayer();
 		foreach (var piece in pieces)
@@ -117,5 +161,8 @@ public partial class ChessEngine : Node2D
 			else
 				piece.Disable();
 		}
+		
+		GD.Print(whiteKing);
+		GD.Print(blackKing);
 	}
 }
