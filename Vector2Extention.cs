@@ -7,9 +7,13 @@ namespace Bla;
 
 public static class Vector2Extention
 {
+    public static bool IsWithinBoard(this Vector2 position)
+    {
+        return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
+    }
     public static IEnumerable<Vector2> WithinBoard(this IEnumerable<Vector2> positions)
     {
-        return positions.Where(p => p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8);
+        return positions.Where(IsWithinBoard);
     }
     public static IEnumerable<Vector2> RemoveFieldsOccupiedByOwnPieces(this IEnumerable<Vector2> positions,
         IEnumerable<Piece> allPieces, Player player)
