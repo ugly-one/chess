@@ -1,13 +1,13 @@
 using System;
 using Godot;
 
+namespace Bla.movement;
+
 public partial class KingMovement : Movement
 {
-    public override bool can_move(Vector2 new_position)
+    public override bool CanMove(Vector2 newPosition)
     {
-        if (Math.Abs(new_position.X - current_position.X) <= 1 && Math.Abs(new_position.Y - current_position.Y) <= 1)
-            return true;
-        return false;
+        return Math.Abs(newPosition.X - CurrentPosition.X) <= 1 && Math.Abs(newPosition.Y - CurrentPosition.Y) <= 1;
     }
 
     public override Texture2D GetTexture()

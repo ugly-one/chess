@@ -1,13 +1,15 @@
 using System;
 using Godot;
 
+namespace Bla.movement;
+
 public partial class KnightMovement : Movement
 {
-    public override bool can_move(Vector2 new_position)
+    public override bool CanMove(Vector2 newPosition)
     {
-        if (Math.Abs(new_position.X - current_position.X) == 1 && Math.Abs(new_position.Y - current_position.Y) == 2)
+        if (Math.Abs(newPosition.X - CurrentPosition.X) == 1 && Math.Abs(newPosition.Y - CurrentPosition.Y) == 2)
             return true;
-        if (Math.Abs(new_position.X - current_position.X) == 2 && Math.Abs(new_position.Y - current_position.Y) == 1)
+        if (Math.Abs(newPosition.X - CurrentPosition.X) == 2 && Math.Abs(newPosition.Y - CurrentPosition.Y) == 1)
             return true;
         return false;
     }

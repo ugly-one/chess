@@ -1,11 +1,13 @@
 using Godot;
 
+namespace Bla.movement;
+
 public partial class BishopMovement : Movement
 {
-	public override bool can_move(Vector2 new_position)
+	public override bool CanMove(Vector2 newPosition)
 	{
-		var move_vector = (new_position - current_position).Abs();
-		if (move_vector.X == move_vector.Y){
+		var moveVector = (newPosition - CurrentPosition).Abs();
+		if (moveVector.X == moveVector.Y){
 			return true;
 		}
 		return false;

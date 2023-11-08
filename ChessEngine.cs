@@ -12,42 +12,40 @@ public partial class ChessEngine : Node2D
     public override void _Ready()
     {
         var pieceFactory = new PieceFactory();
-        var white_pieces = pieceFactory.CreatePieces(Player.WHITE, 0, 1);
-        var black_pieces = pieceFactory.CreatePieces(Player.BLACK, 7, 6);
+        var whitePieces = pieceFactory.CreatePieces(Player.WHITE, 0, 1);
+        var blackPieces = pieceFactory.CreatePieces(Player.BLACK, 7, 6);
 
-        foreach (var piece in white_pieces)
+        foreach (var piece in whitePieces)
         {
             AddChild(piece);
-            piece.enable();
+            piece.Enable();
             piece.Dropped += PieceOnDropped;
         }
         
-        foreach (var piece in black_pieces)
+        foreach (var piece in blackPieces)
         {
             AddChild(piece);
-            piece.disable();
+            piece.Disable();
             piece.Dropped += PieceOnDropped;
         }
     }
 
     private void PieceOnDropped(Piece droppedPiece, Vector2 currentPosition, Vector2 newPosition)
     {
-        if (!droppedPiece.movement.can_move(newPosition))
+        if (!droppedPiece.Movement.CanMove(newPosition))
         {
-            droppedPiece.move(currentPosition);
+            droppedPiece.Move(currentPosition);
             return;
         }
 
-        var illegalMove = false;
-        var childred = GetChildren();
-        var pieces = childred.OfType<Piece>().ToArray();
+        var pieces = GetChildren().OfType<Piece>().ToArray();
         
         // disable dropping pieces on top of your own pieces
         foreach (var piece in pieces)
         {
-            if (newPosition == piece.movement.current_position && piece.player == droppedPiece.player)
+            if (newPosition == piece.Movement.CurrentPosition && piece.Player == droppedPiece.Player)
             {
-                droppedPiece.move(currentPosition);
+                droppedPiece.Move(currentPosition);
                 return;
             }
         }
@@ -56,9 +54,9 @@ public partial class ChessEngine : Node2D
         var path = GetFieldsOnPath(currentPosition, newPosition);
         foreach (var piece in pieces)
         {
-            if (path.Contains(piece.movement.current_position))
+            if (path.Contains(piece.Movement.CurrentPosition))
             {
-                droppedPiece.move(currentPosition);
+                droppedPiece.Move(currentPosition);
                 return;
             }
         }
@@ -66,35 +64,28 @@ public partial class ChessEngine : Node2D
         // kill opponents piece if needed
         foreach (var piece in pieces)
         {
-            if (piece.movement.current_position == newPosition && piece.player == GetOppositePlayer(droppedPiece.player))
-            {
+            if (piece.Movement.CurrentPosition == newPosition && piece.Player == GetOppositePlayer(droppedPiece.Player))
                 piece.QueueFree();
-            }
         }
         
-        droppedPiece.move(newPosition);
-
+        droppedPiece.Move(newPosition);
         currentPlayer = GetOppositePlayer(currentPlayer);
 
         foreach (var piece in pieces)
         {
-            if (piece.player == currentPlayer)
-            {
-                piece.enable();
-            }
+            if (piece.Player == currentPlayer)
+                piece.Enable();
             else
-            {
-                piece.disable();
-            }
+                piece.Disable();
         }
     }
 
-    public Player GetOppositePlayer(Player player)
+    private Player GetOppositePlayer(Player player)
     {
         return player == Player.BLACK ? Player.WHITE : Player.BLACK;
     }
-    
-    public Vector2[] GetFieldsOnPath(Vector2 start, Vector2 end)
+
+    private Vector2[] GetFieldsOnPath(Vector2 start, Vector2 end)
     {
         var path = new List<Vector2>();
         

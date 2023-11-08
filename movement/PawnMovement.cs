@@ -1,23 +1,24 @@
 using Godot;
 
+namespace Bla.movement;
+
 public partial class PawnMovement : Movement
 {
-    public override bool can_move(Vector2 new_position)
+    public override bool CanMove(Vector2 newPosition)
     {
-        if (current_position.Y == new_position.Y)
+        if (CurrentPosition.Y == newPosition.Y)
             return false;
-        if (new_position.X != current_position.X)
+        if (newPosition.X != CurrentPosition.X)
             return false;
 
-        // TODO add support for taking opponents pieces
         if (Player == Player.WHITE)
         {
-            if (new_position.Y - 1 == current_position.Y || (!Moved && new_position.Y - 2 == current_position.Y))
+            if (newPosition.Y - 1 == CurrentPosition.Y || (!Moved && newPosition.Y - 2 == CurrentPosition.Y))
                 return true;
             return false;
         }
 
-        if (new_position.Y + 1 == current_position.Y || (!Moved && new_position.Y + 2 == current_position.Y))
+        if (newPosition.Y + 1 == CurrentPosition.Y || (!Moved && newPosition.Y + 2 == CurrentPosition.Y))
             return true;
         
         return false;

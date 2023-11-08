@@ -1,12 +1,14 @@
 using Godot;
 
+namespace Bla.movement;
+
 public partial class RockMovement : Movement
 {
-    public override bool can_move(Vector2 new_position)
+    public override bool CanMove(Vector2 newPosition)
     {
-        if (current_position.Y == new_position.Y)
+        if (CurrentPosition.Y == newPosition.Y)
             return true;
-        if (new_position.X == current_position.X)
+        if (newPosition.X == CurrentPosition.X)
             return true;
         return false;
     }

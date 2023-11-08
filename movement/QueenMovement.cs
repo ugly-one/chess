@@ -1,15 +1,17 @@
 using Godot;
 
+namespace Bla.movement;
+
 public partial class QueenMovement : Movement
 {
-    public override bool can_move(Vector2 new_position)
+    public override bool CanMove(Vector2 newPosition)
     {
-        var move_vector = (new_position - current_position).Abs();
-        if (move_vector.X == move_vector.Y)
+        var moveVector = (newPosition - CurrentPosition).Abs();
+        if (moveVector.X == moveVector.Y)
             return true;
-        if (current_position.Y == new_position.Y)
+        if (CurrentPosition.Y == newPosition.Y)
             return true;
-        if (new_position.X == current_position.X)
+        if (newPosition.X == CurrentPosition.X)
             return true;
         return false;
     }
