@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://ivjetanwgpo"]
-
-[ext_resource type="Script" path="res://movement/king_movement.gd" id="1_elag4"]
-
-[node name="king_movement" type="Node2D"]
-script = ExtResource("1_elag4")

@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dmnrgq0em6ccc"]
-
-[ext_resource type="Script" path="res://movement/rock_movement.gd" id="1_ebl0l"]
-
-[node name="rock_movement" type="Node2D"]
-script = ExtResource("1_ebl0l")

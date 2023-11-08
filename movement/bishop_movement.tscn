@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dmjjd2d2cnpo7"]
-
-[ext_resource type="Script" path="res://movement/BishopMovement.cs" id="1_lfaf3"]
-
-[node name="bishop_movement" type="Node2D"]
-script = ExtResource("1_lfaf3")
