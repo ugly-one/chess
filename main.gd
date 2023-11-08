@@ -6,7 +6,7 @@ func _ready():
 	var player = Enums.Player.WHITE
 	var pieceFactoryScript = preload("res://PieceFactory.cs").new()
 	var white_pieces = pieceFactoryScript.CreatePieces(Enums.Player.WHITE, 0, 1)
-	var black_pieces = PieceFactory_gdscript.createPieces(Enums.Player.BLACK, 7, 6)
+	var black_pieces = pieceFactoryScript.CreatePieces(Enums.Player.BLACK, 7, 6)
 	for piece in white_pieces:
 		add_child(piece)
 		piece.Enabled = true
