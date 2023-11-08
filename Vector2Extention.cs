@@ -1,11 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace Bla;
 
 public static class Vector2Extention
 {
+    public static IEnumerable<Vector2> WithinBoard(this IEnumerable<Vector2> positions)
+    {
+        return positions.Where(p => p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8);
+    }
+    public static IEnumerable<Vector2> RemoveFieldsOccupiedByOwnPieces(this IEnumerable<Vector2> positions,
+        IEnumerable<Piece> allPieces, Player player)
+    {
+        foreach (var position in positions)
+        {
+            var invalid = false;
+            foreach (var piece in allPieces)
+            {
+                if (position == piece.Movement.CurrentPosition && piece.Player == player)
+                {
+                    invalid = true;
+                    break;
+                }
+            }
+
+            if (!invalid)
+            {
+                yield return position;
+            }
+        }
+    }
     /// <summary>
     /// Returns the fields that are between start and end
     /// </summary>

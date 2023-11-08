@@ -61,9 +61,10 @@ public partial class ChessEngine : Node2D
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 
 		var possibleMoves = piece
-			.Movement
-			.GetMoves(pieces, piece.Movement.CurrentPosition)
-			.Where(p => p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8);
+			.Movement.GetMoves(pieces, piece.Movement.CurrentPosition)
+			.WithinBoard()
+			.RemoveFieldsOccupiedByOwnPieces(pieces, piece.Player);
+		
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
@@ -71,7 +72,7 @@ public partial class ChessEngine : Node2D
 			GD.Print(possibleMove);
 		}
 	}
-
+	
 	private void PieceOnDropped(Piece droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
@@ -82,22 +83,15 @@ public partial class ChessEngine : Node2D
 		highlightedFields.Clear();
 		
 		var pieces = GetChildren().OfType<Piece>().ToArray();
-		var possibleMoves = droppedPiece.Movement.GetMoves(pieces, droppedPiece.Movement.CurrentPosition);
-		// TODO missing clamping so we don't work with moves that are outside of the board
+		var possibleMoves = droppedPiece.Movement
+			.GetMoves(pieces, droppedPiece.Movement.CurrentPosition)
+			.WithinBoard()
+			.RemoveFieldsOccupiedByOwnPieces(pieces, droppedPiece.Player);
+		
 		if (!possibleMoves.Contains(newPosition))
 		{
 			droppedPiece.Move(currentPosition);
 			return;
-		}
-		
-		// disable dropping pieces on top of your own pieces
-		foreach (var piece in pieces)
-		{
-			if (newPosition == piece.Movement.CurrentPosition && piece.Player == droppedPiece.Player)
-			{
-				droppedPiece.Move(currentPosition);
-				return;
-			}
 		}
 		
 		// disable dropping pieces if their path to the destination is not clear
