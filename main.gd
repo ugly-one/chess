@@ -8,19 +8,13 @@ func _ready():
 	var black_pieces = PieceFactory.createPieces(Enums.Player.BLACK, 7, 6)
 	for piece in white_pieces:
 		add_child(piece)
-		piece.connect("dropped", _on_piece_dropped)
+		piece.Enabled = true
+		piece.connect("Dropped", _on_piece_dropped)
 	for piece in black_pieces:
 		add_child(piece)
 		piece.disable()
-		piece.connect("dropped", _on_piece_dropped)
-		
-	var white_pieces_csharp = PieceFactory.createPieces2(Enums.Player.WHITE, 0, 1)
-	
-	for piece in white_pieces_csharp:
-		add_child(piece)
-		piece.Enabled = true
 		piece.connect("Dropped", _on_piece_dropped)
-
+		
 func _on_piece_dropped(piece, current_position: Vector2, new_position: Vector2):
 
 	if (!piece.movement.can_move(new_position)):
