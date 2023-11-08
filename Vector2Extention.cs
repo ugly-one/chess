@@ -7,6 +7,15 @@ namespace Bla;
 
 public static class Vector2Extention
 {
+    public static IEnumerable<Vector2> GetDirection(this Vector2 currentPosition, Vector2 step)
+    {
+        var newPos = currentPosition + step;
+        while (newPos.IsWithinBoard())
+        {
+            yield return newPos;
+            newPos += step;
+        }
+    }
     public static bool IsWithinBoard(this Vector2 position)
     {
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
