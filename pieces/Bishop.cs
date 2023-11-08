@@ -17,4 +17,8 @@ public partial class Bishop : Piece
 		moves.AddRange(CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, pieces, Player));
 		return moves.ToArray();
 	}
+
+	public Bishop(Player player, Vector2 position) : base(player, position)
+	{
+	}
 }

@@ -9,17 +9,17 @@ public partial class PieceFactory : RefCounted
 	
 	public (PieceUI[], King) CreatePieces(Player player, int backRow, int frontRow)
 	{
-		var king = new King();
+		var king = new King(player, new Vector2(4, backRow));
 		var pieces = new List<PieceUI>()
 		{
-			CreatePiece(player, new Rock(), new Vector2(0, backRow)),
-			CreatePiece(player, new Knight(), new Vector2(1, backRow)),
-			CreatePiece(player, new Bishop(), new Vector2(2, backRow)),
-			CreatePiece(player, new Queen(), new Vector2(3, backRow)),
-			CreatePiece(player, king, new Vector2(4, backRow)),
-			CreatePiece(player, new Bishop(), new Vector2(5, backRow)),
-			CreatePiece(player, new Knight(), new Vector2(6, backRow)),
-			CreatePiece(player, new Rock(), new Vector2(7, backRow)),
+			CreatePiece(new Rock(player, new Vector2(0, backRow))),
+			CreatePiece(new Knight(player, new Vector2(1, backRow))),
+			CreatePiece(new Bishop(player, new Vector2(2, backRow))),
+			CreatePiece(new Queen(player, new Vector2(3, backRow))),
+			CreatePiece(king),
+			CreatePiece(new Bishop(player, new Vector2(5, backRow))),
+			CreatePiece(new Knight(player, new Vector2(6, backRow))),
+			CreatePiece(new Rock(player, new Vector2(7, backRow)))
 		};
 		pieces.AddRange(CreatePawns(player, frontRow));
 		return (pieces.ToArray(), king);
@@ -30,15 +30,13 @@ public partial class PieceFactory : RefCounted
 		var result = new List<PieceUI>();
 		for (var i = 0; i < 8; i++)
 		{
-			result.Add(CreatePiece(player, new Pawn(), new Vector2(i, frontRow)));
+			result.Add(CreatePiece(new Pawn(player, new Vector2(i, frontRow))));
 		}
 		return result;
 	}
 
-	private PieceUI CreatePiece(Player player, Piece piece, Vector2 position)
+	private PieceUI CreatePiece(Piece piece)
 	{
-		piece.Player = player;
-		piece.CurrentPosition = position;
 		var pieceScene = ResourceLoader.Load<PackedScene>("res://piece_csharp.tscn");
 		var pieceUI = pieceScene.Instantiate<PieceUI>();
 		pieceUI.Init(piece);

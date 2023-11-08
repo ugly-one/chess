@@ -4,6 +4,10 @@ using Godot;
 
 public partial class Pawn : Piece
 {
+    public Pawn(Player player, Vector2 position) : base(player, position)
+    {
+    }
+    
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "pawn");
@@ -48,4 +52,5 @@ public partial class Pawn : Piece
     {
         return pieces.Any(piece => piece.CurrentPosition == position);
     }
+
 }

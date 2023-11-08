@@ -3,6 +3,10 @@ using Godot;
 
 public partial class King : Piece
 {
+    public King(Player player, Vector2 position) : base(player, position)
+    {
+    }
+    
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "king");
@@ -23,4 +27,5 @@ public partial class King : Piece
             CurrentPosition + Vector2.Down + Vector2.Left,
         }.ToArray();
     }
+
 }

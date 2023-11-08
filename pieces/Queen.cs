@@ -3,6 +3,10 @@ using Godot;
 
 public partial class Queen : Piece
 {
+    public Queen(Player player, Vector2 position) : base(player, position)
+    {
+    }
+    
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "queen");
@@ -21,4 +25,5 @@ public partial class Queen : Piece
         moves.AddRange(CurrentPosition.GetDirection(Vector2.Right, pieces, Player));
         return moves.ToArray();
     }
+
 }

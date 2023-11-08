@@ -3,8 +3,14 @@ using Godot;
 public abstract partial class Piece : Node
 {
 	public bool Moved;
-	public Vector2 CurrentPosition;
-	public Player Player;
+	public Vector2 CurrentPosition { get; set; }
+	public Player Player { get; }
+
+	public Piece(Player player, Vector2 position)
+	{
+		Player = player;
+		CurrentPosition = position;
+	}
 	
 	// TODO this should be a static method outside of Movement class
 	internal Texture2D GetTexture(Player player, string piece)

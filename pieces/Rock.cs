@@ -3,6 +3,10 @@ using Godot;
 
 public partial class Rock : Piece
 {
+    public Rock(Player player, Vector2 position) : base(player, position)
+    {
+    }
+    
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "rock");
@@ -17,4 +21,5 @@ public partial class Rock : Piece
         moves.AddRange(CurrentPosition.GetDirection(Vector2.Right, pieces, Player));
         return moves.ToArray();
     }
+
 }
