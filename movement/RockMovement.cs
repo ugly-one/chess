@@ -11,13 +11,13 @@ public partial class RockMovement : Movement
         return base.GetTexture(Player, "rock");
     }
     
-    public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
+    public override Vector2[] GetMoves(Piece[] pieces)
     {
         var moves = new List<Vector2>();
-        moves.AddRange(currentPosition.GetDirection(Vector2.Up, pieces, Player));
-        moves.AddRange(currentPosition.GetDirection(Vector2.Down, pieces, Player));
-        moves.AddRange(currentPosition.GetDirection(Vector2.Left, pieces, Player));
-        moves.AddRange(currentPosition.GetDirection(Vector2.Right, pieces, Player));
+        moves.AddRange(CurrentPosition.GetDirection(Vector2.Up, pieces, Player));
+        moves.AddRange(CurrentPosition.GetDirection(Vector2.Down, pieces, Player));
+        moves.AddRange(CurrentPosition.GetDirection(Vector2.Left, pieces, Player));
+        moves.AddRange(CurrentPosition.GetDirection(Vector2.Right, pieces, Player));
         return moves.ToArray();
     }
 }

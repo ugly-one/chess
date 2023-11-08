@@ -18,5 +18,5 @@ public abstract partial class Movement : Node
 
 	public abstract Texture2D GetTexture();
 
-	public abstract Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition);
+	public abstract Vector2[] GetMoves(Piece[] pieces);
 }

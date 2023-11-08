@@ -11,17 +11,17 @@ public partial class KnightMovement : Movement
         return base.GetTexture(Player, "knight");
     }
 
-    public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
+    public override Vector2[] GetMoves(Piece[] pieces)
     {
         var moves = new List<Vector2>();
-        moves.Add(currentPosition + Vector2.Up * 2 + Vector2.Right);
-        moves.Add(currentPosition + Vector2.Right * 2 + Vector2.Up);
-        moves.Add(currentPosition + Vector2.Right * 2 + Vector2.Down);
-        moves.Add(currentPosition + Vector2.Down * 2 + Vector2.Right);
-        moves.Add(currentPosition + Vector2.Down * 2 + Vector2.Left);
-        moves.Add(currentPosition + Vector2.Left * 2 + Vector2.Down);
-        moves.Add(currentPosition + Vector2.Up * 2 + Vector2.Left);
-        moves.Add(currentPosition + Vector2.Left * 2 + Vector2.Up);
+        moves.Add(CurrentPosition + Vector2.Up * 2 + Vector2.Right);
+        moves.Add(CurrentPosition + Vector2.Right * 2 + Vector2.Up);
+        moves.Add(CurrentPosition + Vector2.Right * 2 + Vector2.Down);
+        moves.Add(CurrentPosition + Vector2.Down * 2 + Vector2.Right);
+        moves.Add(CurrentPosition + Vector2.Down * 2 + Vector2.Left);
+        moves.Add(CurrentPosition + Vector2.Left * 2 + Vector2.Down);
+        moves.Add(CurrentPosition + Vector2.Up * 2 + Vector2.Left);
+        moves.Add(CurrentPosition + Vector2.Left * 2 + Vector2.Up);
         return moves.ToArray();
     }
 }
