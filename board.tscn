@@ -3,13 +3,13 @@
 [node name="board" type="Node2D"]
 position = Vector2(0, -1)
 
-[node name="whiteField" type="ColorRect" parent="."]
+[node name="a8" type="ColorRect" parent="."]
 offset_top = 1.0
 offset_right = 40.0
 offset_bottom = 41.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField" type="ColorRect" parent="."]
+[node name="b8" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 1.0
 offset_right = 80.0
@@ -17,7 +17,14 @@ offset_bottom = 41.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField2" type="ColorRect" parent="."]
+[node name="c8" type="ColorRect" parent="."]
+offset_left = 80.0
+offset_top = 1.0
+offset_right = 120.0
+offset_bottom = 41.0
+metadata/_edit_use_anchors_ = true
+
+[node name="d8" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 1.0
 offset_right = 160.0
@@ -25,14 +32,14 @@ offset_bottom = 41.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField2" type="ColorRect" parent="."]
-offset_left = 80.0
+[node name="e8" type="ColorRect" parent="."]
+offset_left = 160.0
 offset_top = 1.0
-offset_right = 120.0
+offset_right = 200.0
 offset_bottom = 41.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField3" type="ColorRect" parent="."]
+[node name="f8" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 1.0
 offset_right = 240.0
@@ -40,14 +47,14 @@ offset_bottom = 41.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField3" type="ColorRect" parent="."]
-offset_left = 160.0
+[node name="g8" type="ColorRect" parent="."]
+offset_left = 240.0
 offset_top = 1.0
-offset_right = 200.0
+offset_right = 280.0
 offset_bottom = 41.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField4" type="ColorRect" parent="."]
+[node name="h8" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 1.0
 offset_right = 320.0
@@ -55,14 +62,21 @@ offset_bottom = 41.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField4" type="ColorRect" parent="."]
-offset_left = 240.0
-offset_top = 1.0
-offset_right = 280.0
-offset_bottom = 41.0
+[node name="a7" type="ColorRect" parent="."]
+offset_top = 41.0
+offset_right = 40.0
+offset_bottom = 81.0
+color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField5" type="ColorRect" parent="."]
+[node name="b7" type="ColorRect" parent="."]
+offset_left = 40.0
+offset_top = 41.0
+offset_right = 80.0
+offset_bottom = 81.0
+metadata/_edit_use_anchors_ = true
+
+[node name="c7" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 41.0
 offset_right = 120.0
@@ -70,14 +84,14 @@ offset_bottom = 81.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField5" type="ColorRect" parent="."]
-offset_left = 40.0
+[node name="d7" type="ColorRect" parent="."]
+offset_left = 120.0
 offset_top = 41.0
-offset_right = 80.0
+offset_right = 160.0
 offset_bottom = 81.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField6" type="ColorRect" parent="."]
+[node name="e7" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 41.0
 offset_right = 200.0
@@ -85,43 +99,29 @@ offset_bottom = 81.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField6" type="ColorRect" parent="."]
-offset_left = 120.0
-offset_top = 41.0
-offset_right = 160.0
-offset_bottom = 81.0
-metadata/_edit_use_anchors_ = true
-
-[node name="blackField7" type="ColorRect" parent="."]
-offset_left = 240.0
-offset_top = 41.0
-offset_right = 280.0
-offset_bottom = 81.0
-color = Color(0.2, 0.2, 0.2, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="whiteField7" type="ColorRect" parent="."]
+[node name="f7" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 41.0
 offset_right = 240.0
 offset_bottom = 81.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField8" type="ColorRect" parent="."]
-offset_top = 41.0
-offset_right = 40.0
-offset_bottom = 81.0
-color = Color(0.2, 0.2, 0.2, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="whiteField8" type="ColorRect" parent="."]
+[node name="h7" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 41.0
 offset_right = 320.0
 offset_bottom = 81.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField9" type="ColorRect" parent="."]
+[node name="g7" type="ColorRect" parent="."]
+offset_left = 240.0
+offset_top = 41.0
+offset_right = 280.0
+offset_bottom = 81.0
+color = Color(0.2, 0.2, 0.2, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="c5" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 121.0
 offset_right = 120.0
@@ -129,14 +129,14 @@ offset_bottom = 161.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField9" type="ColorRect" parent="."]
+[node name="b5" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 121.0
 offset_right = 80.0
 offset_bottom = 161.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField10" type="ColorRect" parent="."]
+[node name="e5" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 121.0
 offset_right = 200.0
@@ -144,14 +144,14 @@ offset_bottom = 161.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField10" type="ColorRect" parent="."]
+[node name="d5" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 121.0
 offset_right = 160.0
 offset_bottom = 161.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField11" type="ColorRect" parent="."]
+[node name="g5" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 121.0
 offset_right = 280.0
@@ -159,28 +159,28 @@ offset_bottom = 161.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField11" type="ColorRect" parent="."]
+[node name="f5" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 121.0
 offset_right = 240.0
 offset_bottom = 161.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField12" type="ColorRect" parent="."]
+[node name="a5" type="ColorRect" parent="."]
 offset_top = 121.0
 offset_right = 40.0
 offset_bottom = 161.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField12" type="ColorRect" parent="."]
+[node name="h5" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 121.0
 offset_right = 320.0
 offset_bottom = 161.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField13" type="ColorRect" parent="."]
+[node name="b6" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 81.0
 offset_right = 80.0
@@ -188,13 +188,13 @@ offset_bottom = 121.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField13" type="ColorRect" parent="."]
+[node name="a6" type="ColorRect" parent="."]
 offset_top = 81.0
 offset_right = 40.0
 offset_bottom = 121.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField14" type="ColorRect" parent="."]
+[node name="d6" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 81.0
 offset_right = 160.0
@@ -202,14 +202,14 @@ offset_bottom = 121.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField14" type="ColorRect" parent="."]
+[node name="c6" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 81.0
 offset_right = 120.0
 offset_bottom = 121.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField15" type="ColorRect" parent="."]
+[node name="f6" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 81.0
 offset_right = 240.0
@@ -217,14 +217,14 @@ offset_bottom = 121.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField15" type="ColorRect" parent="."]
+[node name="e6" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 81.0
 offset_right = 200.0
 offset_bottom = 121.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField16" type="ColorRect" parent="."]
+[node name="h6" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 81.0
 offset_right = 320.0
@@ -232,14 +232,14 @@ offset_bottom = 121.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField16" type="ColorRect" parent="."]
+[node name="g6" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 81.0
 offset_right = 280.0
 offset_bottom = 121.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField17" type="ColorRect" parent="."]
+[node name="b4" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 161.0
 offset_right = 80.0
@@ -247,13 +247,13 @@ offset_bottom = 201.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField17" type="ColorRect" parent="."]
+[node name="a4" type="ColorRect" parent="."]
 offset_top = 161.0
 offset_right = 40.0
 offset_bottom = 201.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField18" type="ColorRect" parent="."]
+[node name="d4" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 161.0
 offset_right = 160.0
@@ -261,14 +261,14 @@ offset_bottom = 201.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField18" type="ColorRect" parent="."]
+[node name="c4" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 161.0
 offset_right = 120.0
 offset_bottom = 201.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField19" type="ColorRect" parent="."]
+[node name="f4" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 161.0
 offset_right = 240.0
@@ -276,14 +276,14 @@ offset_bottom = 201.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField19" type="ColorRect" parent="."]
+[node name="e4" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 161.0
 offset_right = 200.0
 offset_bottom = 201.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField20" type="ColorRect" parent="."]
+[node name="h4" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 161.0
 offset_right = 320.0
@@ -291,14 +291,14 @@ offset_bottom = 201.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField20" type="ColorRect" parent="."]
+[node name="g4" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 161.0
 offset_right = 280.0
 offset_bottom = 201.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField21" type="ColorRect" parent="."]
+[node name="b2" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 241.0
 offset_right = 80.0
@@ -306,13 +306,13 @@ offset_bottom = 281.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField21" type="ColorRect" parent="."]
+[node name="a2" type="ColorRect" parent="."]
 offset_top = 241.0
 offset_right = 40.0
 offset_bottom = 281.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField22" type="ColorRect" parent="."]
+[node name="d2" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 241.0
 offset_right = 160.0
@@ -320,14 +320,14 @@ offset_bottom = 281.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField22" type="ColorRect" parent="."]
+[node name="c2" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 241.0
 offset_right = 120.0
 offset_bottom = 281.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField23" type="ColorRect" parent="."]
+[node name="f2" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 241.0
 offset_right = 240.0
@@ -335,14 +335,14 @@ offset_bottom = 281.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField23" type="ColorRect" parent="."]
+[node name="e2" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 241.0
 offset_right = 200.0
 offset_bottom = 281.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField24" type="ColorRect" parent="."]
+[node name="h2" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 241.0
 offset_right = 320.0
@@ -350,14 +350,14 @@ offset_bottom = 281.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField24" type="ColorRect" parent="."]
+[node name="g2" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 241.0
 offset_right = 280.0
 offset_bottom = 281.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField25" type="ColorRect" parent="."]
+[node name="c3" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 201.0
 offset_right = 120.0
@@ -365,14 +365,14 @@ offset_bottom = 241.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField25" type="ColorRect" parent="."]
+[node name="b3" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 201.0
 offset_right = 80.0
 offset_bottom = 241.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField26" type="ColorRect" parent="."]
+[node name="e3" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 201.0
 offset_right = 200.0
@@ -380,14 +380,14 @@ offset_bottom = 241.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField26" type="ColorRect" parent="."]
+[node name="d3" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 201.0
 offset_right = 160.0
 offset_bottom = 241.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField27" type="ColorRect" parent="."]
+[node name="g3" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 201.0
 offset_right = 280.0
@@ -395,28 +395,28 @@ offset_bottom = 241.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField27" type="ColorRect" parent="."]
+[node name="f3" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 201.0
 offset_right = 240.0
 offset_bottom = 241.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField28" type="ColorRect" parent="."]
+[node name="a3" type="ColorRect" parent="."]
 offset_top = 201.0
 offset_right = 40.0
 offset_bottom = 241.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField28" type="ColorRect" parent="."]
+[node name="h3" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 201.0
 offset_right = 320.0
 offset_bottom = 241.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField29" type="ColorRect" parent="."]
+[node name="c1" type="ColorRect" parent="."]
 offset_left = 80.0
 offset_top = 281.0
 offset_right = 120.0
@@ -424,14 +424,14 @@ offset_bottom = 321.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField29" type="ColorRect" parent="."]
+[node name="b1" type="ColorRect" parent="."]
 offset_left = 40.0
 offset_top = 281.0
 offset_right = 80.0
 offset_bottom = 321.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField30" type="ColorRect" parent="."]
+[node name="e1" type="ColorRect" parent="."]
 offset_left = 160.0
 offset_top = 281.0
 offset_right = 200.0
@@ -439,14 +439,14 @@ offset_bottom = 321.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField30" type="ColorRect" parent="."]
+[node name="d1" type="ColorRect" parent="."]
 offset_left = 120.0
 offset_top = 281.0
 offset_right = 160.0
 offset_bottom = 321.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField31" type="ColorRect" parent="."]
+[node name="g1" type="ColorRect" parent="."]
 offset_left = 240.0
 offset_top = 281.0
 offset_right = 280.0
@@ -454,21 +454,21 @@ offset_bottom = 321.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField31" type="ColorRect" parent="."]
+[node name="f1" type="ColorRect" parent="."]
 offset_left = 200.0
 offset_top = 281.0
 offset_right = 240.0
 offset_bottom = 321.0
 metadata/_edit_use_anchors_ = true
 
-[node name="blackField32" type="ColorRect" parent="."]
+[node name="a1" type="ColorRect" parent="."]
 offset_top = 281.0
 offset_right = 40.0
 offset_bottom = 321.0
 color = Color(0.2, 0.2, 0.2, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="whiteField32" type="ColorRect" parent="."]
+[node name="h1" type="ColorRect" parent="."]
 offset_left = 280.0
 offset_top = 281.0
 offset_right = 320.0
