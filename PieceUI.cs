@@ -2,14 +2,14 @@ using Godot;
 
 namespace Bla;
 
-public partial class Piece : StaticBody2D
+public partial class PieceUI : StaticBody2D
 {
 	[Signal]
-	public delegate void DroppedEventHandler(Piece piece, Vector2 currentPosition, Vector2 newPosition);
+	public delegate void DroppedEventHandler(PieceUI piece, Vector2 currentPosition, Vector2 newPosition);
 	[Signal]
-	public delegate void LiftedEventHandler(Piece piece);
+	public delegate void LiftedEventHandler(PieceUI piece);
 
-	public movement.Movement Movement;
+	public movement.Piece Piece;
 
 	private Texture2D _texture;
 	private bool _canDrag;
@@ -17,17 +17,17 @@ public partial class Piece : StaticBody2D
 	private Vector2 _startingPosition;
 	private bool _enabled;
 	
-	public void Init(movement.Movement movement)
+	public void Init(movement.Piece piece)
 	{
-		Movement = movement;
-		_texture = movement.GetTexture();
+		Piece = piece;
+		_texture = piece.GetTexture();
 	}
 
 	public override void _Ready()
 	{
 		var sprite = GetNode<Sprite2D>("Sprite2D");
 		sprite.Texture = _texture;
-		Position = new Vector2(Movement.CurrentPosition.X * 40 + 20, Movement.CurrentPosition.Y * 40 + 20);
+		Position = new Vector2(Piece.CurrentPosition.X * 40 + 20, Piece.CurrentPosition.Y * 40 + 20);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -46,7 +46,7 @@ public partial class Piece : StaticBody2D
 		{
 			_dragging = true;
 			_startingPosition = Position;
-			EmitSignal(Piece.SignalName.Lifted, this);
+			EmitSignal(PieceUI.SignalName.Lifted, this);
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&
@@ -61,7 +61,7 @@ public partial class Piece : StaticBody2D
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
-			EmitSignal(Piece.SignalName.Dropped, this, currentPosition, newPosition);
+			EmitSignal(PieceUI.SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
 
@@ -81,13 +81,13 @@ public partial class Piece : StaticBody2D
 
 	public void Move(Vector2 newPosition)
 	{
-		if (Movement.CurrentPosition != newPosition)
+		if (Piece.CurrentPosition != newPosition)
 		{
-			Movement.Moved = true;
+			Piece.Moved = true;
 		}
 
-		Movement.CurrentPosition = newPosition;
-		var position = new Vector2(Movement.CurrentPosition.X * 40 + 20, Movement.CurrentPosition.Y * 40 + 20);
+		Piece.CurrentPosition = newPosition;
+		var position = new Vector2(Piece.CurrentPosition.X * 40 + 20, Piece.CurrentPosition.Y * 40 + 20);
 		Position = position;
 	}
 

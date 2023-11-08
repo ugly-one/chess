@@ -4,14 +4,14 @@ using Godot;
 
 namespace Bla.movement;
 
-public partial class KnightMovement : Movement
+public partial class Knight : Piece
 {
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "knight");
     }
 
-    public override Vector2[] GetMoves(Movement[] pieces)
+    public override Vector2[] GetMoves(Piece[] pieces)
     {
         // TODO king can step on its own pieces
         var moves = new List<Vector2>();

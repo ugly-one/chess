@@ -2,7 +2,7 @@ using Godot;
 
 namespace Bla.movement;
 
-public abstract partial class Movement : Node
+public abstract partial class Piece : Node
 {
 	public bool Moved;
 	public Vector2 CurrentPosition;
@@ -18,5 +18,5 @@ public abstract partial class Movement : Node
 
 	public abstract Texture2D GetTexture();
 
-	public abstract Vector2[] GetMoves(Movement[] pieces);
+	public abstract Vector2[] GetMoves(Piece[] pieces);
 }

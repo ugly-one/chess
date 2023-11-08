@@ -59,14 +59,14 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-	private void OnPieceLifted(Piece piece)
+	private void OnPieceLifted(PieceUI piece)
 	{
-		var pieces = GetChildren().OfType<Piece>().ToArray();
+		var pieces = GetChildren().OfType<PieceUI>().ToArray();
 
 		var possibleMoves = piece
-			.Movement.GetMoves(pieces.Select(p => p.Movement).ToArray())
+			.Piece.GetMoves(pieces.Select(p => p.Piece).ToArray())
 			.WithinBoard()
-			.Append(piece.Movement.CurrentPosition);
+			.Append(piece.Piece.CurrentPosition);
 		
 		// check if current player king is under attack
 		var bla = IsKingUnderAttack(pieces, currentPlayer);
@@ -81,13 +81,13 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-	private bool IsKingUnderAttack(Piece[] pieces, Player player)
+	private bool IsKingUnderAttack(PieceUI[] pieces, Player player)
 	{
-		var oppositePlayerPieces = pieces.Where(p => p.Movement.Player != player);
+		var oppositePlayerPieces = pieces.Where(p => p.Piece.Player != player);
 		foreach (var oppositePlayerPiece in oppositePlayerPieces)
 		{
 			var possibleMoves =
-				oppositePlayerPiece.Movement.GetMoves(pieces.Select(p => p.Movement).ToArray());
+				oppositePlayerPiece.Piece.GetMoves(pieces.Select(p => p.Piece).ToArray());
 			if (player == Player.WHITE)
 			{
 				if (possibleMoves.Contains(whiteKing))
@@ -108,7 +108,7 @@ public partial class ChessEngine : Node2D
 		return false;
 	}
 
-	private void PieceOnDropped(Piece droppedPiece, Vector2 currentPosition, Vector2 newPosition)
+	private void PieceOnDropped(PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
 		foreach (var (field, color) in highlightedFields)
@@ -118,9 +118,9 @@ public partial class ChessEngine : Node2D
 		highlightedFields.Clear();
 		
 		// get all possible moves
-		var pieces = GetChildren().OfType<Piece>().ToArray();
-		var possibleMoves = droppedPiece.Movement
-			.GetMoves(pieces.Select(p => p.Movement).ToArray())
+		var pieces = GetChildren().OfType<PieceUI>().ToArray();
+		var possibleMoves = droppedPiece.Piece
+			.GetMoves(pieces.Select(p => p.Piece).ToArray())
 			.WithinBoard();
 		
 		// the move is not possible
@@ -135,7 +135,7 @@ public partial class ChessEngine : Node2D
 		// kill opponents piece if needed
 		foreach (var piece in pieces)
 		{
-			if (piece.Movement.CurrentPosition == newPosition && piece.Movement.Player == droppedPiece.Movement.Player.GetOppositePlayer())
+			if (piece.Piece.CurrentPosition == newPosition && piece.Piece.Player == droppedPiece.Piece.Player.GetOppositePlayer())
 				piece.QueueFree();
 		}
 		
@@ -156,7 +156,7 @@ public partial class ChessEngine : Node2D
 		currentPlayer = currentPlayer.GetOppositePlayer();
 		foreach (var piece in pieces)
 		{
-			if (piece.Movement.Player == currentPlayer)
+			if (piece.Piece.Player == currentPlayer)
 				piece.Enable();
 			else
 				piece.Disable();

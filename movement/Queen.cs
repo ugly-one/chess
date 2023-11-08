@@ -3,14 +3,14 @@ using Godot;
 
 namespace Bla.movement;
 
-public partial class QueenMovement : Movement
+public partial class Queen : Piece
 {
     public override Texture2D GetTexture()
     {
         return base.GetTexture(Player, "queen");
     }
 
-    public override Vector2[] GetMoves(Movement[] pieces)
+    public override Vector2[] GetMoves(Piece[] pieces)
     {
         var moves = new List<Vector2>();
         moves.AddRange(CurrentPosition.GetDirection(Vector2.Up + Vector2.Right, pieces, Player));

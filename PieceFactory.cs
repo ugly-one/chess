@@ -7,41 +7,41 @@ public partial class PieceFactory : RefCounted
 {
 	public bool Test() => true;
 	
-	public (Piece[], Vector2) CreatePieces(Player player, int backRow, int frontRow)
+	public (PieceUI[], Vector2) CreatePieces(Player player, int backRow, int frontRow)
 	{
 		var kingPlacement = new Vector2(4, backRow);
-		var pieces = new List<Piece>()
+		var pieces = new List<PieceUI>()
 		{
-			CreatePiece(player, new movement.RockMovement(), new Vector2(0, backRow)),
-			CreatePiece(player, new movement.KnightMovement(), new Vector2(1, backRow)),
-			CreatePiece(player, new movement.BishopMovement(), new Vector2(2, backRow)),
-			CreatePiece(player, new movement.QueenMovement(), new Vector2(3, backRow)),
-			CreatePiece(player, new movement.KingMovement(), kingPlacement),
-			CreatePiece(player, new movement.BishopMovement(), new Vector2(5, backRow)),
-			CreatePiece(player, new movement.KnightMovement(), new Vector2(6, backRow)),
-			CreatePiece(player, new movement.RockMovement(), new Vector2(7, backRow)),
+			CreatePiece(player, new movement.Rock(), new Vector2(0, backRow)),
+			CreatePiece(player, new movement.Knight(), new Vector2(1, backRow)),
+			CreatePiece(player, new movement.Bishop(), new Vector2(2, backRow)),
+			CreatePiece(player, new movement.Queen(), new Vector2(3, backRow)),
+			CreatePiece(player, new movement.King(), kingPlacement),
+			CreatePiece(player, new movement.Bishop(), new Vector2(5, backRow)),
+			CreatePiece(player, new movement.Knight(), new Vector2(6, backRow)),
+			CreatePiece(player, new movement.Rock(), new Vector2(7, backRow)),
 		};
 		pieces.AddRange(CreatePawns(player, frontRow));
 		return (pieces.ToArray(), kingPlacement);
 	}
 
-	private List<Piece> CreatePawns(Player player, int frontRow)
+	private List<PieceUI> CreatePawns(Player player, int frontRow)
 	{
-		var result = new List<Piece>();
+		var result = new List<PieceUI>();
 		for (var i = 0; i < 8; i++)
 		{
-			result.Add(CreatePiece(player, new movement.PawnMovement(), new Vector2(i, frontRow)));
+			result.Add(CreatePiece(player, new movement.Pawn(), new Vector2(i, frontRow)));
 		}
 		return result;
 	}
 
-	private Piece CreatePiece(Player player, movement.Movement movement, Vector2 position)
+	private PieceUI CreatePiece(Player player, movement.Piece piece, Vector2 position)
 	{
-		movement.Player = player;
-		movement.CurrentPosition = position;
+		piece.Player = player;
+		piece.CurrentPosition = position;
 		var pieceScene = ResourceLoader.Load<PackedScene>("res://piece_csharp.tscn");
-		var piece = pieceScene.Instantiate<Piece>();
-		piece.Init(movement);
-		return piece;
+		var pieceUI = pieceScene.Instantiate<PieceUI>();
+		pieceUI.Init(piece);
+		return pieceUI;
 	}
 }

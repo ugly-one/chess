@@ -15,7 +15,7 @@ public static class Vector2Extention
     public static IEnumerable<Vector2> GetDirection(
         this Vector2 currentPosition,
         Vector2 step, 
-        IEnumerable<Movement> allPieces,
+        IEnumerable<Piece> allPieces,
         Player player)
     {
         var newPos = currentPosition + step;
@@ -35,7 +35,7 @@ public static class Vector2Extention
         }
     }
     
-    public static bool IsOccupiedBy(this Vector2 position, Player player, IEnumerable<Movement> allPieces)
+    public static bool IsOccupiedBy(this Vector2 position, Player player, IEnumerable<Piece> allPieces)
     {
         foreach (var piece in allPieces)
         {
