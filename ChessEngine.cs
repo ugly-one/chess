@@ -1,14 +1,40 @@
+using System;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 
 namespace Bla;
 
 public partial class ChessEngine : Node2D
 {
 	private Player currentPlayer = Player.WHITE;
-
+	private Node board;
+	private Dictionary<ColorRect, Color> highlightedFields = new Dictionary<ColorRect, Color>();
+	
+	private ColorRect GetField(Vector2 position)
+	{
+		var number = 8 - position.Y;
+		if (number < 1 || number > 8)
+		{
+			throw new NotSupportedException();
+		}
+		var letter = position.X switch
+		{
+			0 => "a",
+			1 => "b",
+			2 => "c",
+			3 => "d",
+			4 => "e",
+			5 => "f",
+			6 => "g",
+			7 => "h",
+			_ => throw new NotSupportedException()
+		};
+		return board.GetNode<ColorRect>(letter+number);
+	}
 	public override void _Ready()
 	{
+		board = GetNode("board");
 		var pieceFactory = new PieceFactory();
 		var whitePieces = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		var blackPieces = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
@@ -30,6 +56,7 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
+
 	private void OnPieceLifted(Piece piece)
 	{
 		var pieces = GetChildren().OfType<Piece>().ToArray();
@@ -37,21 +64,28 @@ public partial class ChessEngine : Node2D
 		var possibleMoves = piece.Movement.GetMoves(pieces, piece.Movement.CurrentPosition);
 		foreach (var possibleMove in possibleMoves)
 		{
+			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
+			GetField(possibleMove).Color = Colors.Pink;
 			GD.Print(possibleMove);
 		}
 	}
 
 	private void PieceOnDropped(Piece droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
+		// reset the board so nothing is highlighted
+		foreach (var (field, color) in highlightedFields)
+		{
+			field.Color = color;
+		}
+		highlightedFields.Clear();
 		
 		if (!droppedPiece.Movement.CanMove(newPosition))
 		{
 			droppedPiece.Move(currentPosition);
 			return;
 		}
-
-		var pieces = GetChildren().OfType<Piece>().ToArray();
 		
+		var pieces = GetChildren().OfType<Piece>().ToArray();
 		// disable dropping pieces on top of your own pieces
 		foreach (var piece in pieces)
 		{
