@@ -6,6 +6,9 @@ public partial class Piece : StaticBody2D
 {
 	[Signal]
 	public delegate void DroppedEventHandler(Piece piece, Vector2 currentPosition, Vector2 newPosition);
+	[Signal]
+	public delegate void LiftedEventHandler(Piece piece);
+
 	public movement.Movement Movement;
 
 	public Player Player;
@@ -40,16 +43,17 @@ public partial class Piece : StaticBody2D
 		if (mouseButtonEvent is null) return;
 
 		if (_canDrag  && 
-		    mouseButtonEvent.IsPressed() 
-		    && mouseButtonEvent.ButtonIndex == MouseButton.Left)
+			mouseButtonEvent.IsPressed() 
+			&& mouseButtonEvent.ButtonIndex == MouseButton.Left)
 		{
 			_dragging = true;
 			_startingPosition = Position;
+			EmitSignal(Piece.SignalName.Lifted, this);
 		}
 		else if (_dragging && 
-		         mouseButtonEvent.IsReleased() &&
-		         mouseButtonEvent.ButtonIndex == MouseButton.Left
-		        )
+				 mouseButtonEvent.IsReleased() &&
+				 mouseButtonEvent.ButtonIndex == MouseButton.Left
+				)
 		{
 			_dragging = false;
 			_canDrag = false;

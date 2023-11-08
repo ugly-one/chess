@@ -17,4 +17,9 @@ public partial class BishopMovement : Movement
 	{
 		return base.GetTexture(Player, "bishop");
 	}
+
+	public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
+	{
+		throw new System.NotImplementedException();
+	}
 }

@@ -14,4 +14,9 @@ public partial class KingMovement : Movement
     {
         return base.GetTexture(Player, "king");
     }
+
+    public override Vector2[] GetMoves(Piece[] pieces, Vector2 currentPosition)
+    {
+        throw new NotImplementedException();
+    }
 }
