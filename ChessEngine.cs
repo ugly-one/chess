@@ -62,9 +62,7 @@ public partial class ChessEngine : Node2D
 
 		var possibleMoves = piece
 			.Movement.GetMoves(pieces, piece.Movement.CurrentPosition)
-			.WithinBoard()
-			.RemoveFieldsOccupiedByOwnPieces(pieces, piece.Player);
-		
+			.WithinBoard();
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
@@ -85,8 +83,7 @@ public partial class ChessEngine : Node2D
 		var pieces = GetChildren().OfType<Piece>().ToArray();
 		var possibleMoves = droppedPiece.Movement
 			.GetMoves(pieces, droppedPiece.Movement.CurrentPosition)
-			.WithinBoard()
-			.RemoveFieldsOccupiedByOwnPieces(pieces, droppedPiece.Player);
+			.WithinBoard();
 		
 		if (!possibleMoves.Contains(newPosition))
 		{
@@ -108,12 +105,12 @@ public partial class ChessEngine : Node2D
 		// kill opponents piece if needed
 		foreach (var piece in pieces)
 		{
-			if (piece.Movement.CurrentPosition == newPosition && piece.Player == GetOppositePlayer(droppedPiece.Player))
+			if (piece.Movement.CurrentPosition == newPosition && piece.Player == droppedPiece.Player.GetOppositePlayer())
 				piece.QueueFree();
 		}
 		
 		droppedPiece.Move(newPosition);
-		currentPlayer = GetOppositePlayer(currentPlayer);
+		currentPlayer = currentPlayer.GetOppositePlayer();
 
 		foreach (var piece in pieces)
 		{
@@ -122,10 +119,5 @@ public partial class ChessEngine : Node2D
 			else
 				piece.Disable();
 		}
-	}
-
-	private Player GetOppositePlayer(Player player)
-	{
-		return player == Player.BLACK ? Player.WHITE : Player.BLACK;
 	}
 }

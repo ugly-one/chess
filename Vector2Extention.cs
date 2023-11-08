@@ -7,6 +7,11 @@ namespace Bla;
 
 public static class Vector2Extention
 {
+    public static Player GetOppositePlayer(this Player player)
+    {
+        return player == Player.BLACK ? Player.WHITE : Player.BLACK;
+    }
+    
     public static IEnumerable<Vector2> GetDirection(this Vector2 currentPosition, Vector2 step)
     {
         var newPos = currentPosition + step;
@@ -16,16 +21,55 @@ public static class Vector2Extention
             newPos += step;
         }
     }
+    
+    public static IEnumerable<Vector2> GetDirection(
+        this Vector2 currentPosition,
+        Vector2 step, 
+        IEnumerable<Piece> allPieces,
+        Player player)
+    {
+        var newPos = currentPosition + step;
+        var breakAfterAdding = false;
+        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(player, allPieces))
+        {
+            if (newPos.IsOccupiedBy(player.GetOppositePlayer(), allPieces))
+            {
+                breakAfterAdding = true;
+            }
+            yield return newPos;
+            newPos += step;
+            if (breakAfterAdding)
+            {
+                break;
+            }
+        }
+    }
+    
+    public static bool IsOccupiedBy(this Vector2 position, Player player, IEnumerable<Piece> allPieces)
+    {
+        foreach (var piece in allPieces)
+        {
+            if (position == piece.Movement.CurrentPosition && piece.Player == player)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static bool IsWithinBoard(this Vector2 position)
     {
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
     }
+    
     public static IEnumerable<Vector2> WithinBoard(this IEnumerable<Vector2> positions)
     {
         return positions.Where(IsWithinBoard);
     }
-    public static IEnumerable<Vector2> RemoveFieldsOccupiedByOwnPieces(this IEnumerable<Vector2> positions,
-        IEnumerable<Piece> allPieces, Player player)
+    public static IEnumerable<Vector2> RemoveFieldsOccupiedByOwnPieces(
+        this IEnumerable<Vector2> positions,
+        IEnumerable<Piece> allPieces, 
+        Player player)
     {
         foreach (var position in positions)
         {
