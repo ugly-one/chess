@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
@@ -51,7 +49,7 @@ public partial class ChessEngine : Node2D
         }
         
         // disable dropping pieces if their path to the destination is not clear
-        var path = GetFieldsOnPath(currentPosition, newPosition);
+        var path = currentPosition.GetFieldsOnPathTo(newPosition);
         foreach (var piece in pieces)
         {
             if (path.Contains(piece.Movement.CurrentPosition))
@@ -83,45 +81,5 @@ public partial class ChessEngine : Node2D
     private Player GetOppositePlayer(Player player)
     {
         return player == Player.BLACK ? Player.WHITE : Player.BLACK;
-    }
-
-    private Vector2[] GetFieldsOnPath(Vector2 start, Vector2 end)
-    {
-        var path = new List<Vector2>();
-        
-        var diff = end - start;
-        if (diff.Abs() == new Vector2(1, 0) || diff.Abs() == new Vector2(0, 1))
-        { 
-            // if we're moving only one field - no path to check
-            return path.ToArray();
-        }
-
-        if (diff.X == 0 || diff.Y == 0)
-        {
-            var fieldsInBetween = diff.Length();
-            var field = start;
-            for (var i = 0; i < fieldsInBetween - 1; i++)
-            {
-                field += diff.Normalized();
-                path.Add(field);
-            }
-            return path.ToArray();
-        }
-
-        if (Math.Abs(diff.X) == Math.Abs(diff.Y))
-        {
-            var xDirection = Math.Sign(diff.X);
-            var yDirection = Math.Sign(diff.Y);
-
-            var fieldsInBetween = Math.Abs(start.X - end.X);
-            var field = start;
-            for (var i = 0; i < fieldsInBetween - 1; i++)
-            {
-                field += new Vector2(xDirection, yDirection);
-                path.Add(field);
-            }
-            return path.ToArray();
-        }
-        return path.ToArray();
     }
 }
