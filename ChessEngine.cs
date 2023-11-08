@@ -97,15 +97,13 @@ public partial class ChessEngine : Node2D
     public Vector2[] GetFieldsOnPath(Vector2 start, Vector2 end)
     {
         var path = new List<Vector2>();
-
-        if ((start - end).Abs() == new Vector2(1, 0) || (start - end).Abs() == new Vector2(0, 1))
+        
+        var diff = end - start;
+        if (diff.Abs() == new Vector2(1, 0) || diff.Abs() == new Vector2(0, 1))
         { 
             // if we're moving only one field - no path to check
             return path.ToArray();
         }
-
-        // TODO - we've calculated a diff before, can we re-use it?
-        var diff = end - start;
 
         if (diff.X == 0 || diff.Y == 0)
         {
