@@ -3,7 +3,7 @@ using Godot;
 public partial class Piece : StaticBody2D
 {
 	[Signal]
-	public delegate void DroppedEventHandler();
+	public delegate void DroppedEventHandler(Piece piece, Vector2 currentPosition, Vector2 newPosition);
 
 	public Movement movement;
 	public Player player;
