@@ -7,11 +7,6 @@ public partial class Rock : Piece
     {
     }
     
-    public override Texture2D GetTexture()
-    {
-        return Player.GetTexture("rock");
-    }
-    
     public override Vector2[] GetMoves(Piece[] pieces)
     {
         var moves = new List<Vector2>();

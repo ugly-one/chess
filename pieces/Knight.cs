@@ -6,11 +6,6 @@ public partial class Knight : Piece
     public Knight(Player player, Vector2 position) : base(player, position)
     {
     }
-    
-    public override Texture2D GetTexture()
-    {
-        return Player.GetTexture("knight");
-    }
 
     public override Vector2[] GetMoves(Piece[] pieces)
     {

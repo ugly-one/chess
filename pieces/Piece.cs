@@ -12,7 +12,5 @@ public abstract partial class Piece : Node
 		CurrentPosition = position;
 	}
 
-	public abstract Texture2D GetTexture();
-
 	public abstract Vector2[] GetMoves(Piece[] pieces);
 }

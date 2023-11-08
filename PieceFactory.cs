@@ -12,14 +12,14 @@ public partial class PieceFactory : RefCounted
 		var king = new King(player, new Vector2(4, backRow));
 		var pieces = new List<PieceUI>()
 		{
-			CreatePiece(new Rock(player, new Vector2(0, backRow))),
-			CreatePiece(new Knight(player, new Vector2(1, backRow))),
-			CreatePiece(new Bishop(player, new Vector2(2, backRow))),
-			CreatePiece(new Queen(player, new Vector2(3, backRow))),
-			CreatePiece(king),
-			CreatePiece(new Bishop(player, new Vector2(5, backRow))),
-			CreatePiece(new Knight(player, new Vector2(6, backRow))),
-			CreatePiece(new Rock(player, new Vector2(7, backRow)))
+			CreatePiece(new Rock(player, new Vector2(0, backRow)), player.GetTexture("rock")),
+			CreatePiece(new Knight(player, new Vector2(1, backRow)), player.GetTexture("knight")),
+			CreatePiece(new Bishop(player, new Vector2(2, backRow)), player.GetTexture("bishop")),
+			CreatePiece(new Queen(player, new Vector2(3, backRow)), player.GetTexture("queen")),
+			CreatePiece(king, player.GetTexture("king")),
+			CreatePiece(new Bishop(player, new Vector2(5, backRow)), player.GetTexture("bishop")),
+			CreatePiece(new Knight(player, new Vector2(6, backRow)), player.GetTexture("knight")),
+			CreatePiece(new Rock(player, new Vector2(7, backRow)), player.GetTexture("rock"))
 		};
 		pieces.AddRange(CreatePawns(player, frontRow));
 		return (pieces.ToArray(), king);
@@ -30,16 +30,16 @@ public partial class PieceFactory : RefCounted
 		var result = new List<PieceUI>();
 		for (var i = 0; i < 8; i++)
 		{
-			result.Add(CreatePiece(new Pawn(player, new Vector2(i, frontRow))));
+			result.Add(CreatePiece(new Pawn(player, new Vector2(i, frontRow)), player.GetTexture("pawn")));
 		}
 		return result;
 	}
 
-	private PieceUI CreatePiece(Piece piece)
+	private PieceUI CreatePiece(Piece piece, Texture2D texture)
 	{
 		var pieceScene = ResourceLoader.Load<PackedScene>("res://piece_csharp.tscn");
 		var pieceUI = pieceScene.Instantiate<PieceUI>();
-		pieceUI.Init(piece);
+		pieceUI.Init(piece, texture);
 		return pieceUI;
 	}
 }

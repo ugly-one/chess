@@ -17,10 +17,10 @@ public partial class PieceUI : StaticBody2D
 	private Vector2 _startingPosition;
 	private bool _enabled;
 	
-	public void Init(Piece piece)
+	public void Init(Piece piece, Texture2D texture)
 	{
 		Piece = piece;
-		_texture = piece.GetTexture();
+		_texture = texture;
 	}
 
 	public override void _Ready()
