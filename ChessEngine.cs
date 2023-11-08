@@ -10,8 +10,9 @@ public partial class ChessEngine : Node2D
 	private Player currentPlayer = Player.WHITE;
 	private Node board;
 	private Dictionary<ColorRect, Color> highlightedFields = new Dictionary<ColorRect, Color>();
-	private Vector2 whiteKing;
-	private Vector2 blackKing;
+	private King whiteKing;
+	private King blackKing;
+	
 	private ColorRect GetField(Vector2 position)
 	{
 		var number = 8 - position.Y;
@@ -90,7 +91,7 @@ public partial class ChessEngine : Node2D
 				oppositePlayerPiece.Piece.GetMoves(pieces.Select(p => p.Piece).ToArray());
 			if (player == Player.WHITE)
 			{
-				if (possibleMoves.Contains(whiteKing))
+				if (possibleMoves.Contains(whiteKing.CurrentPosition))
 				{
 					GD.Print("WHITE KING UNDER FIRE");
 					return true;
@@ -98,7 +99,7 @@ public partial class ChessEngine : Node2D
 			}
 			else
 			{
-				if (possibleMoves.Contains(blackKing))
+				if (possibleMoves.Contains(blackKing.CurrentPosition))
 				{
 					GD.Print("BLACK KING UNDER FIRE");
 					return true;
@@ -142,16 +143,6 @@ public partial class ChessEngine : Node2D
 		// move
 		droppedPiece.Move(newPosition);
 		
-		// keep track where the king is
-		if (currentPosition == whiteKing)
-		{
-			whiteKing = newPosition;
-		}
-		else if (currentPosition == blackKing)
-		{
-			blackKing = newPosition;
-		}
-		
 		// swap current player
 		currentPlayer = currentPlayer.GetOppositePlayer();
 		foreach (var piece in pieces)
@@ -162,7 +153,7 @@ public partial class ChessEngine : Node2D
 				piece.Disable();
 		}
 		
-		GD.Print(whiteKing);
-		GD.Print(blackKing);
+		GD.Print(whiteKing.CurrentPosition);
+		GD.Print(blackKing.CurrentPosition);
 	}
 }

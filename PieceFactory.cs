@@ -7,22 +7,22 @@ public partial class PieceFactory : RefCounted
 {
 	public bool Test() => true;
 	
-	public (PieceUI[], Vector2) CreatePieces(Player player, int backRow, int frontRow)
+	public (PieceUI[], King) CreatePieces(Player player, int backRow, int frontRow)
 	{
-		var kingPlacement = new Vector2(4, backRow);
+		var king = new King();
 		var pieces = new List<PieceUI>()
 		{
 			CreatePiece(player, new Rock(), new Vector2(0, backRow)),
 			CreatePiece(player, new Knight(), new Vector2(1, backRow)),
 			CreatePiece(player, new Bishop(), new Vector2(2, backRow)),
 			CreatePiece(player, new Queen(), new Vector2(3, backRow)),
-			CreatePiece(player, new King(), kingPlacement),
+			CreatePiece(player, king, new Vector2(4, backRow)),
 			CreatePiece(player, new Bishop(), new Vector2(5, backRow)),
 			CreatePiece(player, new Knight(), new Vector2(6, backRow)),
 			CreatePiece(player, new Rock(), new Vector2(7, backRow)),
 		};
 		pieces.AddRange(CreatePawns(player, frontRow));
-		return (pieces.ToArray(), kingPlacement);
+		return (pieces.ToArray(), king);
 	}
 
 	private List<PieceUI> CreatePawns(Player player, int frontRow)
