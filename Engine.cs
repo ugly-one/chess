@@ -51,7 +51,7 @@ public class Engine
     //         // var isUnderAttack = IsKingUnderAttack(piecesAfterMove, currentPlayer);
     //         // if (isUnderAttack)
     //         // {
-    //         // 	// TODO filter out the move
+    //         // 	// filter out the move
     //         // }
     //     }
     //
