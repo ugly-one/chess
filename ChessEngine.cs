@@ -73,16 +73,36 @@ public partial class ChessEngine : Node2D
 			.Append(pieceUI.Piece.CurrentPosition);
 		
 		// check if current player king is under attack
-		var bla = IsKingUnderAttack(pieces, currentPlayer);
+
+		var pieceToMove = pieceUI.Piece;
+		foreach (var possibleMove in possibleMoves)
+		{
+			// // if the king is under attack, let's try to make a move and see if the king is still under attack
+			// Piece[] piecesAfterMove = Move(pieces, pieceToMove, possibleMove);
+			// // if there is still check after this move - filter the move from possibleMoves
+			// var isUnderAttack = IsKingUnderAttack(piecesAfterMove, currentPlayer);
+			// if (isUnderAttack)
+			// {
+			// 	// TODO filter out the move
+			// }
+		}
 		
-		// if the king is under attack, let's try to make a move and see if the king is still under attack
-		
-		GD.Print(bla);
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
 			GetField(possibleMove).Color = Colors.Pink;
 		}
+	}
+
+	private Piece[] Move(Piece[] pieces, Piece pieceToMove, Vector2 possibleMove)
+	{
+		// make a copy of the board
+		var copy = pieces.ToList();
+		copy.Remove(pieceToMove);
+		//copy.Add(new );
+		// find the piece in the copy, remove it
+		// replace it with a new piece that has all the same properties except CurrenoPosition
+		throw new NotImplementedException();
 	}
 
 	private bool IsKingUnderAttack(Piece[] pieces, Player player)
