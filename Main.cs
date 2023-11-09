@@ -3,9 +3,9 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 
-namespace Bla;
+namespace Chess;
 
-public partial class ChessEngine : Node2D
+public partial class Main : Node2D
 {
 	private Player currentPlayer = Player.WHITE;
 	private Node board;
@@ -38,7 +38,7 @@ public partial class ChessEngine : Node2D
 	public override void _Ready()
 	{
 		board = GetNode("board");
-		var pieceFactory = new PieceFactory();
+		var pieceFactory = new Chess.PieceFactory();
 		var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
 		this.whiteKing = whiteKing;
@@ -60,10 +60,10 @@ public partial class ChessEngine : Node2D
 		}
 	}
 
-	private void OnPieceLifted(PieceUI pieceUI)
+	private void OnPieceLifted(Chess.PieceUI pieceUI)
 	{
 		var pieces = GetChildren()
-			.OfType<PieceUI>()
+			.OfType<Chess.PieceUI>()
 			.Select( ui => ui.Piece)
 			.ToArray();
 
@@ -132,7 +132,7 @@ public partial class ChessEngine : Node2D
 		return false;
 	}
 
-	private void PieceOnDropped(PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
+	private void PieceOnDropped(Chess.PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
 		foreach (var (field, color) in highlightedFields)
@@ -142,7 +142,7 @@ public partial class ChessEngine : Node2D
 		highlightedFields.Clear();
 		
 		// get all possible moves
-		var pieces = GetChildren().OfType<PieceUI>().ToArray();
+		var pieces = GetChildren().OfType<Chess.PieceUI>().ToArray();
 		var possibleMoves = droppedPiece.Piece
 			.GetMoves(pieces.Select(p => p.Piece).ToArray())
 			.WithinBoard();

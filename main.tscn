@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
-[ext_resource type="Script" path="res://ChessEngine.cs" id="1_peige"]
+[ext_resource type="Script" path="res://Main.cs" id="1_bu6r5"]
 
 [node name="main" type="Node2D"]
-script = ExtResource("1_peige")
+script = ExtResource("1_bu6r5")
 
 [node name="board" parent="." instance=ExtResource("1_6sajw")]

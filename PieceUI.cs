@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Bla;
+namespace Chess;
 
 public partial class PieceUI : StaticBody2D
 {
@@ -46,7 +46,7 @@ public partial class PieceUI : StaticBody2D
 		{
 			_dragging = true;
 			_startingPosition = Position;
-			EmitSignal(PieceUI.SignalName.Lifted, this);
+			EmitSignal(Chess.PieceUI.SignalName.Lifted, this);
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&
@@ -61,7 +61,7 @@ public partial class PieceUI : StaticBody2D
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
-			EmitSignal(PieceUI.SignalName.Dropped, this, currentPosition, newPosition);
+			EmitSignal(Chess.PieceUI.SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
 

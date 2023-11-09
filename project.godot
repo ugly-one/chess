@@ -16,4 +16,4 @@ config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 
 [dotnet]
 
-project/assembly_name="Bla"
+project/assembly_name="Chess"

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Bla;
+namespace Chess;
 
 public partial class PieceFactory : RefCounted
 {
