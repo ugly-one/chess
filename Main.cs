@@ -106,6 +106,8 @@ public partial class Main : Node2D
 		
 		// move
 		droppedPiece.Move(newPosition);
+		droppedPiece.Piece.Moved = true;
+		droppedPiece.Piece.CurrentPosition = newPosition;
 		
 		// swap current player
 		currentPlayer = currentPlayer.GetOppositePlayer();

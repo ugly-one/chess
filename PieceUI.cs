@@ -10,7 +10,6 @@ public partial class PieceUI : StaticBody2D
 	public delegate void LiftedEventHandler(PieceUI piece);
 
 	public Piece Piece;
-
 	private Texture2D _texture;
 	private bool _canDrag;
 	private bool _dragging;
@@ -19,7 +18,9 @@ public partial class PieceUI : StaticBody2D
 	
 	public void Init(Piece piece, Texture2D texture)
 	{
+		// TODO get Vector2 instead of Piece
 		Piece = piece;
+		Position = new Vector2(piece.CurrentPosition.X * 40 + 20, piece.CurrentPosition.Y * 40 + 20);
 		_texture = texture;
 	}
 
@@ -27,7 +28,6 @@ public partial class PieceUI : StaticBody2D
 	{
 		var sprite = GetNode<Sprite2D>("Sprite2D");
 		sprite.Texture = _texture;
-		Position = new Vector2(Piece.CurrentPosition.X * 40 + 20, Piece.CurrentPosition.Y * 40 + 20);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -81,13 +81,7 @@ public partial class PieceUI : StaticBody2D
 
 	public void Move(Vector2 newPosition)
 	{
-		if (Piece.CurrentPosition != newPosition)
-		{
-			Piece.Moved = true;
-		}
-
-		Piece.CurrentPosition = newPosition;
-		var position = new Vector2(Piece.CurrentPosition.X * 40 + 20, Piece.CurrentPosition.Y * 40 + 20);
+		var position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
 		Position = position;
 	}
 
