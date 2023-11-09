@@ -7,7 +7,7 @@ public class Engine
 {
     private King whiteKing;
     private King blackKing;
-
+    
     public Engine(King white, King black)
     {
         whiteKing = white;

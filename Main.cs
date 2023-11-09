@@ -58,7 +58,7 @@ public partial class Main : Node2D
 		}
 	}
 
-	private void OnPieceLifted(Chess.PieceUI pieceUI)
+	private void OnPieceLifted(PieceUI pieceUI)
 	{
 		var pieces = GetChildren()
 			.OfType<Chess.PieceUI>()
@@ -68,11 +68,6 @@ public partial class Main : Node2D
 		var piece = pieceUI.Piece;
 		var possibleMoves = engine.GetPossibleMoves(piece, pieces);
 		
-		// check if current player king is under attack
-
-		// var pieceToMove = pieceUI.Piece;
-		// engine.Bla(pieceToMove);
-		
 		foreach (var possibleMove in possibleMoves)
 		{
 			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
@@ -80,18 +75,7 @@ public partial class Main : Node2D
 		}
 	}
 
-	private Piece[] Move(Piece[] pieces, Piece pieceToMove, Vector2 possibleMove)
-	{
-		// make a copy of the board
-		var copy = pieces.ToList();
-		copy.Remove(pieceToMove);
-		//copy.Add(new );
-		// find the piece in the copy, remove it
-		// replace it with a new piece that has all the same properties except CurrenoPosition
-		throw new NotImplementedException();
-	}
-
-	private void PieceOnDropped(Chess.PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
+	private void PieceOnDropped(PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
 		foreach (var (field, color) in highlightedFields)
@@ -100,13 +84,11 @@ public partial class Main : Node2D
 		}
 		highlightedFields.Clear();
 		
-		// get all possible moves
 		var pieces = GetChildren()
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 		var possibleMoves = engine.GetPossibleMoves(droppedPiece.Piece, pieces.Select(p => p.Piece).ToArray());
 		
-		// the move is not possible
 		if (!possibleMoves.Contains(newPosition))
 		{
 			droppedPiece.Move(currentPosition);
