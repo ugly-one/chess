@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace Chess;
@@ -16,10 +17,12 @@ public class Piece
 	public Player Player { get; init; }
 	public PieceType Type { get; init; }
 
+	public EventHandler<Vector2> MovedEvent;
 	public void Move(Vector2 newPosition)
 	{
 		CurrentPosition = newPosition;
 		Moved = true;
+		MovedEvent.Invoke(this, newPosition);
 	}
 
 	public Piece CloneWith(Vector2 position)

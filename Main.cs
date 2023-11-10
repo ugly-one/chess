@@ -105,7 +105,7 @@ public partial class Main : Node2D
 		
 		if (!possibleMoves.Contains(newPosition))
 		{
-			droppedPiece.Move(currentPosition);
+			droppedPiece.CancelMove();
 			return;
 		}
 		
@@ -119,7 +119,6 @@ public partial class Main : Node2D
 		}
 		
 		// move
-		droppedPiece.Move(newPosition);
 		droppedPiece.Piece.Move(newPosition);
 		
 		// swap current player

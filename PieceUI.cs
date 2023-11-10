@@ -18,10 +18,15 @@ public partial class PieceUI : StaticBody2D
 	
 	public void Init(Piece piece, Texture2D texture)
 	{
-		// TODO get Vector2 instead of Piece
 		Piece = piece;
+		piece.MovedEvent += MovedEvent;
 		Position = new Vector2(piece.CurrentPosition.X * 40 + 20, piece.CurrentPosition.Y * 40 + 20);
 		_texture = texture;
+	}
+
+	private void MovedEvent(object sender, Vector2 newPosition)
+	{
+		Position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
 	}
 
 	public override void _Ready()
@@ -51,8 +56,6 @@ public partial class PieceUI : StaticBody2D
 		{ 
 			_dragging = true;
 			_startingPosition = Position;
-			GD.Print("LIFTING");
-			PrintState();
 			EmitSignal(SignalName.Lifted, this);
 		}
 		else if (_dragging && 
@@ -67,9 +70,6 @@ public partial class PieceUI : StaticBody2D
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
-			
-			GD.Print("DROPPING");
-			PrintState();
 			EmitSignal(SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
@@ -79,14 +79,6 @@ public partial class PieceUI : StaticBody2D
 		if (_dragging || (!_enabled)) 
 			return;
 		_isMouseOver = true;
-		PrintState();
-	}
-
-	private void PrintState()
-	{
-		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} isMouseOver: {_isMouseOver}");
-		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} dragging: {_dragging}");
-		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} enabled: {_enabled}");
 	}
 
 	public override void _MouseShapeExit(int shapeIdx)
@@ -94,13 +86,11 @@ public partial class PieceUI : StaticBody2D
 		if (_dragging) 
 			return;
 		_isMouseOver = false;
-		PrintState();
 	}
 
-	public void Move(Vector2 newPosition)
+	public void CancelMove()
 	{
-		var position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
-		Position = position;
+		Position = _startingPosition;
 	}
 
 	public void Disable() => _enabled = false;
