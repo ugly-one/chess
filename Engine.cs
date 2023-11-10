@@ -57,6 +57,14 @@ public class Engine
         var boardCopy = pieces.ToList(); // shallow copy, do not modify pieces!
         boardCopy.Remove(piece);
         var newPiece = piece.Copy();
+        // I'm afraid I will have to duplicate the logic of making a move here.
+        // move can be done in 3 different ways:
+        // a) simple move where only the moved piece is affected
+        // b) capture - moved piece is affected and the captured piece has to be removed
+        // c) castling - rock and king are affected
+        // now here we have a support for a and b. 
+        // but the same logic will have to reside somewhere else where we actually make the move once the engine detects that the move is valid
+        // currently it's the main class.
         newPiece.CurrentPosition = move;
         // simulate taking a piece
         var takenPiece = boardCopy.FirstOrDefault(p => p.CurrentPosition == newPiece.CurrentPosition);
