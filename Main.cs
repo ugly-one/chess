@@ -40,10 +40,10 @@ public partial class Main : Node2D
 		var pieceFactory = new Chess.PieceFactory();
 		var whitePlayer = Player.WHITE;
 		var blackPlayer = Player.BLACK;
-		var whiteKing = new Piece(PieceType.King, false, whitePlayer, new Vector2(0, 0));
-		var blackKing = new Piece(PieceType.King, false, blackPlayer, new Vector2(5, 5));
-		var blackRock = new Piece(PieceType.Rock, false, blackPlayer, new Vector2(0, 5));
-		var whiteRock = new Piece(PieceType.Rock, false, whitePlayer, new Vector2(2, 3));
+		var whiteKing = new Piece(PieceType.King, whitePlayer, new Vector2(0, 0));
+		var blackKing = new Piece(PieceType.King, blackPlayer, new Vector2(5, 5));
+		var blackRock = new Piece(PieceType.Rock, blackPlayer, new Vector2(0, 5));
+		var whiteRock = new Piece(PieceType.Rock, whitePlayer, new Vector2(2, 3));
 
 		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
 		var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
@@ -120,8 +120,7 @@ public partial class Main : Node2D
 		
 		// move
 		droppedPiece.Move(newPosition);
-		droppedPiece.Piece.Moved = true;
-		droppedPiece.Piece.CurrentPosition = newPosition;
+		droppedPiece.Piece.Move(newPosition);
 		
 		// swap current player
 		currentPlayer = currentPlayer.GetOppositePlayer();

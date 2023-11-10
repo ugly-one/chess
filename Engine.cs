@@ -56,7 +56,7 @@ public class Engine
     {
         var boardCopy = board.ToList(); // shallow copy, do not modify pieces!
         boardCopy.Remove(piece);
-        var newPiece = piece with { CurrentPosition = move };
+        var newPiece = piece.CloneWith(move);
         // I'm afraid I will have to duplicate the logic of making a move here.
         // move can be done in 3 different ways:
         // a) simple move where only the moved piece is affected
