@@ -35,7 +35,7 @@ public partial class PieceFactory : RefCounted
 		return result;
 	}
 
-	private PieceUI CreatePiece(Piece piece, Texture2D texture)
+	public PieceUI CreatePiece(Piece piece, Texture2D texture)
 	{
 		var pieceScene = ResourceLoader.Load<PackedScene>("res://piece_csharp.tscn");
 		var pieceUI = pieceScene.Instantiate<PieceUI>();

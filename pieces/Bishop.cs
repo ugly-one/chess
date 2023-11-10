@@ -13,6 +13,11 @@ public partial class Bishop : Piece
 		return moves.ToArray();
 	}
 
+	public override Piece Copy()
+	{
+		return new Bishop(Player, CurrentPosition);
+	}
+
 	public Bishop(Player player, Vector2 position) : base(player, position)
 	{
 	}

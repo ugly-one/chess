@@ -6,6 +6,11 @@ public partial class King : Piece
     public King(Player player, Vector2 position) : base(player, position)
     {
     }
+    
+    public override Piece Copy()
+    {
+        return new King(Player, CurrentPosition);
+    }
 
     public override Vector2[] GetMoves(Piece[] pieces)
     {

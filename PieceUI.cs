@@ -51,6 +51,8 @@ public partial class PieceUI : StaticBody2D
 		{ 
 			_dragging = true;
 			_startingPosition = Position;
+			GD.Print("LIFTING");
+			PrintState();
 			EmitSignal(SignalName.Lifted, this);
 		}
 		else if (_dragging && 
@@ -65,6 +67,9 @@ public partial class PieceUI : StaticBody2D
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
+			
+			GD.Print("DROPPING");
+			PrintState();
 			EmitSignal(SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
@@ -74,6 +79,14 @@ public partial class PieceUI : StaticBody2D
 		if (_dragging || (!_enabled)) 
 			return;
 		_isMouseOver = true;
+		PrintState();
+	}
+
+	private void PrintState()
+	{
+		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} isMouseOver: {_isMouseOver}");
+		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} dragging: {_dragging}");
+		GD.Print($"{this.Piece.GetType()} {this.Piece.Player} enabled: {_enabled}");
 	}
 
 	public override void _MouseShapeExit(int shapeIdx)
@@ -81,6 +94,7 @@ public partial class PieceUI : StaticBody2D
 		if (_dragging) 
 			return;
 		_isMouseOver = false;
+		PrintState();
 	}
 
 	public void Move(Vector2 newPosition)

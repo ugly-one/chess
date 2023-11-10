@@ -6,6 +6,11 @@ public partial class Rock : Piece
     public Rock(Player player, Vector2 position) : base(player, position)
     {
     }
+
+    public override Piece Copy()
+    {
+        return new Rock(Player, CurrentPosition);
+    }
     
     public override Vector2[] GetMoves(Piece[] pieces)
     {

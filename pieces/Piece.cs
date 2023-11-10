@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 public abstract partial class Piece : Node
@@ -13,4 +14,6 @@ public abstract partial class Piece : Node
 	}
 
 	public abstract Vector2[] GetMoves(Piece[] pieces);
+
+	public abstract Piece Copy();
 }

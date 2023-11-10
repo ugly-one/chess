@@ -7,6 +7,11 @@ public partial class Pawn : Piece
     public Pawn(Player player, Vector2 position) : base(player, position)
     {
     }
+    
+    public override Piece Copy()
+    {
+        return new Pawn(Player, CurrentPosition);
+    }
 
     public override Vector2[] GetMoves(Piece[] pieces)
     {

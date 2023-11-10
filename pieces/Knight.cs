@@ -6,6 +6,11 @@ public partial class Knight : Piece
     public Knight(Player player, Vector2 position) : base(player, position)
     {
     }
+    
+    public override Piece Copy()
+    {
+        return new Knight(Player, CurrentPosition);
+    }
 
     public override Vector2[] GetMoves(Piece[] pieces)
     {

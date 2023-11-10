@@ -38,10 +38,19 @@ public partial class Main : Node2D
 	{
 		board = GetNode("board");
 		var pieceFactory = new Chess.PieceFactory();
-		var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
-		var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
+		var whitePlayer = Player.WHITE;
+		var blackPlayer = Player.BLACK;
+		var whiteKing = new King(whitePlayer, new Vector2(0, 0));
+		var blackKing = new King(blackPlayer, new Vector2(5, 5));
+		var blackRock = new Rock(blackPlayer, new Vector2(0, 5));
+		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
+		var whiteKingUI = pieceFactory.CreatePiece(whiteKing, whitePlayer.GetTexture("king"));
+		var blackKingUI = pieceFactory.CreatePiece(blackKing, blackPlayer.GetTexture("king"));
+
+		// var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
+		// var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
 		engine = new Engine(whiteKing, blackKing);
-		foreach (var piece in whitePieces)
+		foreach (var piece in new [] { whiteKingUI })
 		{
 			AddChild(piece);
 			piece.Enable();
@@ -49,7 +58,7 @@ public partial class Main : Node2D
 			piece.Lifted += OnPieceLifted;
 		}
 		
-		foreach (var piece in blackPieces)
+		foreach (var piece in new [] { blackKingUI, blackRockUI})
 		{
 			AddChild(piece);
 			piece.Disable();
@@ -60,6 +69,7 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI)
 	{
+		GD.Print("EVENT RECEIVED!" + pieceUI.Piece.GetType());
 		var pieces = GetChildren()
 			.OfType<Chess.PieceUI>()
 			.Select( ui => ui.Piece)
@@ -118,5 +128,7 @@ public partial class Main : Node2D
 			else
 				piece.Disable();
 		}
+		
+		// TODO check each current player's piece and see if there is a possible move to detect a draw
 	}
 }

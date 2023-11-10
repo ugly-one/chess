@@ -4,6 +4,13 @@ using Godot;
 
 public static class Vector2Extention
 {
+    /// <summary>
+    /// this shouldn't be an extension method on player, but maybe we should have 2 methods GetWhiteTexture and GetBlackTexture
+    /// that would ease the usage of it outside of PieceFactory class
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="piece"></param>
+    /// <returns></returns>
     public static Texture2D GetTexture(this Player player, string piece)
     {
         var color = player == Player.WHITE ? "white" : "black";
