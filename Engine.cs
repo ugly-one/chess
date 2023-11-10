@@ -58,6 +58,12 @@ public class Engine
         boardCopy.Remove(piece);
         var newPiece = piece.Copy();
         newPiece.CurrentPosition = move;
+        // simulate taking a piece
+        var takenPiece = boardCopy.FirstOrDefault(p => p.CurrentPosition == newPiece.CurrentPosition);
+        if (takenPiece != null)
+        {
+            boardCopy.Remove(takenPiece);
+        }
         boardCopy.Add(newPiece);
         return boardCopy.ToArray();
     }

@@ -43,14 +43,18 @@ public partial class Main : Node2D
 		var whiteKing = new King(whitePlayer, new Vector2(0, 0));
 		var blackKing = new King(blackPlayer, new Vector2(5, 5));
 		var blackRock = new Rock(blackPlayer, new Vector2(0, 5));
+		var whiteRock = new Rock(whitePlayer, new Vector2(6, 5));
+
 		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
+		var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
+
 		var whiteKingUI = pieceFactory.CreatePiece(whiteKing, whitePlayer.GetTexture("king"));
 		var blackKingUI = pieceFactory.CreatePiece(blackKing, blackPlayer.GetTexture("king"));
 
 		// var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		// var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
 		engine = new Engine();
-		foreach (var piece in new [] { whiteKingUI })
+		foreach (var piece in new [] { whiteKingUI, whiteRockUI })
 		{
 			AddChild(piece);
 			piece.Enable();

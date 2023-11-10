@@ -1,7 +1,4 @@
 2. Castling
 3. En passant
-4. Detecting checks:
-	a) allowing only moves that moves the king out of a check
-	b) not allowing moves that makes the king being checked
 5. detect draws
 6. detect wins	
