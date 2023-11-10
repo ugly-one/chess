@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace Chess;
@@ -20,8 +21,14 @@ public partial class PieceUI : StaticBody2D
 	{
 		Piece = piece;
 		piece.MovedEvent += MovedEvent;
+		piece.Killed += OnKilled;
 		Position = new Vector2(piece.CurrentPosition.X * 40 + 20, piece.CurrentPosition.Y * 40 + 20);
 		_texture = texture;
+	}
+
+	private void OnKilled(object sender, EventArgs e)
+	{
+		QueueFree();
 	}
 
 	private void MovedEvent(object sender, Vector2 newPosition)

@@ -51,12 +51,29 @@ public class Engine
         }
         return false;
     }
+    
+    public bool TryMove(Piece pieceToMove, Piece[] board, Vector2 newPosition)
+    {
+        var possibleMoves = GetPossibleMoves(pieceToMove, board);
+		
+        if (!possibleMoves.Contains(newPosition))
+        {
+            return false;
+        }
+        
+        var takenPiece = board.FirstOrDefault(p => p.CurrentPosition == newPosition);
+        if (takenPiece != null)
+        {
+            takenPiece.Kill();
+        }
+        pieceToMove.Move(newPosition);
+        return true;
+    }
 
     private Piece[] Move(Piece[] board, Piece piece, Vector2 move)
     {
         var boardCopy = board.ToList(); // shallow copy, do not modify pieces!
         boardCopy.Remove(piece);
-        var newPiece = piece.CloneWith(move);
         // I'm afraid I will have to duplicate the logic of making a move here.
         // move can be done in 3 different ways:
         // a) simple move where only the moved piece is affected
@@ -66,11 +83,12 @@ public class Engine
         // but the same logic will have to reside somewhere else where we actually make the move once the engine detects that the move is valid
         // currently it's the main class.
         // simulate taking a piece
-        var takenPiece = boardCopy.FirstOrDefault(p => p.CurrentPosition == newPiece.CurrentPosition);
+        var takenPiece = boardCopy.FirstOrDefault(p => p.CurrentPosition == move);
         if (takenPiece != null)
         {
             boardCopy.Remove(takenPiece);
         }
+        var newPiece = piece.CloneWith(move);
         boardCopy.Add(newPiece);
         return boardCopy.ToArray();
     }

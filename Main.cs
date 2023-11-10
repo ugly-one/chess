@@ -101,34 +101,24 @@ public partial class Main : Node2D
 		var pieces = GetChildren()
 			.OfType<Chess.PieceUI>()
 			.ToArray();
-		var possibleMoves = engine.GetPossibleMoves(droppedPiece.Piece, pieces.Select(p => p.Piece).ToArray());
-		
-		if (!possibleMoves.Contains(newPosition))
+
+		var success = engine.TryMove(droppedPiece.Piece, pieces.Select(p => p.Piece).ToArray(),newPosition);
+
+		if (success)
+		{
+			// swap current player
+			currentPlayer = currentPlayer.GetOppositePlayer();
+			foreach (var piece in pieces)
+			{
+				if (piece.Piece.Player == currentPlayer)
+					piece.Enable();
+				else
+					piece.Disable();
+			}
+		}
+		else
 		{
 			droppedPiece.CancelMove();
-			return;
-		}
-		
-		// the move is possible
-		
-		// kill opponents piece if needed
-		foreach (var piece in pieces)
-		{
-			if (piece.Piece.CurrentPosition == newPosition && piece.Piece.Player == droppedPiece.Piece.Player.GetOppositePlayer())
-				piece.QueueFree();
-		}
-		
-		// move
-		droppedPiece.Piece.Move(newPosition);
-		
-		// swap current player
-		currentPlayer = currentPlayer.GetOppositePlayer();
-		foreach (var piece in pieces)
-		{
-			if (piece.Piece.Player == currentPlayer)
-				piece.Enable();
-			else
-				piece.Disable();
 		}
 		
 		// TODO check each current player's piece and see if there is a possible move to detect a draw
