@@ -11,7 +11,7 @@ public partial class PieceUI : StaticBody2D
 
 	public Piece Piece;
 	private Texture2D _texture;
-	private bool _canDrag;
+	private bool _isMouseOver;
 	private bool _dragging;
 	private Vector2 _startingPosition;
 	private bool _enabled;
@@ -32,6 +32,11 @@ public partial class PieceUI : StaticBody2D
 
 	public override void _Input(InputEvent @event)
 	{
+		if (!_enabled)
+		{
+			return;
+		}
+		
 		if (_dragging && @event is InputEventMouseMotion motionEvent)
 		{
 			Position = motionEvent.Position;
@@ -40,13 +45,13 @@ public partial class PieceUI : StaticBody2D
 		var mouseButtonEvent = @event as InputEventMouseButton;
 		if (mouseButtonEvent is null) return;
 
-		if (_canDrag  && 
+		if (_isMouseOver  && 
 			mouseButtonEvent.IsPressed() 
 			&& mouseButtonEvent.ButtonIndex == MouseButton.Left)
-		{
+		{ 
 			_dragging = true;
 			_startingPosition = Position;
-			EmitSignal(Chess.PieceUI.SignalName.Lifted, this);
+			EmitSignal(SignalName.Lifted, this);
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&
@@ -54,14 +59,13 @@ public partial class PieceUI : StaticBody2D
 				)
 		{
 			_dragging = false;
-			_canDrag = false;
 			var x = (int) Position.X / 40;
 			var y = (int) Position.Y / 40;
 			var newPosition = new Vector2(x, y);
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
-			EmitSignal(Chess.PieceUI.SignalName.Dropped, this, currentPosition, newPosition);
+			EmitSignal(SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
 
@@ -69,14 +73,14 @@ public partial class PieceUI : StaticBody2D
 	{
 		if (_dragging || (!_enabled)) 
 			return;
-		_canDrag = true;
+		_isMouseOver = true;
 	}
 
 	public override void _MouseShapeExit(int shapeIdx)
 	{
 		if (_dragging) 
 			return;
-		_canDrag = false;
+		_isMouseOver = false;
 	}
 
 	public void Move(Vector2 newPosition)
@@ -84,7 +88,6 @@ public partial class PieceUI : StaticBody2D
 		var position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
 		Position = position;
 	}
-
 
 	public void Disable() => _enabled = false;
 	public void Enable() => _enabled = true;
