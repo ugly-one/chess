@@ -40,10 +40,10 @@ public partial class Main : Node2D
 		var pieceFactory = new Chess.PieceFactory();
 		var whitePlayer = Player.WHITE;
 		var blackPlayer = Player.BLACK;
-		var whiteKing = new King(whitePlayer, new Vector2(0, 0));
-		var blackKing = new King(blackPlayer, new Vector2(5, 5));
-		var blackRock = new Rock(blackPlayer, new Vector2(0, 5));
-		var whiteRock = new Rock(whitePlayer, new Vector2(6, 5));
+		var whiteKing = new Piece(PieceType.King, false, whitePlayer, new Vector2(0, 0));
+		var blackKing = new Piece(PieceType.King, false, blackPlayer, new Vector2(5, 5));
+		var blackRock = new Piece(PieceType.Rock, false, blackPlayer, new Vector2(0, 5));
+		var whiteRock = new Piece(PieceType.Rock, false, whitePlayer, new Vector2(2, 3));
 
 		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
 		var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
