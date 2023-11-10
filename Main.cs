@@ -49,7 +49,7 @@ public partial class Main : Node2D
 
 		// var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		// var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
-		engine = new Engine(whiteKing, blackKing);
+		engine = new Engine();
 		foreach (var piece in new [] { whiteKingUI })
 		{
 			AddChild(piece);

@@ -6,15 +6,6 @@ namespace Chess;
 
 public class Engine
 {
-    private King whiteKing;
-    private King blackKing;
-    
-    public Engine(King white, King black)
-    {
-        whiteKing = white;
-        blackKing = black;
-    }
-    
     public bool IsKingUnderAttack(Piece[] pieces, King king)
     {
         var oppositePlayerPieces = pieces.Where(p => p.Player != king.Player);
