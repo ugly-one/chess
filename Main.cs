@@ -52,12 +52,12 @@ public partial class Main : Node2D
 
 		var allPieces = whitePieces.Concat(blackPieces).ToList();
 
-		allPieces = new List<Piece>()
-		{
-			new Piece(PieceType.King, Color.WHITE, new Vector2(4, 4)),
-			new Piece(PieceType.King, Color.BLACK, new Vector2(6, 6)),
-			new Piece(PieceType.Pawn, Color.WHITE, new Vector2(0, 6)),
-		};
+		// allPieces = new List<Piece>()
+		// {
+		// 	new Piece(PieceType.King, Color.WHITE, new Vector2(4, 4)),
+		// 	new Piece(PieceType.King, Color.BLACK, new Vector2(6, 6)),
+		// 	new Piece(PieceType.Pawn, Color.WHITE, new Vector2(0, 6)),
+		// };
 		
 		
 		engine = new Engine(allPieces);

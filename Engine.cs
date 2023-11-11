@@ -238,6 +238,18 @@ public class Engine
         else
         {
             // check en-passant
+            if (lastMove != null)
+            {
+                var isPawn = lastMove.PieceToMove.Type == PieceType.Pawn;
+                var is2StepMove = (lastMove.PieceToMove.Position - lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
+                var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == Vector2.Left;
+                if ( isPawn && // was it a pawn
+                    is2StepMove && // was it a 2 step move
+                    isThePawnNowNextToUs) // was it move next to us 
+                {
+                    moves.Add(Chess.Move.Capture(piece, takeLeft, GetPieceInPosition(opponentsPieces, lastMove.PieceNewPosition)));                
+                }
+            }
         }
         
         
@@ -247,6 +259,22 @@ public class Engine
         if (opponentCapturedPiece2 != null)
         {
             moves.Add(Chess.Move.Capture(piece, takeRight, opponentCapturedPiece2));
+        }
+        else
+        {
+            // check en-passant
+            if (lastMove != null)
+            {
+                var isPawn = lastMove.PieceToMove.Type == PieceType.Pawn;
+                var is2StepMove = (lastMove.PieceToMove.Position - lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
+                var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == Vector2.Right;
+                if ( isPawn && // was it a pawn
+                     is2StepMove && // was it a 2 step move
+                     isThePawnNowNextToUs) // was it move next to us 
+                {
+                    moves.Add(Chess.Move.Capture(piece, takeRight, GetPieceInPosition(opponentsPieces, lastMove.PieceNewPosition)));                
+                }
+            }
         }
         // two steps forward if not moved yet and not blocked
         if (piece.Moved) return moves.ToArray();
@@ -259,24 +287,6 @@ public class Engine
         return moves.ToArray();
     }
 
-    // private static bool EnPassantPossible(Move last2StepPawnMove, Vector2 takeRight)
-    // {
-    //     if (last2StepPawnMove is null)
-    //     {
-    //         return false;
-    //     }
-    //     if ((takeRight.Y > last2StepPawnMove.Start.Y && takeRight.Y < last2StepPawnMove.End.Y) ||
-    //         (takeRight.Y < last2StepPawnMove.Start.Y && takeRight.Y > last2StepPawnMove.End.Y))
-    //     {
-    //         if (last2StepPawnMove.Start.X == takeRight.X)
-    //         {
-    //             return true;
-    //         }
-    //         return false;
-    //     }
-    //     return false;
-    // }
-    
     private Piece GetPieceInPosition(Piece[] pieces, Vector2 position)
     {
         return pieces.FirstOrDefault(p => p.Position == position);
