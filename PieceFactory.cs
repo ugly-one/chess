@@ -5,33 +5,33 @@ namespace Chess;
 
 public partial class PieceFactory : RefCounted
 {
-	// public (PieceUI[], King) CreatePieces(Player player, int backRow, int frontRow)
-	// {
-	// 	var king = new King(player, new Vector2(4, backRow));
-	// 	var pieces = new List<PieceUI>()
-	// 	{
-	// 		CreatePiece(new Rock(player, new Vector2(0, backRow)), player.GetTexture("rock")),
-	// 		CreatePiece(new Knight(player, new Vector2(1, backRow)), player.GetTexture("knight")),
-	// 		CreatePiece(new Bishop(player, new Vector2(2, backRow)), player.GetTexture("bishop")),
-	// 		CreatePiece(new Queen(player, new Vector2(3, backRow)), player.GetTexture("queen")),
-	// 		CreatePiece(king, player.GetTexture("king")),
-	// 		CreatePiece(new Bishop(player, new Vector2(5, backRow)), player.GetTexture("bishop")),
-	// 		CreatePiece(new Knight(player, new Vector2(6, backRow)), player.GetTexture("knight")),
-	// 		CreatePiece(new Rock(player, new Vector2(7, backRow)), player.GetTexture("rock"))
-	// 	};
-	// 	pieces.AddRange(CreatePawns(player, frontRow));
-	// 	return (pieces.ToArray(), king);
-	// }
-	//
-	// private List<PieceUI> CreatePawns(Player player, int frontRow)
-	// {
-	// 	var result = new List<PieceUI>();
-	// 	for (var i = 0; i < 8; i++)
-	// 	{
-	// 		result.Add(CreatePiece(new Pawn(player, new Vector2(i, frontRow)), player.GetTexture("pawn")));
-	// 	}
-	// 	return result;
-	// }
+	public PieceUI[] CreatePieces(Color color, int backRow, int frontRow)
+	{
+		var king = new Piece(PieceType.King, color, new Vector2(4, backRow));
+		var pieces = new List<PieceUI>()
+		{
+			CreatePiece(new Piece(PieceType.Rock, color, new Vector2(0, backRow)), color.GetTexture("rock")),
+			CreatePiece(new Piece(PieceType.Knight, color, new Vector2(1, backRow)), color.GetTexture("knight")),
+			CreatePiece(new Piece(PieceType.Bishop, color, new Vector2(2, backRow)), color.GetTexture("bishop")),
+			CreatePiece(new Piece(PieceType.Queen, color, new Vector2(3, backRow)), color.GetTexture("queen")),
+			CreatePiece(king, color.GetTexture("king")),
+			CreatePiece(new Piece(PieceType.Bishop, color, new Vector2(5, backRow)), color.GetTexture("bishop")),
+			CreatePiece(new Piece(PieceType.Knight, color, new Vector2(6, backRow)), color.GetTexture("knight")),
+			CreatePiece(new Piece(PieceType.Rock, color, new Vector2(7, backRow)), color.GetTexture("rock"))
+		};
+		pieces.AddRange(CreatePawns(color, frontRow));
+		return pieces.ToArray();
+	}
+	
+	private List<PieceUI> CreatePawns(Color color, int frontRow)
+	{
+		var result = new List<PieceUI>();
+		for (var i = 0; i < 8; i++)
+		{
+			result.Add(CreatePiece(new Piece(PieceType.Pawn, color, new Vector2(i, frontRow)), color.GetTexture("pawn")));
+		}
+		return result;
+	}
 
 	public PieceUI CreatePiece(Piece piece, Texture2D texture)
 	{
