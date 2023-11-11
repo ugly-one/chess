@@ -144,6 +144,15 @@ public class Engine
         return boardCopy.ToArray();
     }
 
+    /// <summary>
+    /// Get moves for the piece without taking into consideration all the rules
+    /// TODO - maybe this should NOT take the board to be clear that it gives only moves that in theory a piece could do
+    /// But then we should put the logic somewhere to detect that we can't jump over other pieces.
+    /// However, it will be tricky because knights CAN jump over pieces and they do not have a range of movement in straight lines
+    /// </summary>
+    /// <param name="piece"></param>
+    /// <param name="board"></param>
+    /// <returns></returns>
     private Vector2[] GetMoves(Piece piece, Piece[] board)
     {
         var moves = piece.Type switch
