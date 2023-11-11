@@ -1,0 +1,8 @@
+go back to mutable Piece? too much code duplication
+fix TODOs in the code
+show message when the game ends
+be able to start a new game
+write an AI that makes random moves
+
+nice to have:
+be able to setup a board manually
