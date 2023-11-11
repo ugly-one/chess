@@ -4,8 +4,11 @@ using Godot;
 
 namespace Chess;
 
+public record Move(Vector2 Start, Vector2 End);
+
 public class Engine
 {
+    private Move last2StepPawnMove = null;
     /// <summary>
     /// Checks possible moves for the given piece
     /// </summary>
@@ -53,6 +56,8 @@ public class Engine
             // and we shall do so with updated board
             board = board.Where(p => p != takenPiece).ToArray();
         }
+
+        var positionBeforeMove = pieceToMove.CurrentPosition;
         pieceToMove.Move(newPosition);
         
         // did we manage to check opponent's king?
@@ -63,6 +68,15 @@ public class Engine
             // check that the opponent have a move, if not - draw
             if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
             {
+                if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
+                {
+                    GD.Print("made a move 2 steps by a pawn");
+                    last2StepPawnMove = new(positionBeforeMove, newPosition);
+                }
+                else
+                {
+                    last2StepPawnMove = null;
+                }
                 return true;
             }
             GD.Print("DRAW!!");
@@ -73,6 +87,15 @@ public class Engine
         // did we manage to check-mate?
         if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
         {
+            if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
+            {
+                GD.Print("made a move 2 steps by a pawn");
+                last2StepPawnMove = new(positionBeforeMove, newPosition);
+            }
+            else
+            {
+                last2StepPawnMove = null;
+            }
             return true;
         }
 
@@ -234,35 +257,54 @@ public class Engine
         
         // one step forward if not blocked
         var forward = piece.CurrentPosition + direction;
-        if (!IsBlocked(forward, board))
+        if (!IsBlocked(board, forward))
             moves.Add(forward);
         
+        var opponentsPieces = GetOppositeColorPieces(board, piece.Color);
         // one down/left if there is an opponent's piece
         var takeLeft = piece.CurrentPosition + Vector2.Left + direction;
-        if (IsBlockedByOpponent(piece, takeLeft, board))
+        if (IsBlockedByOpponent(opponentsPieces, takeLeft) || EnPassantPossible(last2StepPawnMove, takeLeft))
         {
             moves.Add(takeLeft);
         }
         // one down/right if there is an opponent's piece
         var takeRight = piece.CurrentPosition + Vector2.Right + direction;
-        if (IsBlockedByOpponent(piece, takeRight, board))
+        if (IsBlockedByOpponent(opponentsPieces, takeRight) || EnPassantPossible(last2StepPawnMove, takeRight))
         {
             moves.Add(takeRight);
         }
         // two steps forward if not moved yet and not blocked
         if (piece.Moved) return moves.ToArray();
         var forward2Steps = piece.CurrentPosition + direction + direction;
-        if (!IsBlocked(forward2Steps, board))
+        if (!IsBlocked(board, forward2Steps))
             moves.Add(forward2Steps);
 
         return moves.ToArray();
     }
-    
-    private bool IsBlockedByOpponent(Piece piece, Vector2 position, Piece[] pieces)
+
+    private static bool EnPassantPossible(Move last2StepPawnMove, Vector2 takeRight)
     {
-        return pieces.Any(p => p.CurrentPosition == position && piece.Color != p.Color);
+        if (last2StepPawnMove is null)
+        {
+            return false;
+        }
+        if ((takeRight.Y > last2StepPawnMove.Start.Y && takeRight.Y < last2StepPawnMove.End.Y) ||
+            (takeRight.Y < last2StepPawnMove.Start.Y && takeRight.Y > last2StepPawnMove.End.Y))
+        {
+            if (last2StepPawnMove.Start.X == takeRight.X)
+            {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
-    private bool IsBlocked(Vector2 position, Piece[] pieces)
+
+    private bool IsBlockedByOpponent(Piece[] opponentsPieces, Vector2 position)
+    {
+        return opponentsPieces.Any(p => p.CurrentPosition == position);
+    }
+    private bool IsBlocked(Piece[] pieces, Vector2 position)
     {
         return pieces.Any(p => p.CurrentPosition == position);
     }
