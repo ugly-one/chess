@@ -24,7 +24,7 @@ public class Engine
             Piece[] boardAfterMove = Move(board, piece, possibleMove);
             // find the position of the king in the new setup,
             // We can't use the member variable because the king may moved after the move we simulate the move
-            var king = boardAfterMove.First(k => k.Type == PieceType.King && k.Player == piece.Player);
+            var king = GetKing(boardAfterMove, piece.Color);
             // if there is still check after this move - filter the move from possibleMoves
             var isUnderAttack = IsKingUnderAttack(boardAfterMove, king);
             if (!isUnderAttack)
@@ -35,23 +35,7 @@ public class Engine
         
         return possibleMovesAfterFiltering.ToArray();
     }
-    
-    private bool IsKingUnderAttack(Piece[] board, Piece king)
-    {
-        var oppositePlayerPieces = board
-            .Where(p => p.Player != king.Player);
-        foreach (var oppositePlayerPiece in oppositePlayerPieces)
-        {
-            var possibleMoves = GetMoves(oppositePlayerPiece, board);
-            if (possibleMoves.Contains(king.CurrentPosition))
-            {
-                GD.Print("KING UNDER FIRE");
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     public bool TryMove(Piece pieceToMove, Piece[] board, Vector2 newPosition)
     {
         var possibleMoves = GetPossibleMoves(pieceToMove, board);
@@ -67,7 +51,71 @@ public class Engine
             takenPiece.Kill();
         }
         pieceToMove.Move(newPosition);
+        
+        // did we manage to check opponent's king?
+        var opponentsKing = GetKing(board, pieceToMove.Color.GetOppositeColor());
+        var isOpponentsKingUnderFire = IsKingUnderAttack(board, opponentsKing);
+        if (!isOpponentsKingUnderFire)
+        {
+            return true;
+        }
+        
+        GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
+        // did we manage to check-mate?
+        var opponentsPieces = GetPieces(board, opponentsKing.Color);
+        var allPossibleMovesForOpponent = new List<Vector2>();
+        foreach (var opponentsPiece in opponentsPieces)
+        {
+            // try to find possible moves
+            var opponentsPiecePossibleMoves = GetPossibleMoves(opponentsPiece, board);
+            allPossibleMovesForOpponent.AddRange(opponentsPiecePossibleMoves);
+        }
+
+        if (allPossibleMovesForOpponent.Any())
+        {
+            return true;
+        }
+
+        GD.Print("CHECK MATE!!");
         return true;
+    }
+    
+    /// <summary>
+    /// Gets the king if given player
+    /// </summary>
+    /// <returns></returns>
+    private static Piece GetKing(Piece[] board, Color color)
+    {
+        return board
+            .First(k => k.Type == PieceType.King && k.Color == color);
+    }
+    
+    private bool IsKingUnderAttack(Piece[] board, Piece king)
+    {
+        var oppositePlayerPieces = GetOppositeColorPieces(board, king.Color);
+        foreach (var oppositePlayerPiece in oppositePlayerPieces)
+        {
+            var possibleMoves = GetMoves(oppositePlayerPiece, board);
+            if (possibleMoves.Contains(king.CurrentPosition))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Piece[] GetPieces(Piece[] board, Color color)
+    {
+        return board
+            .Where(p => p.Color == color)
+            .ToArray();
+    }
+
+    private static Piece[] GetOppositeColorPieces(Piece[] board, Color color)
+    {
+        return board
+            .Where(p => p.Color != color)
+            .ToArray();
     }
 
     private Piece[] Move(Piece[] board, Piece piece, Vector2 move)
@@ -110,14 +158,14 @@ public class Engine
     private Vector2[] GetQueenMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right,   board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left,    board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left,  board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board,    piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board,  piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board,  piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Player));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right,   board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left,    board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left,  board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board,    piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board,  piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board,  piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
@@ -139,27 +187,27 @@ public class Engine
     private Vector2[] GetRockMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Player));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
     private Vector2[] GetBishopMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left, board, piece.Player));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Player));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left, board, piece.Color));
+        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
     private Vector2[] GetPawnMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Vector2>();
-        var direction = piece.Player == Player.WHITE ? Vector2.Up : Vector2.Down;
+        var direction = piece.Color == Color.WHITE ? Vector2.Up : Vector2.Down;
         
         // one step forward if not blocked
         var forward = piece.CurrentPosition + direction;
@@ -189,7 +237,7 @@ public class Engine
     
     private bool IsBlockedByOpponent(Piece piece, Vector2 position, Piece[] pieces)
     {
-        return pieces.Any(p => p.CurrentPosition == position && piece.Player != p.Player);
+        return pieces.Any(p => p.CurrentPosition == position && piece.Color != p.Color);
     }
     private bool IsBlocked(Vector2 position, Piece[] pieces)
     {

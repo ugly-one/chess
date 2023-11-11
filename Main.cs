@@ -7,9 +7,9 @@ namespace Chess;
 
 public partial class Main : Node2D
 {
-	private Player currentPlayer = Player.WHITE;
+	private Color _currentColor;
 	private Node board;
-	private Dictionary<ColorRect, Color> highlightedFields = new Dictionary<ColorRect, Color>();
+	private Dictionary<ColorRect, Godot.Color> highlightedFields = new Dictionary<ColorRect, Godot.Color>();
 	private Engine engine;
 	
 	private ColorRect GetField(Vector2 position)
@@ -37,16 +37,17 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		board = GetNode("board");
+		_currentColor = Color.BLACK;
 		var pieceFactory = new Chess.PieceFactory();
-		var whitePlayer = Player.WHITE;
-		var blackPlayer = Player.BLACK;
-		var whiteKing = new Piece(PieceType.King, whitePlayer, new Vector2(0, 0));
-		var blackKing = new Piece(PieceType.King, blackPlayer, new Vector2(5, 5));
-		var blackRock = new Piece(PieceType.Rock, blackPlayer, new Vector2(0, 5));
-		var whiteRock = new Piece(PieceType.Rock, whitePlayer, new Vector2(2, 3));
+		var whitePlayer = Color.WHITE;
+		var blackPlayer = Color.BLACK;
+		var whiteKing = new Piece(PieceType.King, whitePlayer, new Vector2(4, 0));
+		var blackKing = new Piece(PieceType.King, blackPlayer, new Vector2(4, 2));
+		var blackRock = new Piece(PieceType.Rock, blackPlayer, new Vector2(7, 1));
+		// var whiteRock = new Piece(PieceType.Rock, whitePlayer, new Vector2(2, 3));
 
 		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
-		var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
+		// var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
 
 		var whiteKingUI = pieceFactory.CreatePiece(whiteKing, whitePlayer.GetTexture("king"));
 		var blackKingUI = pieceFactory.CreatePiece(blackKing, blackPlayer.GetTexture("king"));
@@ -54,26 +55,24 @@ public partial class Main : Node2D
 		// var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		// var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
 		engine = new Engine();
-		foreach (var piece in new [] { whiteKingUI, whiteRockUI })
+		foreach (var piece in new [] { whiteKingUI, blackKingUI, blackRockUI})
 		{
 			AddChild(piece);
-			piece.Enable();
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
-		}
-		
-		foreach (var piece in new [] { blackKingUI, blackRockUI})
-		{
-			AddChild(piece);
-			piece.Disable();
-			piece.Dropped += PieceOnDropped;
-			piece.Lifted += OnPieceLifted;
+			if (piece.Piece.Color == _currentColor)
+			{
+				piece.Enable();
+			}
+			else
+			{
+				piece.Disable();
+			}
 		}
 	}
 
 	private void OnPieceLifted(PieceUI pieceUI)
 	{
-		GD.Print("EVENT RECEIVED!" + pieceUI.Piece.GetType());
 		var pieces = GetChildren()
 			.OfType<Chess.PieceUI>()
 			.Select( ui => ui.Piece)
@@ -107,10 +106,10 @@ public partial class Main : Node2D
 		if (success)
 		{
 			// swap current player
-			currentPlayer = currentPlayer.GetOppositePlayer();
+			_currentColor = _currentColor.GetOppositeColor();
 			foreach (var piece in pieces)
 			{
-				if (piece.Piece.Player == currentPlayer)
+				if (piece.Piece.Color == _currentColor)
 					piece.Enable();
 				else
 					piece.Disable();

@@ -5,16 +5,16 @@ namespace Chess;
 
 public class Piece
 {
-	public Piece(PieceType type, Player player, Vector2 currentPosition)
+	public Piece(PieceType type, Color color, Vector2 currentPosition)
 	{
 		Type = type;
-		Player = player;
+		Color = color;
 		CurrentPosition = currentPosition;
 	}
 
 	public bool Moved { get; private set; }
 	public Vector2 CurrentPosition { get; private set; }
-	public Player Player { get; init; }
+	public Color Color { get; init; }
 	public PieceType Type { get; init; }
 
 	public EventHandler<Vector2> MovedEvent;
@@ -29,7 +29,7 @@ public class Piece
 
 	public Piece CloneWith(Vector2 position)
 	{
-		var clonedPiece = new Piece(this.Type, this.Player, position);
+		var clonedPiece = new Piece(this.Type, this.Color, position);
 		clonedPiece.Moved = this.Moved;
 		return clonedPiece;
 	}
