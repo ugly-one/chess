@@ -32,6 +32,15 @@ public partial class PieceUI : StaticBody2D
 		Position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
 	}
 
+	public void MoveWithPromotion(Vector2 newPosition, Texture2D texture)
+	{
+		ChessPosition = newPosition;
+		Position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
+		_texture = texture;
+		var sprite = GetNode<Sprite2D>("Sprite2D");
+		sprite.Texture = _texture;
+	}
+	
 	public override void _Ready()
 	{
 		var sprite = GetNode<Sprite2D>("Sprite2D");

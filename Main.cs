@@ -136,6 +136,12 @@ public partial class Main : Node2D
 			}
 			
 			var pieceUIToMove = pieces.First(p => p.ChessPosition == currentPosition);
+			// this is horrible, I have the same logic in Engine
+			if (move.PieceToMove.Type == PieceType.Pawn &&
+			    (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
+			{
+				pieceUIToMove.MoveWithPromotion(move.PieceNewPosition, move.PieceToMove.Color.GetTexture("queen"));
+			}
 			pieceUIToMove.Move(move.PieceNewPosition);
 
 			if (move.RockToMove != null)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -70,7 +69,7 @@ public class Engine
         return possibleMovesAfterFiltering.ToArray();
     }
 
-    public Move TryMove(Piece pieceToMove, Vector2 newPosition)
+    public Move TryMove(Piece pieceToMove, Vector2 newPosition, PieceType promotedPiece = PieceType.Queen)
     {
         var possibleMoves = GetPossibleMoves(pieceToMove);
 
@@ -83,13 +82,19 @@ public class Engine
         var takenPiece = move.PieceToCapture; 
         if (takenPiece != null)
         {
-            // we should remove the taken piece from the board because we need to evaluate if the king is checked/check-mated
-            // and we shall do so with updated board
             board = board.Where(p => p != takenPiece).ToArray();
         }
 
         lastMove = move;
+
+        
         var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
+        // convert a pawn into something better if necessary
+        // this is horrible, I have the same logic in Main
+        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
+        {
+            newPiece = new Piece(promotedPiece, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
+        }
         board = board.Where(p => p != move.PieceToMove).Append(newPiece).ToArray();
 
         var rockToMove = move.RockToMove;
