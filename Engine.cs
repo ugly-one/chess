@@ -289,6 +289,9 @@ public class Engine
         }
         else
         {
+            // TODO This is probably a bug - we shouldn't be using lastMove here
+            // GetPawnMoves is executed when we simulate moves and that means lastMove is not updated correctly.
+            // We don't update it when we simulate moves
             // check en-passant
             if (lastMove != null)
             {
@@ -303,7 +306,6 @@ public class Engine
                 }
             }
         }
-        
         
         // one down/right if there is an opponent's piece
         var takeRight = piece.Position + Vector2.Right + direction;
