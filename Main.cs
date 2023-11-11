@@ -73,13 +73,13 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI)
 	{
-		var pieces = GetChildren()
+		var board = GetChildren()
 			.OfType<Chess.PieceUI>()
 			.Select( ui => ui.Piece)
 			.ToArray();
 
 		var piece = pieceUI.Piece;
-		var possibleMoves = engine.GetPossibleMoves(piece, pieces);
+		var possibleMoves = engine.GetPossibleMoves(board, piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -101,7 +101,8 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var success = engine.TryMove(droppedPiece.Piece, pieces.Select(p => p.Piece).ToArray(),newPosition);
+		var board = pieces.Select(p => p.Piece).ToArray();
+		var success = engine.TryMove(board, droppedPiece.Piece, newPosition);
 
 		if (success)
 		{

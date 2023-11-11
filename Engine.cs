@@ -12,7 +12,7 @@ public class Engine
     /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <param name="board">entire board</param>
     /// <returns></returns>
-    public Vector2[] GetPossibleMoves(Piece piece, Piece[] board)
+    public Vector2[] GetPossibleMoves(Piece[] board, Piece piece)
     {
         var possibleMoves = GetMoves(piece, board)
             .WithinBoard();
@@ -36,9 +36,9 @@ public class Engine
         return possibleMovesAfterFiltering.ToArray();
     }
 
-    public bool TryMove(Piece pieceToMove, Piece[] board, Vector2 newPosition)
+    public bool TryMove(Piece[] board, Piece pieceToMove, Vector2 newPosition)
     {
-        var possibleMoves = GetPossibleMoves(pieceToMove, board);
+        var possibleMoves = GetPossibleMoves(board, pieceToMove);
 		
         if (!possibleMoves.Contains(newPosition))
         {
@@ -87,7 +87,7 @@ public class Engine
         foreach (var opponentsPiece in pieces)
         {
             // try to find possible moves
-            var possibleMoves = GetPossibleMoves(opponentsPiece, board);
+            var possibleMoves = GetPossibleMoves(board, opponentsPiece);
             allPossibleMoves.AddRange(possibleMoves);
         }
 
