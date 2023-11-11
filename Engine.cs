@@ -60,7 +60,7 @@ public class Engine
         {
             return false;
         }
-        
+        // copy of below method - TODO
         var takenPiece = board.FirstOrDefault(p => p.CurrentPosition == newPosition);
         if (takenPiece != null)
         {
