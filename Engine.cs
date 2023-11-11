@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using Godot;
 
@@ -63,8 +64,14 @@ public class Engine
 
         lastMove = move;
         var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
-        
         board = board.Where(p => p != move.PieceToMove).Append(newPiece).ToArray();
+
+        var rockToMove = move.RockToMove;
+        if (rockToMove != null)
+        {
+            var newRock = rockToMove.Move(move.RockNewPosition.Value);
+            board = board.Where(p => p != move.RockToMove).Append(newRock).ToArray();
+        }
         
         // did we manage to check opponent's king?
         var opponentsKing = GetKing(board, move.PieceToMove.Color.GetOppositeColor());
@@ -296,24 +303,64 @@ public class Engine
         return pieces.Any(p => p.Position == position);
     }
 
-    private Move[] GetKingMoves(Piece piece, Piece[] board)
+    private Move[] GetKingMoves(Piece king, Piece[] board)
     {
         var allPositions = new List<Vector2>()
         {
-            piece.Position + Vector2.Up,
-            piece.Position + Vector2.Down,
-            piece.Position + Vector2.Left,
-            piece.Position + Vector2.Right,
-            piece.Position + Vector2.Up + Vector2.Right,
-            piece.Position + Vector2.Up + Vector2.Left,
-            piece.Position + Vector2.Down + Vector2.Right,
-            piece.Position + Vector2.Down + Vector2.Left,
+            king.Position + Vector2.Up,
+            king.Position + Vector2.Down,
+            king.Position + Vector2.Left,
+            king.Position + Vector2.Right,
+            king.Position + Vector2.Up + Vector2.Right,
+            king.Position + Vector2.Up + Vector2.Left,
+            king.Position + Vector2.Down + Vector2.Right,
+            king.Position + Vector2.Down + Vector2.Left,
         };
 
-        var allMoves = ConvertToMoves(piece, board, allPositions);
+        var allMoves = ConvertToMoves(king, board, allPositions);
+        
+        // add castling
+        if (king.Moved)
+        {
+            return allMoves;
+        }
+
+        // short castle
+        allMoves = TryGetCastleMove(king, board, Vector2.Right, 2, allMoves);
+
+        // long castle
+        allMoves = TryGetCastleMove(king, board, Vector2.Left, 3, allMoves);
+        
         return allMoves;
     }
-    
+
+    private Move[] TryGetCastleMove(Piece king, Piece[] board, Vector2 kingMoveDirection, int rockSteps, Move[] allMoves)
+    {
+        var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
+        var rock = board
+            .Where(p => p.Type == PieceType.Rock)
+            .FirstOrDefault(p => p.Position == king.Position + kingMoveDirection * (rockSteps + 1));
+        if (rock != null && !rock.Moved)
+        {
+            // we have a rock and a king which didn't move yet! 
+            var simpleMovesCount = GetMovesInDirection(king, kingMoveDirection, board, king.Color)
+                .Select(m => m.PieceToCapture == null).Count();
+
+            if (simpleMovesCount == rockSteps)
+            {
+                allMoves = allMoves
+                    .Append(Chess.Move.Castle(
+                        king,
+                        king.Position + kingMoveDirection * 2,
+                        rock,
+                        rock.Position + rockMoveDirection * rockSteps))
+                    .ToArray();
+            }
+        }
+
+        return allMoves;
+    }
+
     private Move[] GetKnightMoves(Piece piece, Piece[] board)
     {
         var allPositions = new List<Vector2>()

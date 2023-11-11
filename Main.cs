@@ -126,6 +126,10 @@ public partial class Main : Node2D
 
 		if (move != null)
 		{
+			// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
+			// it was less code with the events emitted from Piece class (events handled by UI components)
+			// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
+			// when detecting en-passant
 			if (move.PieceToCapture != null)
 			{
 				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
@@ -134,6 +138,12 @@ public partial class Main : Node2D
 			
 			var pieceUIToMove = pieces.First(p => p.ChessPosition == currentPosition);
 			pieceUIToMove.Move(move.PieceNewPosition);
+
+			if (move.RockToMove != null)
+			{
+				var rockToMoveUI = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
+				rockToMoveUI.Move(move.RockNewPosition.Value);
+			}
 			
 			// swap current player
 			currentColor = currentColor.GetOppositeColor();

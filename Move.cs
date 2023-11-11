@@ -14,4 +14,10 @@ public record Move(Piece PieceToMove, Vector2 PieceNewPosition, Piece PieceToCap
     {
         return new Move(pieceToMove, newPosition, pieceToCapture, null, null);
     }
+
+    public static Move Castle(Piece king, Vector2 kingNewPosition, Piece rock, Vector2 rockNewPosition)
+    {
+        return new Move(king, kingNewPosition, null, rock, rockNewPosition);
+        
+    }
 }
