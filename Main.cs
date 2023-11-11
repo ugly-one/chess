@@ -44,10 +44,10 @@ public partial class Main : Node2D
 		var whiteKing = new Piece(PieceType.King, whitePlayer, new Vector2(4, 0));
 		var blackKing = new Piece(PieceType.King, blackPlayer, new Vector2(4, 2));
 		var blackRock = new Piece(PieceType.Rock, blackPlayer, new Vector2(7, 1));
-		// var whiteRock = new Piece(PieceType.Rock, whitePlayer, new Vector2(2, 3));
+		var whiteRock = new Piece(PieceType.Rock, whitePlayer, new Vector2(6, 7));
 
 		var blackRockUI = pieceFactory.CreatePiece(blackRock, blackPlayer.GetTexture("rock"));
-		// var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
+		var whiteRockUI = pieceFactory.CreatePiece(whiteRock, whitePlayer.GetTexture("rock"));
 
 		var whiteKingUI = pieceFactory.CreatePiece(whiteKing, whitePlayer.GetTexture("king"));
 		var blackKingUI = pieceFactory.CreatePiece(blackKing, blackPlayer.GetTexture("king"));
@@ -55,7 +55,7 @@ public partial class Main : Node2D
 		// var (whitePieces, whiteKing) = pieceFactory.CreatePieces(Player.WHITE, 7, 6);
 		// var (blackPieces, blackKing) = pieceFactory.CreatePieces(Player.BLACK, 0, 1);
 		engine = new Engine();
-		foreach (var piece in new [] { whiteKingUI, blackKingUI, blackRockUI})
+		foreach (var piece in new [] { whiteKingUI, whiteRockUI, blackKingUI, blackRockUI})
 		{
 			AddChild(piece);
 			piece.Dropped += PieceOnDropped;

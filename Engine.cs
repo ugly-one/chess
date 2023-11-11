@@ -49,6 +49,9 @@ public class Engine
         if (takenPiece != null)
         {
             takenPiece.Kill();
+            // we should remove the taken piece from the board because we need to evaluate if the king is checked/check-mated
+            // and we shall do so with updated board
+            board = board.Where(p => p != takenPiece).ToArray();
         }
         pieceToMove.Move(newPosition);
         

@@ -1,9 +1,6 @@
 2. Castling
 3. En passant
 5. detect draws
-6. detect wins
-- simple: check that the king is under fine and it has nowhere to go
-- more complicated: check that there is no piece that can block the check.
 
 7. in order to make the engine have the logic for moving pieces, we should go away from modifying pieceUI objects in main.
 we should only be able to modify Piece objects which should result in UI being updated. This will allow to have the moving logic in the engine class.
