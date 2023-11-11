@@ -24,29 +24,6 @@ public static class Vector2Extention
         return color == Color.BLACK ? Color.WHITE : Color.BLACK;
     }
     
-    public static IEnumerable<Vector2> GetDirection(
-        this Vector2 currentPosition,
-        Vector2 step, 
-        IEnumerable<Piece> allPieces,
-        Color color)
-    {
-        var newPos = currentPosition + step;
-        var breakAfterAdding = false;
-        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, allPieces))
-        {
-            if (newPos.IsOccupiedBy(color.GetOppositeColor(), allPieces))
-            {
-                breakAfterAdding = true;
-            }
-            yield return newPos;
-            newPos += step;
-            if (breakAfterAdding)
-            {
-                break;
-            }
-        }
-    }
-    
     public static bool IsOccupiedBy(this Vector2 position, Color color, IEnumerable<Piece> allPieces)
     {
         foreach (var piece in allPieces)
@@ -64,8 +41,8 @@ public static class Vector2Extention
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
     }
     
-    public static IEnumerable<Vector2> WithinBoard(this IEnumerable<Vector2> positions)
+    public static IEnumerable<Move> WithinBoard(this IEnumerable<Move> moves)
     {
-        return positions.Where(IsWithinBoard);
+        return moves.Where(m => IsWithinBoard(m.PieceNewPosition));
     }
 }

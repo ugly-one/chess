@@ -1,3 +1,5 @@
-2. Castling (make sure it's not possible to castle if the king goes through an attacked field
-3. En passant
-4. Promoting
+Castling (make sure it's not possible to castle if the king goes through an attacked field
+En passant
+Promoting
+King can walk into a check
+King doesn't capture anything

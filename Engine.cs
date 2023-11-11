@@ -4,23 +4,20 @@ using Godot;
 
 namespace Chess;
 
-public record Move(Vector2 Start, Vector2 End);
-
 public class Engine
 {
-    private Move last2StepPawnMove = null;
     /// <summary>
     /// Checks possible moves for the given piece
     /// </summary>
     /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <param name="board">entire board</param>
     /// <returns></returns>
-    public Vector2[] GetPossibleMoves(Piece[] board, Piece piece)
+    public Move[] GetPossibleMoves(Piece[] board, Piece piece)
     {
         var possibleMoves = GetMoves(piece, board)
             .WithinBoard();
 
-        var possibleMovesAfterFiltering = new List<Vector2>();
+        var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
         {
             // let's try to make the move and see if the king is still under attack
@@ -42,13 +39,14 @@ public class Engine
     public bool TryMove(Piece[] board, Piece pieceToMove, Vector2 newPosition)
     {
         var possibleMoves = GetPossibleMoves(board, pieceToMove);
-		
-        if (!possibleMoves.Contains(newPosition))
+
+        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
+        if (move is null)
         {
             return false;
         }
-        // copy of below method - TODO
-        var takenPiece = board.FirstOrDefault(p => p.CurrentPosition == newPosition);
+        
+        var takenPiece = move.PieceToCapture; 
         if (takenPiece != null)
         {
             takenPiece.Kill();
@@ -57,20 +55,10 @@ public class Engine
             board = board.Where(p => p != takenPiece).ToArray();
         }
 
-        var positionBeforeMove = pieceToMove.CurrentPosition;
-        if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
-        {
-            GD.Print("made a move 2 steps by a pawn");
-            last2StepPawnMove = new(positionBeforeMove, newPosition);
-        }
-        else
-        {
-            last2StepPawnMove = null;
-        }
-        pieceToMove.Move(newPosition);
+        move.PieceToMove.Move(move.PieceNewPosition);
         
         // did we manage to check opponent's king?
-        var opponentsKing = GetKing(board, pieceToMove.Color.GetOppositeColor());
+        var opponentsKing = GetKing(board, move.PieceToMove.Color.GetOppositeColor());
         var isOpponentsKingUnderFire = IsKingUnderAttack(board, opponentsKing);
         if (!isOpponentsKingUnderFire)
         {
@@ -94,10 +82,10 @@ public class Engine
         return true;
     }
 
-    private List<Vector2> GetAllPossibleMovesForColor(Piece[] board, Color color)
+    private List<Move> GetAllPossibleMovesForColor(Piece[] board, Color color)
     {
         var pieces = GetPieces(board, color);
-        var allPossibleMoves = new List<Vector2>();
+        var allPossibleMoves = new List<Move>();
         foreach (var opponentsPiece in pieces)
         {
             // try to find possible moves
@@ -124,7 +112,8 @@ public class Engine
         foreach (var oppositePlayerPiece in oppositePlayerPieces)
         {
             var possibleMoves = GetMoves(oppositePlayerPiece, board);
-            if (possibleMoves.Contains(king.CurrentPosition))
+            var possibleCaptures = possibleMoves.Where(m => m.PieceToCapture != null);
+            if (possibleCaptures.Any(m => m.PieceToCapture.Type == PieceType.King))
             {
                 return true;
             }
@@ -145,30 +134,20 @@ public class Engine
             .Where(p => p.Color != color)
             .ToArray();
     }
-
-    private Piece[] Move(Piece[] board, Piece piece, Vector2 move)
+    private Piece[] Move(Piece[] board, Piece piece, Move move)
     {
         var boardCopy = board.ToList(); // shallow copy, do not modify pieces!
         boardCopy.Remove(piece);
-        // I'm afraid I will have to duplicate the logic of making a move here.
-        // move can be done in 3 different ways:
-        // a) simple move where only the moved piece is affected
-        // b) capture - moved piece is affected and the captured piece has to be removed
-        // c) castling - rock and king are affected
-        // now here we have a support for a and b. 
-        // but the same logic will have to reside somewhere else where we actually make the move once the engine detects that the move is valid
-        // currently it's the main class.
-        // simulate taking a piece
-        var takenPiece = boardCopy.FirstOrDefault(p => p.CurrentPosition == move);
+        var takenPiece = move.PieceToCapture;
         if (takenPiece != null)
         {
             boardCopy.Remove(takenPiece);
         }
-        var newPiece = piece.CloneWith(move);
+        var newPiece = piece.CloneWith(move.PieceNewPosition);
         boardCopy.Add(newPiece);
         return boardCopy.ToArray();
     }
-
+    
     /// <summary>
     /// Get moves for the piece without taking into consideration all the rules
     /// TODO - maybe this should NOT take the board to be clear that it gives only moves that in theory a piece could do
@@ -178,7 +157,7 @@ public class Engine
     /// <param name="piece"></param>
     /// <param name="board"></param>
     /// <returns></returns>
-    private Vector2[] GetMoves(Piece piece, Piece[] board)
+    private Move[] GetMoves(Piece piece, Piece[] board)
     {
         var moves = piece.Type switch
         {
@@ -192,127 +171,164 @@ public class Engine
         return moves;
     }
 
-    private Vector2[] GetQueenMoves(Piece piece, Piece[] board)
+    private Move[] GetQueenMoves(Piece piece, Piece[] board)
     {
-        var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right,   board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left,    board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left,  board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board,    piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board,  piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board,  piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Color));
+        var moves = new List<Move>();
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up + Vector2.Right,   board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up + Vector2.Left,    board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down + Vector2.Left,  board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down + Vector2.Right, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up, board,    piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down, board,  piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Left, board,  piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
-    private Vector2[] GetKnightMoves(Piece piece, Piece[] board)
+    private Move[] GetKnightMoves(Piece piece, Piece[] board)
     {
-        // TODO king can step on its own pieces
-        var moves = new List<Vector2>();
-        moves.Add(piece.CurrentPosition + Vector2.Up * 2 + Vector2.Right);
-        moves.Add(piece.CurrentPosition + Vector2.Right * 2 + Vector2.Up);
-        moves.Add(piece.CurrentPosition + Vector2.Right * 2 + Vector2.Down);
-        moves.Add(piece.CurrentPosition + Vector2.Down * 2 + Vector2.Right);
-        moves.Add(piece.CurrentPosition + Vector2.Down * 2 + Vector2.Left);
-        moves.Add(piece.CurrentPosition + Vector2.Left * 2 + Vector2.Down);
-        moves.Add(piece.CurrentPosition + Vector2.Up * 2 + Vector2.Left);
-        moves.Add(piece.CurrentPosition + Vector2.Left * 2 + Vector2.Up);
+        // TODO can step on its own pieces
+        // TODO doesn't capture anything
+        var moves = new List<Move>();
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Up * 2 + Vector2.Right));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Right * 2 + Vector2.Up));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Right * 2 + Vector2.Down));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Down * 2 + Vector2.Right));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Down * 2 + Vector2.Left));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Left * 2 + Vector2.Down));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Up * 2 + Vector2.Left));
+        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Left * 2 + Vector2.Up));
         return moves.ToArray();
     }
 
-    private Vector2[] GetRockMoves(Piece piece, Piece[] board)
+    private Move[] GetRockMoves(Piece piece, Piece[] board)
     {
-        var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Left, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Right, board, piece.Color));
+        var moves = new List<Move>();
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Left, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
-    private Vector2[] GetBishopMoves(Piece piece, Piece[] board)
+    private Move[] GetBishopMoves(Piece piece, Piece[] board)
     {
-        var moves = new List<Vector2>();
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Right, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Up + Vector2.Left, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Left, board, piece.Color));
-        moves.AddRange(piece.CurrentPosition.GetDirection(Vector2.Down + Vector2.Right, board, piece.Color));
+        var moves = new List<Move>();
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up + Vector2.Right, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Up + Vector2.Left, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down + Vector2.Left, board, piece.Color));
+        moves.AddRange(GetMovesInDirection(piece, Vector2.Down + Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
 
-    private Vector2[] GetPawnMoves(Piece piece, Piece[] board)
+    public IEnumerable<Move> GetMovesInDirection(
+        Piece piece,
+        Vector2 step, 
+        Piece[] allPieces,
+        Color color)
     {
-        var moves = new List<Vector2>();
+        var newPos = piece.CurrentPosition + step;
+        var breakAfterAdding = false;
+        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, allPieces))
+        {
+            // we should pass only opponents pieces to GetPieceInPosition
+            var capturedPiece = GetPieceInPosition(allPieces, newPos);
+            if (capturedPiece != null)
+            {
+                breakAfterAdding = true;
+                yield return Chess.Move.Capture(piece, newPos, capturedPiece);
+                
+            }
+            else
+            {
+                yield return Chess.Move.RegularMove(piece, newPos);
+            }
+            newPos += step;
+            if (breakAfterAdding)
+            {
+                break;
+            }
+        }
+    }
+    private Move[] GetPawnMoves(Piece piece, Piece[] board)
+    {
+        var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector2.Up : Vector2.Down;
         
         // one step forward if not blocked
         var forward = piece.CurrentPosition + direction;
         if (!IsBlocked(board, forward))
-            moves.Add(forward);
+        {
+            moves.Add(Chess.Move.RegularMove(piece, forward));
+        }
         
         var opponentsPieces = GetOppositeColorPieces(board, piece.Color);
         // one down/left if there is an opponent's piece
         var takeLeft = piece.CurrentPosition + Vector2.Left + direction;
-        if (IsBlockedByOpponent(opponentsPieces, takeLeft) || EnPassantPossible(last2StepPawnMove, takeLeft))
+        var opponentCapturedPiece = GetPieceInPosition(opponentsPieces, takeLeft);
+        if (opponentCapturedPiece != null)
         {
-            moves.Add(takeLeft);
+            moves.Add(Chess.Move.Capture(piece, takeLeft, opponentCapturedPiece));
         }
         // one down/right if there is an opponent's piece
         var takeRight = piece.CurrentPosition + Vector2.Right + direction;
-        if (IsBlockedByOpponent(opponentsPieces, takeRight) || EnPassantPossible(last2StepPawnMove, takeRight))
+        var opponentCapturedPiece2 = GetPieceInPosition(opponentsPieces, takeRight);
+        if (opponentCapturedPiece2 != null)
         {
-            moves.Add(takeRight);
+            moves.Add(Chess.Move.Capture(piece, takeRight, opponentCapturedPiece2));
         }
         // two steps forward if not moved yet and not blocked
         if (piece.Moved) return moves.ToArray();
         var forward2Steps = piece.CurrentPosition + direction + direction;
         if (!IsBlocked(board, forward2Steps))
-            moves.Add(forward2Steps);
+        {
+            moves.Add(Chess.Move.RegularMove(piece, forward2Steps));
+        }
 
         return moves.ToArray();
     }
 
-    private static bool EnPassantPossible(Move last2StepPawnMove, Vector2 takeRight)
+    // private static bool EnPassantPossible(Move last2StepPawnMove, Vector2 takeRight)
+    // {
+    //     if (last2StepPawnMove is null)
+    //     {
+    //         return false;
+    //     }
+    //     if ((takeRight.Y > last2StepPawnMove.Start.Y && takeRight.Y < last2StepPawnMove.End.Y) ||
+    //         (takeRight.Y < last2StepPawnMove.Start.Y && takeRight.Y > last2StepPawnMove.End.Y))
+    //     {
+    //         if (last2StepPawnMove.Start.X == takeRight.X)
+    //         {
+    //             return true;
+    //         }
+    //         return false;
+    //     }
+    //     return false;
+    // }
+    
+    private Piece GetPieceInPosition(Piece[] pieces, Vector2 position)
     {
-        if (last2StepPawnMove is null)
-        {
-            return false;
-        }
-        if ((takeRight.Y > last2StepPawnMove.Start.Y && takeRight.Y < last2StepPawnMove.End.Y) ||
-            (takeRight.Y < last2StepPawnMove.Start.Y && takeRight.Y > last2StepPawnMove.End.Y))
-        {
-            if (last2StepPawnMove.Start.X == takeRight.X)
-            {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-    private bool IsBlockedByOpponent(Piece[] opponentsPieces, Vector2 position)
-    {
-        return opponentsPieces.Any(p => p.CurrentPosition == position);
+        return pieces.FirstOrDefault(p => p.CurrentPosition == position);
     }
     private bool IsBlocked(Piece[] pieces, Vector2 position)
     {
         return pieces.Any(p => p.CurrentPosition == position);
     }
 
-    private Vector2[] GetKingMoves(Piece king, Piece[] board)
+    private Move[] GetKingMoves(Piece king, Piece[] board)
     {
         // TODO king can step on its own pieces
-        return new List<Vector2>()
+        // TODO discover if we're capturing a piece
+        return new List<Move>()
         {
-            king.CurrentPosition + Vector2.Up,
-            king.CurrentPosition + Vector2.Down,
-            king.CurrentPosition + Vector2.Left,
-            king.CurrentPosition + Vector2.Right,
-            king.CurrentPosition + Vector2.Up + Vector2.Right,
-            king.CurrentPosition + Vector2.Up + Vector2.Left,
-            king.CurrentPosition + Vector2.Down + Vector2.Right,
-            king.CurrentPosition + Vector2.Down + Vector2.Left,
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Left),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Right),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up + Vector2.Right),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up + Vector2.Left),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down + Vector2.Right),
+            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down + Vector2.Left),
         }.ToArray();
     }
 }

@@ -101,8 +101,8 @@ public partial class Main : Node2D
 		
 		foreach (var possibleMove in possibleMoves)
 		{
-			highlightedFields.Add(GetField(possibleMove), GetField(possibleMove).Color);			
-			GetField(possibleMove).Color = Colors.Pink;
+			highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
+			GetField(possibleMove.PieceNewPosition).Color = Colors.Pink;
 		}
 	}
 
