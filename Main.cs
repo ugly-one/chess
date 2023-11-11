@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Godot.Collections;
 
 namespace Chess;
 
@@ -9,7 +9,7 @@ public partial class Main : Node2D
 {
 	private Color currentColor;
 	private Node board;
-	private Dictionary<ColorRect, Godot.Color> highlightedFields = new Dictionary<ColorRect, Godot.Color>();
+	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Engine engine;
 	
 	private ColorRect GetField(Vector2 position)
@@ -49,11 +49,22 @@ public partial class Main : Node2D
 		
 		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
 		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
-		engine = new Engine(whitePieces.Concat(blackPieces).ToList());
+
+		var allPieces = whitePieces.Concat(blackPieces).ToList();
+
+		allPieces = new List<Piece>()
+		{
+			new Piece(PieceType.King, Color.WHITE, new Vector2(4, 4)),
+			new Piece(PieceType.King, Color.BLACK, new Vector2(6, 6)),
+			new Piece(PieceType.Pawn, Color.WHITE, new Vector2(0, 6)),
+		};
+		
+		
+		engine = new Engine(allPieces);
 
 		var piecesUI = engine.board.Select(p =>
 		{
-			return pieceFactory.CreatePiece(p.CurrentPosition, p.Color, GetTexture(p.Type, p.Color));
+			return pieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
 		});
 		
 		foreach (var piece in piecesUI)
@@ -87,7 +98,7 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
 	{
-		var piece = engine.board.First(p => p.CurrentPosition == position);
+		var piece = engine.board.First(p => p.Position == position);
 		var possibleMoves = engine.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
@@ -110,14 +121,14 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var pieceToMove = engine.board.First(p => p.CurrentPosition == currentPosition);
+		var pieceToMove = engine.board.First(p => p.Position == currentPosition);
 		var move = engine.TryMove(pieceToMove, newPosition);
 
 		if (move != null)
 		{
 			if (move.PieceToCapture != null)
 			{
-				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.CurrentPosition);
+				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
 				pieceUIToCapture.QueueFree();
 			}
 			

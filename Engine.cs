@@ -62,7 +62,9 @@ public class Engine
         }
 
         lastMove = move;
-        move.PieceToMove.Move(move.PieceNewPosition);
+        var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
+        
+        board = board.Where(p => p != move.PieceToMove).Append(newPiece).ToArray();
         
         // did we manage to check opponent's king?
         var opponentsKing = GetKing(board, move.PieceToMove.Color.GetOppositeColor());
@@ -151,7 +153,7 @@ public class Engine
         {
             boardCopy.Remove(takenPiece);
         }
-        var newPiece = piece.CloneWith(move.PieceNewPosition);
+        var newPiece = piece.Move(move.PieceNewPosition);
         boardCopy.Add(newPiece);
         return boardCopy.ToArray();
     }
@@ -219,7 +221,7 @@ public class Engine
         var direction = piece.Color == Color.WHITE ? Vector2.Up : Vector2.Down;
         
         // one step forward if not blocked
-        var forward = piece.CurrentPosition + direction;
+        var forward = piece.Position + direction;
         if (!IsBlocked(board, forward))
         {
             moves.Add(Chess.Move.RegularMove(piece, forward));
@@ -227,7 +229,7 @@ public class Engine
         
         var opponentsPieces = GetOppositeColorPieces(board, piece.Color);
         // one down/left if there is an opponent's piece
-        var takeLeft = piece.CurrentPosition + Vector2.Left + direction;
+        var takeLeft = piece.Position + Vector2.Left + direction;
         var opponentCapturedPiece = GetPieceInPosition(opponentsPieces, takeLeft);
         if (opponentCapturedPiece != null)
         {
@@ -240,7 +242,7 @@ public class Engine
         
         
         // one down/right if there is an opponent's piece
-        var takeRight = piece.CurrentPosition + Vector2.Right + direction;
+        var takeRight = piece.Position + Vector2.Right + direction;
         var opponentCapturedPiece2 = GetPieceInPosition(opponentsPieces, takeRight);
         if (opponentCapturedPiece2 != null)
         {
@@ -248,7 +250,7 @@ public class Engine
         }
         // two steps forward if not moved yet and not blocked
         if (piece.Moved) return moves.ToArray();
-        var forward2Steps = piece.CurrentPosition + direction + direction;
+        var forward2Steps = piece.Position + direction + direction;
         if (!IsBlocked(board, forward2Steps))
         {
             moves.Add(Chess.Move.RegularMove(piece, forward2Steps));
@@ -277,25 +279,25 @@ public class Engine
     
     private Piece GetPieceInPosition(Piece[] pieces, Vector2 position)
     {
-        return pieces.FirstOrDefault(p => p.CurrentPosition == position);
+        return pieces.FirstOrDefault(p => p.Position == position);
     }
     private bool IsBlocked(Piece[] pieces, Vector2 position)
     {
-        return pieces.Any(p => p.CurrentPosition == position);
+        return pieces.Any(p => p.Position == position);
     }
 
     private Move[] GetKingMoves(Piece piece, Piece[] board)
     {
         var allPositions = new List<Vector2>()
         {
-            piece.CurrentPosition + Vector2.Up,
-            piece.CurrentPosition + Vector2.Down,
-            piece.CurrentPosition + Vector2.Left,
-            piece.CurrentPosition + Vector2.Right,
-            piece.CurrentPosition + Vector2.Up + Vector2.Right,
-            piece.CurrentPosition + Vector2.Up + Vector2.Left,
-            piece.CurrentPosition + Vector2.Down + Vector2.Right,
-            piece.CurrentPosition + Vector2.Down + Vector2.Left,
+            piece.Position + Vector2.Up,
+            piece.Position + Vector2.Down,
+            piece.Position + Vector2.Left,
+            piece.Position + Vector2.Right,
+            piece.Position + Vector2.Up + Vector2.Right,
+            piece.Position + Vector2.Up + Vector2.Left,
+            piece.Position + Vector2.Down + Vector2.Right,
+            piece.Position + Vector2.Down + Vector2.Left,
         };
 
         var allMoves = ConvertToMoves(piece, board, allPositions);
@@ -306,14 +308,14 @@ public class Engine
     {
         var allPositions = new List<Vector2>()
         {
-            piece.CurrentPosition + Vector2.Up * 2 + Vector2.Right,
-            piece.CurrentPosition + Vector2.Right * 2 + Vector2.Up,
-            piece.CurrentPosition + Vector2.Right * 2 + Vector2.Down,
-            piece.CurrentPosition + Vector2.Down * 2 + Vector2.Right,
-            piece.CurrentPosition + Vector2.Down * 2 + Vector2.Left,
-            piece.CurrentPosition + Vector2.Left * 2 + Vector2.Down,
-            piece.CurrentPosition + Vector2.Up * 2 + Vector2.Left,
-            piece.CurrentPosition + Vector2.Left * 2 + Vector2.Up,
+            piece.Position + Vector2.Up * 2 + Vector2.Right,
+            piece.Position + Vector2.Right * 2 + Vector2.Up,
+            piece.Position + Vector2.Right * 2 + Vector2.Down,
+            piece.Position + Vector2.Down * 2 + Vector2.Right,
+            piece.Position + Vector2.Down * 2 + Vector2.Left,
+            piece.Position + Vector2.Left * 2 + Vector2.Down,
+            piece.Position + Vector2.Up * 2 + Vector2.Left,
+            piece.Position + Vector2.Left * 2 + Vector2.Up,
         };
 
         var allMoves = ConvertToMoves(piece, board, allPositions);
@@ -343,7 +345,7 @@ public class Engine
         Piece[] allPieces,
         Color color)
     {
-        var newPos = piece.CurrentPosition + step;
+        var newPos = piece.Position + step;
         var breakAfterAdding = false;
         while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, allPieces))
         {

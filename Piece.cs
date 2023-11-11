@@ -3,30 +3,24 @@ using Godot;
 
 namespace Chess;
 
-public class Piece
+public record Piece
 {
-	public Piece(PieceType type, Color color, Vector2 currentPosition)
+	public Piece(PieceType type, Color color, Vector2 position, bool moved = false)
 	{
 		Type = type;
 		Color = color;
-		CurrentPosition = currentPosition;
+		Position = position;
+		Moved = moved;
 	}
 
-	public bool Moved { get; private set; }
-	public Vector2 CurrentPosition { get; private set; }
-	public Color Color { get; init; }
-	public PieceType Type { get; init; }
+	public bool Moved { get; }
+	public Vector2 Position { get; }
+	public Color Color { get; }
+	public PieceType Type { get; }
 
-	public void Move(Vector2 newPosition)
+	public Piece Move(Vector2 position)
 	{
-		CurrentPosition = newPosition;
-		Moved = true;
-	}
-
-	public Piece CloneWith(Vector2 position)
-	{
-		var clonedPiece = new Piece(this.Type, this.Color, position);
-		clonedPiece.Moved = this.Moved;
+		var clonedPiece = new Piece(this.Type, this.Color, position, true);
 		return clonedPiece;
 	}
 }

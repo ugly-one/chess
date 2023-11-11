@@ -28,7 +28,7 @@ public static class Vector2Extention
     {
         foreach (var piece in allPieces)
         {
-            if (position == piece.CurrentPosition && piece.Color == color)
+            if (position == piece.Position && piece.Color == color)
             {
                 return true;
             }
