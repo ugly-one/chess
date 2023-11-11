@@ -54,25 +54,25 @@ public partial class Main : Node2D
 		// whitePieces = new[] { whiteKingUI, whiteRockUI };
 		// blackPieces = new[] { blackKingUI, blackRockUI };
 		
-		// whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
-		// blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
-		
-		var whiteKingUI = pieceFactory.CreatePiece(
-			new Piece(PieceType.King, Color.WHITE, new Vector2(0, 0)), 
-			Color.WHITE.GetTexture("king"));
-		var blackKingUI = pieceFactory.CreatePiece(
-			new Piece(PieceType.King, Color.BLACK, new Vector2(7, 7)), 
-			Color.BLACK.GetTexture("king"));
-
-		var whitePawnUI = pieceFactory.CreatePiece(
-			new Piece(PieceType.Pawn, Color.WHITE, new Vector2(2, 6)),
-			Color.WHITE.GetTexture("pawn"));
-		var blackPawnUI = pieceFactory.CreatePiece(
-			new Piece(PieceType.Pawn, Color.BLACK, new Vector2(3, 4)),
-			Color.BLACK.GetTexture("pawn"));
-		whitePieces = new[] { whiteKingUI, whitePawnUI };
-		blackPieces = new[] { blackKingUI, blackPawnUI };
-		
+		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
+		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
+		//
+		// var whiteKingUI = pieceFactory.CreatePiece(
+		// 	new Piece(PieceType.King, Color.WHITE, new Vector2(0, 0)), 
+		// 	Color.WHITE.GetTexture("king"));
+		// var blackKingUI = pieceFactory.CreatePiece(
+		// 	new Piece(PieceType.King, Color.BLACK, new Vector2(7, 7)), 
+		// 	Color.BLACK.GetTexture("king"));
+		//
+		// var whitePawnUI = pieceFactory.CreatePiece(
+		// 	new Piece(PieceType.Pawn, Color.WHITE, new Vector2(2, 6)),
+		// 	Color.WHITE.GetTexture("pawn"));
+		// var blackPawnUI = pieceFactory.CreatePiece(
+		// 	new Piece(PieceType.Pawn, Color.BLACK, new Vector2(3, 4)),
+		// 	Color.BLACK.GetTexture("pawn"));
+		// whitePieces = new[] { whiteKingUI, whitePawnUI };
+		// blackPieces = new[] { blackKingUI, blackPawnUI };
+		//
 		foreach (var piece in whitePieces.Concat(blackPieces))
 		{
 			AddChild(piece);

@@ -317,18 +317,31 @@ public class Engine
 
     private Move[] GetKingMoves(Piece king, Piece[] board)
     {
-        // TODO king can step on its own pieces
-        // TODO discover if we're capturing a piece
-        return new List<Move>()
+        var allPositions = new List<Vector2>()
         {
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Left),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Right),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up + Vector2.Right),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Up + Vector2.Left),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down + Vector2.Right),
-            Chess.Move.RegularMove(king, king.CurrentPosition + Vector2.Down + Vector2.Left),
-        }.ToArray();
+            king.CurrentPosition + Vector2.Up,
+            king.CurrentPosition + Vector2.Down,
+            king.CurrentPosition + Vector2.Left,
+            king.CurrentPosition + Vector2.Right,
+            king.CurrentPosition + Vector2.Up + Vector2.Right,
+            king.CurrentPosition + Vector2.Up + Vector2.Left,
+            king.CurrentPosition + Vector2.Down + Vector2.Right,
+            king.CurrentPosition + Vector2.Down + Vector2.Left,
+        };
+
+        var allMoves = allPositions.Select(p =>
+        {
+            var pieceOnTheWay = GetPieceInPosition(board, p);
+            if (pieceOnTheWay is null)
+            {
+                return Chess.Move.RegularMove(king, p);
+            }
+            if (pieceOnTheWay.Color != king.Color)
+            {
+                return Chess.Move.Capture(king, p, pieceOnTheWay);
+            }
+            return null;
+        });
+        return allMoves.Where(m=> m != null).ToArray();
     }
 }
