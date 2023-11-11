@@ -58,6 +58,15 @@ public class Engine
         }
 
         var positionBeforeMove = pieceToMove.CurrentPosition;
+        if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
+        {
+            GD.Print("made a move 2 steps by a pawn");
+            last2StepPawnMove = new(positionBeforeMove, newPosition);
+        }
+        else
+        {
+            last2StepPawnMove = null;
+        }
         pieceToMove.Move(newPosition);
         
         // did we manage to check opponent's king?
@@ -68,15 +77,6 @@ public class Engine
             // check that the opponent have a move, if not - draw
             if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
             {
-                if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
-                {
-                    GD.Print("made a move 2 steps by a pawn");
-                    last2StepPawnMove = new(positionBeforeMove, newPosition);
-                }
-                else
-                {
-                    last2StepPawnMove = null;
-                }
                 return true;
             }
             GD.Print("DRAW!!");
@@ -87,15 +87,6 @@ public class Engine
         // did we manage to check-mate?
         if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
         {
-            if (pieceToMove.Type == PieceType.Pawn && (newPosition - positionBeforeMove).Abs() == Vector2.Down * 2)
-            {
-                GD.Print("made a move 2 steps by a pawn");
-                last2StepPawnMove = new(positionBeforeMove, newPosition);
-            }
-            else
-            {
-                last2StepPawnMove = null;
-            }
             return true;
         }
 
