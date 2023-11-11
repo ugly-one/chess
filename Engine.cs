@@ -60,21 +60,18 @@ public class Engine
         var isOpponentsKingUnderFire = IsKingUnderAttack(board, opponentsKing);
         if (!isOpponentsKingUnderFire)
         {
+            // check that the opponent have a move, if not - draw
+            if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
+            {
+                return true;
+            }
+            GD.Print("DRAW!!");
             return true;
         }
-        
+        // opponent's king is under fine
         GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
         // did we manage to check-mate?
-        var opponentsPieces = GetPieces(board, opponentsKing.Color);
-        var allPossibleMovesForOpponent = new List<Vector2>();
-        foreach (var opponentsPiece in opponentsPieces)
-        {
-            // try to find possible moves
-            var opponentsPiecePossibleMoves = GetPossibleMoves(opponentsPiece, board);
-            allPossibleMovesForOpponent.AddRange(opponentsPiecePossibleMoves);
-        }
-
-        if (allPossibleMovesForOpponent.Any())
+        if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
         {
             return true;
         }
@@ -82,7 +79,21 @@ public class Engine
         GD.Print("CHECK MATE!!");
         return true;
     }
-    
+
+    private List<Vector2> GetAllPossibleMovesForColor(Piece[] board, Color color)
+    {
+        var pieces = GetPieces(board, color);
+        var allPossibleMoves = new List<Vector2>();
+        foreach (var opponentsPiece in pieces)
+        {
+            // try to find possible moves
+            var possibleMoves = GetPossibleMoves(opponentsPiece, board);
+            allPossibleMoves.AddRange(possibleMoves);
+        }
+
+        return allPossibleMoves;
+    }
+
     /// <summary>
     /// Gets the king if given player
     /// </summary>
