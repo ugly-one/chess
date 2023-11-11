@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
@@ -159,7 +158,5 @@ public partial class Main : Node2D
 		{
 			droppedPiece.CancelMove();
 		}
-		
-		// TODO check each current player's piece and see if there is a possible move to detect a draw
 	}
 }
