@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using Godot;
 
@@ -33,12 +33,38 @@ public class Engine
             // find the position of the king in the new setup,
             // We can't use the member variable because the king may moved after the move we simulate the move
             var king = GetKing(boardAfterMove, piece.Color);
-            // if there is still check after this move - filter the move from possibleMoves
+            // if there is still check after this move - filter the move out from possibleMoves
             var isUnderAttack = IsKingUnderAttack(boardAfterMove, king);
             if (!isUnderAttack)
             {
                 possibleMovesAfterFiltering.Add(possibleMove);
             }
+        }
+
+        if (piece.Type != PieceType.King)
+        {
+            return possibleMovesAfterFiltering.ToArray();
+        }
+        
+        // add castle
+        var king_ = GetKing(board, piece.Color);
+        var kingUnderAttack = IsFieldUnderAttack(board, king_.Position, king_.Color.GetOppositeColor());
+
+        if (kingUnderAttack)
+            return possibleMovesAfterFiltering.ToArray();
+        
+        // short castle
+        var shortCastleMove = TryGetCastleMove(king_, board, Vector2.Right, 2);
+        if (shortCastleMove != null)
+        {
+            possibleMovesAfterFiltering.Add(shortCastleMove);
+        }
+
+        // long castle
+        var longCastleMove = TryGetCastleMove(king_, board, Vector2.Left, 3);
+        if (longCastleMove != null)
+        {
+            possibleMovesAfterFiltering.Add(longCastleMove);
         }
         
         return possibleMovesAfterFiltering.ToArray();
@@ -124,12 +150,31 @@ public class Engine
     
     private bool IsKingUnderAttack(Piece[] board, Piece king)
     {
+        // TODO consider using IsFieldUnderAttack method
         var oppositePlayerPieces = GetOppositeColorPieces(board, king.Color);
         foreach (var oppositePlayerPiece in oppositePlayerPieces)
         {
             var possibleMoves = GetMoves(oppositePlayerPiece, board);
             var possibleCaptures = possibleMoves.Where(m => m.PieceToCapture != null);
             if (possibleCaptures.Any(m => m.PieceToCapture.Type == PieceType.King))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Check if given field is under attack by given color's pieces
+    /// </summary>
+    /// <returns></returns>
+    private bool IsFieldUnderAttack(Piece[] board, Vector2 field, Color color)
+    {
+        var pieces = GetPieces(board, color);
+        foreach (var piece in pieces)
+        {
+            var possibleMoves = GetMoves(piece, board);
+            if (possibleMoves.Any(m => m.PieceNewPosition == field))
             {
                 return true;
             }
@@ -319,46 +364,43 @@ public class Engine
 
         var allMoves = ConvertToMoves(king, board, allPositions);
         
-        // add castling
-        if (king.Moved)
-        {
-            return allMoves;
-        }
-
-        // short castle
-        allMoves = TryGetCastleMove(king, board, Vector2.Right, 2, allMoves);
-
-        // long castle
-        allMoves = TryGetCastleMove(king, board, Vector2.Left, 3, allMoves);
-        
         return allMoves;
     }
 
-    private Move[] TryGetCastleMove(Piece king, Piece[] board, Vector2 kingMoveDirection, int rockSteps, Move[] allMoves)
+    private Move TryGetCastleMove(Piece king, Piece[] board, Vector2 kingMoveDirection, int rockSteps)
     {
-        var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
+        if (king.Moved)
+            return null;
+        
         var rock = board
             .Where(p => p.Type == PieceType.Rock)
             .FirstOrDefault(p => p.Position == king.Position + kingMoveDirection * (rockSteps + 1));
-        if (rock != null && !rock.Moved)
-        {
-            // we have a rock and a king which didn't move yet! 
-            var simpleMovesCount = GetMovesInDirection(king, kingMoveDirection, board, king.Color)
-                .Select(m => m.PieceToCapture == null).Count();
+        if (rock == null || rock.Moved) 
+            return null;
+        
+        // check that there are no pieces in between king and rock
+        // step 1 find fields between king and rock
+        var allFieldsInBetweenClean = true;
 
-            if (simpleMovesCount == rockSteps)
+        for (int i = 1; i <= 2; i++)
+        {
+            var fieldToCheck = king.Position + kingMoveDirection * i;
+            if (IsFieldUnderAttack(board, fieldToCheck, king.Color.GetOppositeColor()) || GetPieceInPosition(board, fieldToCheck) != null)
             {
-                allMoves = allMoves
-                    .Append(Chess.Move.Castle(
-                        king,
-                        king.Position + kingMoveDirection * 2,
-                        rock,
-                        rock.Position + rockMoveDirection * rockSteps))
-                    .ToArray();
+                allFieldsInBetweenClean = false;
+                break;
             }
         }
 
-        return allMoves;
+        if (!allFieldsInBetweenClean) return null;
+        
+        var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
+        return Chess.Move.Castle(
+            king,
+            king.Position + kingMoveDirection * 2,
+            rock,
+            rock.Position + rockMoveDirection * rockSteps);
+
     }
 
     private Move[] GetKnightMoves(Piece piece, Piece[] board)
