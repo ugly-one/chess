@@ -134,6 +134,7 @@ public class Engine
             .Where(p => p.Color != color)
             .ToArray();
     }
+    
     private Piece[] Move(Piece[] board, Piece piece, Move move)
     {
         var boardCopy = board.ToList(); // shallow copy, do not modify pieces!
@@ -185,22 +186,6 @@ public class Engine
         return moves.ToArray();
     }
 
-    private Move[] GetKnightMoves(Piece piece, Piece[] board)
-    {
-        // TODO can step on its own pieces
-        // TODO doesn't capture anything
-        var moves = new List<Move>();
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Up * 2 + Vector2.Right));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Right * 2 + Vector2.Up));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Right * 2 + Vector2.Down));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Down * 2 + Vector2.Right));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Down * 2 + Vector2.Left));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Left * 2 + Vector2.Down));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Up * 2 + Vector2.Left));
-        moves.Add(Chess.Move.RegularMove(piece, piece.CurrentPosition + Vector2.Left * 2 + Vector2.Up));
-        return moves.ToArray();
-    }
-
     private Move[] GetRockMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Move>();
@@ -220,36 +205,7 @@ public class Engine
         moves.AddRange(GetMovesInDirection(piece, Vector2.Down + Vector2.Right, board, piece.Color));
         return moves.ToArray();
     }
-
-    public IEnumerable<Move> GetMovesInDirection(
-        Piece piece,
-        Vector2 step, 
-        Piece[] allPieces,
-        Color color)
-    {
-        var newPos = piece.CurrentPosition + step;
-        var breakAfterAdding = false;
-        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, allPieces))
-        {
-            // we should pass only opponents pieces to GetPieceInPosition
-            var capturedPiece = GetPieceInPosition(allPieces, newPos);
-            if (capturedPiece != null)
-            {
-                breakAfterAdding = true;
-                yield return Chess.Move.Capture(piece, newPos, capturedPiece);
-                
-            }
-            else
-            {
-                yield return Chess.Move.RegularMove(piece, newPos);
-            }
-            newPos += step;
-            if (breakAfterAdding)
-            {
-                break;
-            }
-        }
-    }
+    
     private Move[] GetPawnMoves(Piece piece, Piece[] board)
     {
         var moves = new List<Move>();
@@ -315,33 +271,86 @@ public class Engine
         return pieces.Any(p => p.CurrentPosition == position);
     }
 
-    private Move[] GetKingMoves(Piece king, Piece[] board)
+    private Move[] GetKingMoves(Piece piece, Piece[] board)
     {
         var allPositions = new List<Vector2>()
         {
-            king.CurrentPosition + Vector2.Up,
-            king.CurrentPosition + Vector2.Down,
-            king.CurrentPosition + Vector2.Left,
-            king.CurrentPosition + Vector2.Right,
-            king.CurrentPosition + Vector2.Up + Vector2.Right,
-            king.CurrentPosition + Vector2.Up + Vector2.Left,
-            king.CurrentPosition + Vector2.Down + Vector2.Right,
-            king.CurrentPosition + Vector2.Down + Vector2.Left,
+            piece.CurrentPosition + Vector2.Up,
+            piece.CurrentPosition + Vector2.Down,
+            piece.CurrentPosition + Vector2.Left,
+            piece.CurrentPosition + Vector2.Right,
+            piece.CurrentPosition + Vector2.Up + Vector2.Right,
+            piece.CurrentPosition + Vector2.Up + Vector2.Left,
+            piece.CurrentPosition + Vector2.Down + Vector2.Right,
+            piece.CurrentPosition + Vector2.Down + Vector2.Left,
         };
 
-        var allMoves = allPositions.Select(p =>
+        var allMoves = ConvertToMoves(piece, board, allPositions);
+        return allMoves;
+    }
+    
+    private Move[] GetKnightMoves(Piece piece, Piece[] board)
+    {
+        var allPositions = new List<Vector2>()
+        {
+            piece.CurrentPosition + Vector2.Up * 2 + Vector2.Right,
+            piece.CurrentPosition + Vector2.Right * 2 + Vector2.Up,
+            piece.CurrentPosition + Vector2.Right * 2 + Vector2.Down,
+            piece.CurrentPosition + Vector2.Down * 2 + Vector2.Right,
+            piece.CurrentPosition + Vector2.Down * 2 + Vector2.Left,
+            piece.CurrentPosition + Vector2.Left * 2 + Vector2.Down,
+            piece.CurrentPosition + Vector2.Up * 2 + Vector2.Left,
+            piece.CurrentPosition + Vector2.Left * 2 + Vector2.Up,
+        };
+
+        var allMoves = ConvertToMoves(piece, board, allPositions);
+        return allMoves;
+    }
+
+    private Move[] ConvertToMoves(Piece piece, Piece[] board, List<Vector2> allPositions)
+    {
+        return allPositions.Select(p =>
         {
             var pieceOnTheWay = GetPieceInPosition(board, p);
             if (pieceOnTheWay is null)
             {
-                return Chess.Move.RegularMove(king, p);
+                return Chess.Move.RegularMove(piece, p);
             }
-            if (pieceOnTheWay.Color != king.Color)
+            if (pieceOnTheWay.Color != piece.Color)
             {
-                return Chess.Move.Capture(king, p, pieceOnTheWay);
+                return Chess.Move.Capture(piece, p, pieceOnTheWay);
             }
             return null;
-        });
-        return allMoves.Where(m=> m != null).ToArray();
+        }).Where(m => m != null).ToArray();
+    }
+
+    private IEnumerable<Move> GetMovesInDirection(
+        Piece piece,
+        Vector2 step, 
+        Piece[] allPieces,
+        Color color)
+    {
+        var newPos = piece.CurrentPosition + step;
+        var breakAfterAdding = false;
+        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, allPieces))
+        {
+            // we should pass only opponents pieces to GetPieceInPosition
+            var capturedPiece = GetPieceInPosition(allPieces, newPos);
+            if (capturedPiece != null)
+            {
+                breakAfterAdding = true;
+                yield return Chess.Move.Capture(piece, newPos, capturedPiece);
+                
+            }
+            else
+            {
+                yield return Chess.Move.RegularMove(piece, newPos);
+            }
+            newPos += step;
+            if (breakAfterAdding)
+            {
+                break;
+            }
+        }
     }
 }
