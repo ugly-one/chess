@@ -36,49 +36,32 @@ public partial class Main : Node2D
 	
 	public override void _Ready()
 	{
-		engine = new Engine();
 		board = GetNode("board");
 		currentColor = Color.WHITE;
 		var pieceFactory = new PieceFactory();
-		PieceUI[] whitePieces;
-		PieceUI[] blackPieces;
+		Piece[] whitePieces;
+		Piece[] blackPieces;
 		
 		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(4, 0));
 		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(4, 2));
 		// var blackRock = new Piece(PieceType.Rock, Color.BLACK, new Vector2(7, 1));
 		// var whiteRock = new Piece(PieceType.Rock, Color.WHITE, new Vector2(6, 7));
-		// var blackRockUI = pieceFactory.CreatePiece(blackRock, Color.BLACK.GetTexture("rock"));
-		// var whiteRockUI = pieceFactory.CreatePiece(whiteRock, Color.WHITE.GetTexture("rock"));
-		// var whiteKingUI = pieceFactory.CreatePiece(whiteKing, Color.WHITE.GetTexture("king"));
-		// var blackKingUI = pieceFactory.CreatePiece(blackKing, Color.BLACK.GetTexture("king"));
-		// whitePieces = new[] { whiteKingUI, whiteRockUI };
-		// blackPieces = new[] { blackKingUI, blackRockUI };
 		
 		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
 		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
-		//
-		// var whiteKingUI = pieceFactory.CreatePiece(
-		// 	new Piece(PieceType.King, Color.WHITE, new Vector2(0, 0)), 
-		// 	Color.WHITE.GetTexture("king"));
-		// var blackKingUI = pieceFactory.CreatePiece(
-		// 	new Piece(PieceType.King, Color.BLACK, new Vector2(7, 7)), 
-		// 	Color.BLACK.GetTexture("king"));
-		//
-		// var whitePawnUI = pieceFactory.CreatePiece(
-		// 	new Piece(PieceType.Pawn, Color.WHITE, new Vector2(2, 6)),
-		// 	Color.WHITE.GetTexture("pawn"));
-		// var blackPawnUI = pieceFactory.CreatePiece(
-		// 	new Piece(PieceType.Pawn, Color.BLACK, new Vector2(3, 4)),
-		// 	Color.BLACK.GetTexture("pawn"));
-		// whitePieces = new[] { whiteKingUI, whitePawnUI };
-		// blackPieces = new[] { blackKingUI, blackPawnUI };
-		//
-		foreach (var piece in whitePieces.Concat(blackPieces))
+		engine = new Engine(whitePieces.Concat(blackPieces).ToList());
+
+		var piecesUI = engine.board.Select(p =>
+		{
+			return pieceFactory.CreatePiece(p.CurrentPosition, p.Color, GetTexture(p.Type, p.Color));
+		});
+		
+		foreach (var piece in piecesUI)
 		{
 			AddChild(piece);
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
-			if (piece.Piece.Color == currentColor)
+			if (piece.Color == currentColor)
 			{
 				piece.Enable();
 			}
@@ -89,15 +72,23 @@ public partial class Main : Node2D
 		}
 	}
 
-	private void OnPieceLifted(PieceUI pieceUI)
+	private Texture2D GetTexture(PieceType argType, Color argColor)
 	{
-		var board = GetChildren()
-			.OfType<Chess.PieceUI>()
-			.Select( ui => ui.Piece)
-			.ToArray();
+		return argType switch
+		{
+			PieceType.Bishop => argColor.GetTexture("bishop"),
+			PieceType.King => argColor.GetTexture("king"),
+			PieceType.Queen => argColor.GetTexture("queen"),
+			PieceType.Rock => argColor.GetTexture("rock"),
+			PieceType.Pawn => argColor.GetTexture("pawn"),
+			PieceType.Knight => argColor.GetTexture("knight"),
+		};
+	}
 
-		var piece = pieceUI.Piece;
-		var possibleMoves = engine.GetPossibleMoves(board, piece);
+	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
+	{
+		var piece = engine.board.First(p => p.CurrentPosition == position);
+		var possibleMoves = engine.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -119,16 +110,25 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var board = pieces.Select(p => p.Piece).ToArray();
-		var success = engine.TryMove(board, droppedPiece.Piece, newPosition);
+		var pieceToMove = engine.board.First(p => p.CurrentPosition == currentPosition);
+		var move = engine.TryMove(pieceToMove, newPosition);
 
-		if (success)
+		if (move != null)
 		{
+			if (move.PieceToCapture != null)
+			{
+				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.CurrentPosition);
+				pieceUIToCapture.QueueFree();
+			}
+			
+			var pieceUIToMove = pieces.First(p => p.ChessPosition == currentPosition);
+			pieceUIToMove.Move(move.PieceNewPosition);
+			
 			// swap current player
 			currentColor = currentColor.GetOppositeColor();
 			foreach (var piece in pieces)
 			{
-				if (piece.Piece.Color == currentColor)
+				if (piece.Color == currentColor)
 					piece.Enable();
 				else
 					piece.Disable();

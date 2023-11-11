@@ -17,14 +17,10 @@ public class Piece
 	public Color Color { get; init; }
 	public PieceType Type { get; init; }
 
-	public EventHandler<Vector2> MovedEvent;
-	public EventHandler Killed;
-
 	public void Move(Vector2 newPosition)
 	{
 		CurrentPosition = newPosition;
 		Moved = true;
-		MovedEvent.Invoke(this, newPosition);
 	}
 
 	public Piece CloneWith(Vector2 position)
@@ -32,10 +28,5 @@ public class Piece
 		var clonedPiece = new Piece(this.Type, this.Color, position);
 		clonedPiece.Moved = this.Moved;
 		return clonedPiece;
-	}
-
-	public void Kill()
-	{
-		Killed.Invoke(this, null);
 	}
 }

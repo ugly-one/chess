@@ -6,13 +6,20 @@ namespace Chess;
 
 public class Engine
 {
+    private Move lastMove;
+    public Piece[] board;
+    public Engine(List<Piece> board)
+    {
+        this.board = board.ToArray();
+    }
+
     /// <summary>
     /// Checks possible moves for the given piece
     /// </summary>
     /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <param name="board">entire board</param>
     /// <returns></returns>
-    public Move[] GetPossibleMoves(Piece[] board, Piece piece)
+    public Move[] GetPossibleMoves(Piece piece)
     {
         var possibleMoves = GetMoves(piece, board)
             .WithinBoard();
@@ -36,25 +43,25 @@ public class Engine
         return possibleMovesAfterFiltering.ToArray();
     }
 
-    public bool TryMove(Piece[] board, Piece pieceToMove, Vector2 newPosition)
+    public Move TryMove(Piece pieceToMove, Vector2 newPosition)
     {
-        var possibleMoves = GetPossibleMoves(board, pieceToMove);
+        var possibleMoves = GetPossibleMoves(pieceToMove);
 
         var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
         if (move is null)
         {
-            return false;
+            return null;
         }
         
         var takenPiece = move.PieceToCapture; 
         if (takenPiece != null)
         {
-            takenPiece.Kill();
             // we should remove the taken piece from the board because we need to evaluate if the king is checked/check-mated
             // and we shall do so with updated board
             board = board.Where(p => p != takenPiece).ToArray();
         }
 
+        lastMove = move;
         move.PieceToMove.Move(move.PieceNewPosition);
         
         // did we manage to check opponent's king?
@@ -65,21 +72,21 @@ public class Engine
             // check that the opponent have a move, if not - draw
             if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
             {
-                return true;
+                return move;
             }
             GD.Print("DRAW!!");
-            return true;
+            return move;
         }
         // opponent's king is under fine
         GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
         // did we manage to check-mate?
         if (GetAllPossibleMovesForColor(board, opponentsKing.Color).Any())
         {
-            return true;
+            return move;
         }
 
         GD.Print("CHECK MATE!!");
-        return true;
+        return move;
     }
 
     private List<Move> GetAllPossibleMovesForColor(Piece[] board, Color color)
@@ -89,7 +96,7 @@ public class Engine
         foreach (var opponentsPiece in pieces)
         {
             // try to find possible moves
-            var possibleMoves = GetPossibleMoves(board, opponentsPiece);
+            var possibleMoves = GetPossibleMoves(opponentsPiece);
             allPossibleMoves.AddRange(possibleMoves);
         }
 
@@ -226,6 +233,12 @@ public class Engine
         {
             moves.Add(Chess.Move.Capture(piece, takeLeft, opponentCapturedPiece));
         }
+        else
+        {
+            // check en-passant
+        }
+        
+        
         // one down/right if there is an opponent's piece
         var takeRight = piece.CurrentPosition + Vector2.Right + direction;
         var opponentCapturedPiece2 = GetPieceInPosition(opponentsPieces, takeRight);

@@ -8,31 +8,27 @@ public partial class PieceUI : StaticBody2D
 	[Signal]
 	public delegate void DroppedEventHandler(PieceUI piece, Vector2 currentPosition, Vector2 newPosition);
 	[Signal]
-	public delegate void LiftedEventHandler(PieceUI piece);
+	public delegate void LiftedEventHandler(PieceUI piece, Vector2 currentPosition);
 
-	public Piece Piece;
+	public Color Color;
+	public Vector2 ChessPosition;
 	private Texture2D _texture;
 	private bool _isMouseOver;
 	private bool _dragging;
 	private Vector2 _startingPosition;
 	private bool _enabled;
 	
-	public void Init(Piece piece, Texture2D texture)
+	public void Init(Vector2 position, Color color, Texture2D texture)
 	{
-		Piece = piece;
-		piece.MovedEvent += MovedEvent;
-		piece.Killed += OnKilled;
-		Position = new Vector2(piece.CurrentPosition.X * 40 + 20, piece.CurrentPosition.Y * 40 + 20);
+		ChessPosition = position;
+		Position = new Vector2(position.X * 40 + 20, position.Y * 40 + 20);
 		_texture = texture;
+		Color = color;
 	}
 
-	private void OnKilled(object sender, EventArgs e)
+	public void Move(Vector2 newPosition)
 	{
-		QueueFree();
-	}
-
-	private void MovedEvent(object sender, Vector2 newPosition)
-	{
+		ChessPosition = newPosition;
 		Position = new Vector2(newPosition.X * 40 + 20, newPosition.Y * 40 + 20);
 	}
 
@@ -63,7 +59,10 @@ public partial class PieceUI : StaticBody2D
 		{ 
 			_dragging = true;
 			_startingPosition = Position;
-			EmitSignal(SignalName.Lifted, this);
+			var x = (int) Position.X / 40;
+			var y = (int) Position.Y / 40;
+			var position = new Vector2(x, y);
+			EmitSignal(SignalName.Lifted, this, position);
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&
