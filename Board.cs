@@ -163,18 +163,10 @@ public class Board
         }
         else
         {
-            // check en-passant
-            if (_lastMove != null)
+            var move = TryGetEnPassant(piece, takeLeft, opponentsPieces);
+            if (move != null)
             {
-                var isPawn = _lastMove.PieceToMove.Type == PieceType.Pawn;
-                var is2StepMove = (_lastMove.PieceToMove.Position - _lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
-                var isThePawnNowNextToUs = (_lastMove.PieceNewPosition - piece.Position) == Vector2.Left;
-                if ( isPawn && // was it a pawn
-                     is2StepMove && // was it a 2 step move
-                     isThePawnNowNextToUs) // was it move next to us 
-                {
-                    moves.Add(Chess.Move.Capture(piece, takeLeft, GetPieceInPosition(opponentsPieces, _lastMove.PieceNewPosition)));                
-                }
+                moves.Add(move);
             }
         }
         
@@ -187,18 +179,10 @@ public class Board
         }
         else
         {
-            // check en-passant
-            if (_lastMove != null)
+            var move = TryGetEnPassant(piece, takeRight, opponentsPieces);
+            if (move != null)
             {
-                var isPawn = _lastMove.PieceToMove.Type == PieceType.Pawn;
-                var is2StepMove = (_lastMove.PieceToMove.Position - _lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
-                var isThePawnNowNextToUs = (_lastMove.PieceNewPosition - piece.Position) == Vector2.Right;
-                if ( isPawn && // was it a pawn
-                     is2StepMove && // was it a 2 step move
-                     isThePawnNowNextToUs) // was it move next to us 
-                {
-                    moves.Add(Chess.Move.Capture(piece, takeRight, GetPieceInPosition(opponentsPieces, _lastMove.PieceNewPosition)));                
-                }
+                moves.Add(move);
             }
         }
         // two steps forward if not moved yet and not blocked
@@ -211,7 +195,26 @@ public class Board
 
         return moves.ToArray();
     }
-    
+
+    private Move TryGetEnPassant(Piece piece, Vector2 capturePosition, Piece[] opponentsPieces)
+    {
+        if (_lastMove != null)
+        {
+            var isPawn = _lastMove.PieceToMove.Type == PieceType.Pawn;
+            var is2StepMove = (_lastMove.PieceToMove.Position - _lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
+            var isThePawnNowNextToUs = (_lastMove.PieceNewPosition - piece.Position) == new Vector2((capturePosition - piece.Position).X, 0);
+            if (isPawn && // was it a pawn
+                is2StepMove && // was it a 2 step move
+                isThePawnNowNextToUs) // was it move next to us 
+            {
+                return Chess.Move.Capture(piece, capturePosition,
+                    GetPieceInPosition(opponentsPieces, _lastMove.PieceNewPosition));
+            }
+        }
+
+        return null;
+    }
+
     private Piece[] GetOppositeColorPieces(Color color)
     {
         return _board

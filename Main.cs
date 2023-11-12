@@ -53,8 +53,8 @@ public partial class Main : Node2D
 		};
 		blackPieces = new[] { blackKing, blackRock, blackRock2 };
 		//
-		// whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
-		// blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
+		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
+		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
 
 		var allPieces = whitePieces.Concat(blackPieces).ToList();
 
