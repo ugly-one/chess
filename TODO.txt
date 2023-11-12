@@ -1,3 +1,6 @@
+add possibility to pick promoted piece: 
+- when the window with options is shown, it should not be possible to make any moves
+show captured piece
 go back to mutable Piece? too much code duplication
 show message when the game ends
 be able to start a new game
