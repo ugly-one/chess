@@ -9,7 +9,7 @@ public partial class Main : Node2D
 	private Color currentColor;
 	private Node board;
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Engine engine;
+	private Game _game;
 	
 	private ColorRect GetField(Vector2 position)
 	{
@@ -59,9 +59,9 @@ public partial class Main : Node2D
 		// };
 		
 		
-		engine = new Engine(allPieces);
+		_game = new Game(allPieces);
 
-		var piecesUI = engine.board.Select(p =>
+		var piecesUI = _game.board.Select(p =>
 		{
 			return pieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
 		});
@@ -97,8 +97,8 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
 	{
-		var piece = engine.board.First(p => p.Position == position);
-		var possibleMoves = engine.GetPossibleMoves(piece);
+		var piece = _game.board.First(p => p.Position == position);
+		var possibleMoves = _game.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -120,8 +120,8 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var pieceToMove = engine.board.First(p => p.Position == currentPosition);
-		var move = engine.TryMove(pieceToMove, newPosition);
+		var pieceToMove = _game.board.First(p => p.Position == currentPosition);
+		var move = _game.TryMove(pieceToMove, newPosition);
 
 		if (move != null)
 		{

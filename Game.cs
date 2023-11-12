@@ -4,11 +4,11 @@ using Godot;
 
 namespace Chess;
 
-public class Engine
+public class Game
 {
     private Move lastMove;
     public Piece[] board;
-    public Engine(List<Piece> board)
+    public Game(List<Piece> board)
     {
         this.board = board.ToArray();
     }
