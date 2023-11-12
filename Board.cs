@@ -20,34 +20,30 @@ public class Board
         var possibleMoves = GetPossibleMoves(pieceToMove);
 
         var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
+        
         if (move is null)
         {
             return (this, null);
         }
 
-        var board = Move(move);
+        var board = Move(move, promotedPiece);
 
         var opponentsColor = pieceToMove.Color.GetOppositeColor();
-        // did we manage to check opponent's king?
-        if (!board.IsKingUnderAttack(opponentsColor))
-        {
-            // check that the opponent have a move, if not - draw
-            if (GetAllPossibleMovesForColor(opponentsColor).Any())
-            {
-                return (board, move);
-            }
-            GD.Print("DRAW!!");
-            return (board, move);
-        }
-        // opponent's king is under fine
-        GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
-        // did we manage to check-mate?
+        
         if (GetAllPossibleMovesForColor(opponentsColor).Any())
         {
             return (board, move);
         }
+        
+        if (board.IsKingUnderAttack(opponentsColor))
+        {
+            GD.Print("CHECK MATE!!");
+        }
+        else
+        {
+            GD.Print("DRAW!!");
+        }
 
-        GD.Print("CHECK MATE!!");
         return (board, move);
     }
       
