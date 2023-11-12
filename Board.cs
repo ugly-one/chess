@@ -6,72 +6,13 @@ namespace Chess;
 
 public class Board
 {
-    private Piece[] board;
-    private Move lastMove;
+    private readonly Piece[] _board;
+    private readonly Move _lastMove;
 
     public Board(ICollection<Piece> board, Move lastMove = null)
     {
-        this.board = board.ToArray();
-        this.lastMove = lastMove;
-    }
-    
-    /// <summary>
-    /// Gets the king of given player
-    /// </summary>
-    /// <returns></returns>
-    public Piece GetKing(Color color)
-    {
-        return board
-            .First(k => k.Type == PieceType.King && k.Color == color);
-    }
-
-    public bool IsKingUnderAttack(Color color)
-    {
-        var king = GetKing(color);
-        return IsPieceUnderAttack(king);
-    }
-    
-    public bool IsPieceUnderAttack(Piece piece)
-    {
-        return IsFieldUnderAttack(piece.Position, piece.Color.GetOppositeColor());
-    }
-    
-    /// <summary>
-    /// Check if given field is under attack by given color's pieces
-    /// </summary>
-    /// <returns></returns>
-    public bool IsFieldUnderAttack(Vector2 field, Color color)
-    {
-        var pieces = GetPieces(color);
-        foreach (var piece in pieces)
-        {
-            var possibleMoves = GetMoves(piece);
-            if (possibleMoves.Any(m => m.PieceNewPosition == field))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Piece[] GetPieces(Color color)
-    {
-        return board
-            .Where(p => p.Color == color)
-            .ToArray();
-    }
-    
-    public Piece[] GetPieces()
-    {
-        return board
-            .ToArray();
-    }
-
-    private Piece[] GetOppositeColorPieces(Color color)
-    {
-        return board
-            .Where(p => p.Color != color)
-            .ToArray();
+        _board = board.ToArray();
+        _lastMove = lastMove;
     }
     
     /// <summary>
@@ -81,7 +22,7 @@ public class Board
     public Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
     {
         var takenPiece = move.PieceToCapture;
-        var newBoard = board.ToList();
+        var newBoard = _board.ToList();
         if (takenPiece != null)
         {
             newBoard = newBoard.Where(p => p != takenPiece).ToList();
@@ -104,6 +45,45 @@ public class Board
         newBoard.Remove(move.PieceToMove);
 
         return new Board(newBoard, move);
+    }
+    
+    
+    public bool IsKingUnderAttack(Color color)
+    {
+        var king = _board
+            .First(k => k.Type == PieceType.King && k.Color == color);
+        return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
+    }
+    
+    /// <summary>
+    /// Check if given field is under attack by given color's pieces
+    /// </summary>
+    /// <returns></returns>
+    public bool IsFieldUnderAttack(Vector2 field, Color color)
+    {
+        var pieces = GetPieces(color);
+        foreach (var piece in pieces)
+        {
+            var possibleMoves = GetMoves(piece);
+            if (possibleMoves.Any(m => m.PieceNewPosition == field))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Piece[] GetPieces(Color color)
+    {
+        return _board
+            .Where(p => p.Color == color)
+            .ToArray();
+    }
+    
+    public Piece[] GetPieces()
+    {
+        return _board
+            .ToArray();
     }
     
     /// <summary>
@@ -183,20 +163,17 @@ public class Board
         }
         else
         {
-            // TODO This is probably a bug - we shouldn't be using lastMove here
-            // GetPawnMoves is executed when we simulate moves and that means lastMove is not updated correctly.
-            // We don't update it when we simulate moves
             // check en-passant
-            if (lastMove != null)
+            if (_lastMove != null)
             {
-                var isPawn = lastMove.PieceToMove.Type == PieceType.Pawn;
-                var is2StepMove = (lastMove.PieceToMove.Position - lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
-                var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == Vector2.Left;
+                var isPawn = _lastMove.PieceToMove.Type == PieceType.Pawn;
+                var is2StepMove = (_lastMove.PieceToMove.Position - _lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
+                var isThePawnNowNextToUs = (_lastMove.PieceNewPosition - piece.Position) == Vector2.Left;
                 if ( isPawn && // was it a pawn
                      is2StepMove && // was it a 2 step move
                      isThePawnNowNextToUs) // was it move next to us 
                 {
-                    moves.Add(Chess.Move.Capture(piece, takeLeft, GetPieceInPosition(opponentsPieces, lastMove.PieceNewPosition)));                
+                    moves.Add(Chess.Move.Capture(piece, takeLeft, GetPieceInPosition(opponentsPieces, _lastMove.PieceNewPosition)));                
                 }
             }
         }
@@ -211,16 +188,16 @@ public class Board
         else
         {
             // check en-passant
-            if (lastMove != null)
+            if (_lastMove != null)
             {
-                var isPawn = lastMove.PieceToMove.Type == PieceType.Pawn;
-                var is2StepMove = (lastMove.PieceToMove.Position - lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
-                var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == Vector2.Right;
+                var isPawn = _lastMove.PieceToMove.Type == PieceType.Pawn;
+                var is2StepMove = (_lastMove.PieceToMove.Position - _lastMove.PieceNewPosition).Abs() == Vector2.Down * 2;
+                var isThePawnNowNextToUs = (_lastMove.PieceNewPosition - piece.Position) == Vector2.Right;
                 if ( isPawn && // was it a pawn
                      is2StepMove && // was it a 2 step move
                      isThePawnNowNextToUs) // was it move next to us 
                 {
-                    moves.Add(Chess.Move.Capture(piece, takeRight, GetPieceInPosition(opponentsPieces, lastMove.PieceNewPosition)));                
+                    moves.Add(Chess.Move.Capture(piece, takeRight, GetPieceInPosition(opponentsPieces, _lastMove.PieceNewPosition)));                
                 }
             }
         }
@@ -234,10 +211,17 @@ public class Board
 
         return moves.ToArray();
     }
+    
+    private Piece[] GetOppositeColorPieces(Color color)
+    {
+        return _board
+            .Where(p => p.Color != color)
+            .ToArray();
+    }
 
     private Piece GetPieceInPosition(Vector2 position)
     {
-        return GetPieceInPosition(board, position);
+        return GetPieceInPosition(_board, position);
     }
     
     private Piece GetPieceInPosition(Piece[] pieces, Vector2 position)
@@ -247,7 +231,7 @@ public class Board
     
     private bool IsBlocked(Vector2 position)
     {
-        return board.Any(p => p.Position == position);
+        return _board.Any(p => p.Position == position);
     }
 
     private Move[] GetKingMoves(Piece king)
@@ -283,12 +267,12 @@ public class Board
         return allMoves.ToArray();
     }
 
-    public Move TryGetCastleMove(Piece king, Vector2 kingMoveDirection, int rockSteps)
+    private Move TryGetCastleMove(Piece king, Vector2 kingMoveDirection, int rockSteps)
     {
         if (king.Moved)
             return null;
         
-        var rock = board
+        var rock = _board
             .Where(p => p.Type == PieceType.Rock)
             .FirstOrDefault(p => p.Position == king.Position + kingMoveDirection * (rockSteps + 1));
         if (rock == null || rock.Moved) 
@@ -359,7 +343,7 @@ public class Board
     {
         var newPos = piece.Position + step;
         var breakAfterAdding = false;
-        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, board))
+        while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, _board))
         {
             // we should pass only opponents pieces to GetPieceInPosition
             var capturedPiece = GetPieceInPosition(newPos);

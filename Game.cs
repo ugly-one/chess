@@ -72,14 +72,13 @@ public class Game
         }
 
         board = board.Move(move);
-        
+
+        var opponentsColor = pieceToMove.Color.GetOppositeColor();
         // did we manage to check opponent's king?
-        var opponentsKing = board.GetKing(move.PieceToMove.Color.GetOppositeColor());
-        var isOpponentsKingUnderFire = board.IsPieceUnderAttack(opponentsKing);
-        if (!isOpponentsKingUnderFire)
+        if (!board.IsKingUnderAttack(opponentsColor))
         {
             // check that the opponent have a move, if not - draw
-            if (GetAllPossibleMovesForColor(opponentsKing.Color).Any())
+            if (GetAllPossibleMovesForColor(opponentsColor).Any())
             {
                 return move;
             }
@@ -89,7 +88,7 @@ public class Game
         // opponent's king is under fine
         GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
         // did we manage to check-mate?
-        if (GetAllPossibleMovesForColor(opponentsKing.Color).Any())
+        if (GetAllPossibleMovesForColor(opponentsColor).Any())
         {
             return move;
         }
