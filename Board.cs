@@ -69,12 +69,10 @@ public class Board
     }
     
     /// <summary>
-    /// TODO remove the first argument
     /// </summary>
-    /// <param name="piece"></param>
     /// <param name="move"></param>
     /// <returns></returns>
-    public Board Move(Piece piece, Move move, PieceType promotedPiece = PieceType.Queen)
+    public Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
     {
         var takenPiece = move.PieceToCapture;
         var newBoard = board.ToList();
@@ -97,7 +95,7 @@ public class Board
             var newRock = rockToMove.Move(move.RockNewPosition.Value);
             newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
         }
-        newBoard.Remove(piece);
+        newBoard.Remove(move.PieceToMove);
 
         return new Board(newBoard, move);
     }

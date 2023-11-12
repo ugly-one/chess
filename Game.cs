@@ -23,11 +23,12 @@ public class Game
         var possibleMoves = board.GetMoves(piece)
             .WithinBoard();
 
+        // TODO I think we should only filter out moves of current player - no need to loop through all possible moves
         var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
         {
             // let's try to make the move and see if the king is still under attack
-            var boardAfterMove = board.Move(piece, possibleMove);
+            var boardAfterMove = board.Move(possibleMove);
             // find the position of the king in the new setup,
             // We can't use the member variable because the king may moved after the move we simulate the move
             var king = boardAfterMove.GetKing(piece.Color);
@@ -91,8 +92,7 @@ public class Game
             return null;
         }
 
-        // TODO why do we have to pass 2 arguments?
-        board = board.Move(move.PieceToMove, move);
+        board = board.Move(move);
         
         // did we manage to check opponent's king?
         var opponentsKing = board.GetKing(move.PieceToMove.Color.GetOppositeColor());
