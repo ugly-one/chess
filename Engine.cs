@@ -33,7 +33,7 @@ public class Engine
             // We can't use the member variable because the king may moved after the move we simulate the move
             var king = GetKing(boardAfterMove, piece.Color);
             // if there is still check after this move - filter the move out from possibleMoves
-            var isUnderAttack = IsKingUnderAttack(boardAfterMove, king);
+            var isUnderAttack = IsPieceUnderAttack(boardAfterMove, king);
             if (!isUnderAttack)
             {
                 possibleMovesAfterFiltering.Add(possibleMove);
@@ -47,7 +47,7 @@ public class Engine
         
         // add castle
         var king_ = GetKing(board, piece.Color);
-        var kingUnderAttack = IsFieldUnderAttack(board, king_.Position, king_.Color.GetOppositeColor());
+        var kingUnderAttack = IsPieceUnderAttack(board, king_);
 
         if (kingUnderAttack)
             return possibleMovesAfterFiltering.ToArray();
@@ -106,7 +106,7 @@ public class Engine
         
         // did we manage to check opponent's king?
         var opponentsKing = GetKing(board, move.PieceToMove.Color.GetOppositeColor());
-        var isOpponentsKingUnderFire = IsKingUnderAttack(board, opponentsKing);
+        var isOpponentsKingUnderFire = IsPieceUnderAttack(board, opponentsKing);
         if (!isOpponentsKingUnderFire)
         {
             // check that the opponent have a move, if not - draw
@@ -153,20 +153,9 @@ public class Engine
             .First(k => k.Type == PieceType.King && k.Color == color);
     }
     
-    private bool IsKingUnderAttack(Piece[] board, Piece king)
+    private bool IsPieceUnderAttack(Piece[] board, Piece piece)
     {
-        // TODO consider using IsFieldUnderAttack method
-        var oppositePlayerPieces = GetOppositeColorPieces(board, king.Color);
-        foreach (var oppositePlayerPiece in oppositePlayerPieces)
-        {
-            var possibleMoves = GetMoves(oppositePlayerPiece, board);
-            var possibleCaptures = possibleMoves.Where(m => m.PieceToCapture != null);
-            if (possibleCaptures.Any(m => m.PieceToCapture.Type == PieceType.King))
-            {
-                return true;
-            }
-        }
-        return false;
+        return IsFieldUnderAttack(board, piece.Position, piece.Color.GetOppositeColor());
     }
     
     /// <summary>
