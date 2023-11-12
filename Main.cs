@@ -9,7 +9,7 @@ public partial class Main : Node2D
 	private Color currentColor;
 	private Node board;
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Game _game;
+	private Board _board;
 	
 	private ColorRect GetField(Vector2 position)
 	{
@@ -66,9 +66,9 @@ public partial class Main : Node2D
 		// };
 		
 		
-		_game = new Game(allPieces);
+		_board = new Board(allPieces);
 
-		var piecesUI = _game.board.GetPieces().Select(p =>
+		var piecesUI = _board.GetPieces().Select(p =>
 		{
 			return pieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
 		});
@@ -104,8 +104,8 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
 	{
-		var piece = _game.board.GetPieces().First(p => p.Position == position);
-		var possibleMoves = _game.GetPossibleMoves(piece);
+		var piece = _board.GetPieces().First(p => p.Position == position);
+		var possibleMoves = _board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -127,9 +127,9 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _game.board.GetPieces().First(p => p.Position == currentPosition);
-		var move = _game.TryMove(pieceToMove, newPosition);
-
+		var pieceToMove = _board.GetPieces().First(p => p.Position == currentPosition);
+		var (newBoard, move) = _board.TryMove(pieceToMove, newPosition);
+		_board = newBoard;
 		if (move != null)
 		{
 			// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now

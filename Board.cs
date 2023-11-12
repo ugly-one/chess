@@ -14,12 +14,104 @@ public class Board
         _board = board.ToArray();
         _lastMove = lastMove;
     }
-    
+
+    public (Board, Move) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType promotedPiece = PieceType.Queen)
+    {
+        var possibleMoves = GetPossibleMoves(pieceToMove);
+
+        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
+        if (move is null)
+        {
+            return (this, null);
+        }
+
+        var board = Move(move);
+
+        var opponentsColor = pieceToMove.Color.GetOppositeColor();
+        // did we manage to check opponent's king?
+        if (!board.IsKingUnderAttack(opponentsColor))
+        {
+            // check that the opponent have a move, if not - draw
+            if (GetAllPossibleMovesForColor(opponentsColor).Any())
+            {
+                return (board, move);
+            }
+            GD.Print("DRAW!!");
+            return (board, move);
+        }
+        // opponent's king is under fine
+        GD.Print("KING IS UNDER FIRE AFTER OUR MOVE");
+        // did we manage to check-mate?
+        if (GetAllPossibleMovesForColor(opponentsColor).Any())
+        {
+            return (board, move);
+        }
+
+        GD.Print("CHECK MATE!!");
+        return (board, move);
+    }
+      
     /// <summary>
+    /// Checks possible moves for the given piece
     /// </summary>
-    /// <param name="move"></param>
+    /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <returns></returns>
-    public Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
+    public Move[] GetPossibleMoves(Piece piece)
+    {
+        var possibleMoves = GetMoves(piece)
+            .WithinBoard();
+
+        var possibleMovesAfterFiltering = new List<Move>();
+        foreach (var possibleMove in possibleMoves)
+        {
+            // let's try to make the move and see if the king is under attack, if yes, move is not allowed
+            var boardAfterMove = Move(possibleMove);
+            if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
+            if (possibleMove.PieceToMove.Type == PieceType.King)
+            {
+                if (possibleMove.RockToMove != null)
+                {
+                    // we're castling
+                    var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
+                    var oneStepVector = moveVector.Abs().Clamp(new Vector2(0,0),new Vector2(1,0));
+                    if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
+                    {
+                        // castling not allowed
+                    }
+                    else
+                    {
+                        possibleMovesAfterFiltering.Add(possibleMove);
+                    }
+                }
+                else
+                {
+                    possibleMovesAfterFiltering.Add(possibleMove);
+                }
+            }
+            else
+            {
+                possibleMovesAfterFiltering.Add(possibleMove);
+            }
+        }
+
+        return possibleMovesAfterFiltering.ToArray();
+    }
+
+    private List<Move> GetAllPossibleMovesForColor(Color color)
+    {
+        var pieces = GetPieces(color);
+        var allPossibleMoves = new List<Move>();
+        foreach (var opponentsPiece in pieces)
+        {
+            // try to find possible moves
+            var possibleMoves = GetPossibleMoves(opponentsPiece);
+            allPossibleMoves.AddRange(possibleMoves);
+        }
+
+        return allPossibleMoves;
+    }
+
+    private Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
     {
         var takenPiece = move.PieceToCapture;
         var newBoard = _board.ToList();
@@ -46,9 +138,9 @@ public class Board
 
         return new Board(newBoard, move);
     }
-    
-    
-    public bool IsKingUnderAttack(Color color)
+
+
+    private bool IsKingUnderAttack(Color color)
     {
         var king = _board
             .First(k => k.Type == PieceType.King && k.Color == color);
@@ -59,7 +151,7 @@ public class Board
     /// Check if given field is under attack by given color's pieces
     /// </summary>
     /// <returns></returns>
-    public bool IsFieldUnderAttack(Vector2 field, Color color)
+    private bool IsFieldUnderAttack(Vector2 field, Color color)
     {
         var pieces = GetPieces(color);
         foreach (var piece in pieces)
@@ -73,7 +165,7 @@ public class Board
         return false;
     }
 
-    public Piece[] GetPieces(Color color)
+    private Piece[] GetPieces(Color color)
     {
         return _board
             .Where(p => p.Color == color)
@@ -93,7 +185,7 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    public Move[] GetMoves(Piece piece)
+    private Move[] GetMoves(Piece piece)
     {
         var moves = piece.Type switch
         {
