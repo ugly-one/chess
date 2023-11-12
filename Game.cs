@@ -26,14 +26,10 @@ public class Game
         var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
         {
-            // let's try to make the move and see if the king is still under attack
+            // let's try to make the move and see if the king is under attack, if yes, move is not allowed
             var boardAfterMove = board.Move(possibleMove);
-            // find the position of the king in the new setup,
-            // We can't use the member variable because the king may moved after the move we simulate the move
             var king = boardAfterMove.GetKing(piece.Color);
-            // if there is still check after this move - filter the move out from possibleMoves
-            var isUnderAttack = boardAfterMove.IsPieceUnderAttack(king);
-            if (!isUnderAttack)
+            if (!boardAfterMove.IsPieceUnderAttack(king))
             {
                 possibleMovesAfterFiltering.Add(possibleMove);
             }
