@@ -41,13 +41,20 @@ public partial class Main : Node2D
 		Piece[] whitePieces;
 		Piece[] blackPieces;
 		
-		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(4, 0));
-		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(4, 2));
-		// var blackRock = new Piece(PieceType.Rock, Color.BLACK, new Vector2(7, 1));
-		// var whiteRock = new Piece(PieceType.Rock, Color.WHITE, new Vector2(6, 7));
-		
-		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
-		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
+		var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(4, 7));
+		var whiteRock = new Piece(PieceType.Rock, Color.WHITE, new Vector2(0, 7));
+		var whiteRock2 = new Piece(PieceType.Rock, Color.WHITE, new Vector2(7, 7));
+		var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(4, 0));
+		var blackRock = new Piece(PieceType.Rock, Color.BLACK, new Vector2(0, 0));
+		var blackRock2 = new Piece(PieceType.Rock, Color.BLACK, new Vector2(7, 0));
+		whitePieces = new Piece[]
+		{
+			whiteKing, whiteRock, whiteRock2
+		};
+		blackPieces = new[] { blackKing, blackRock, blackRock2 };
+		//
+		// whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
+		// blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
 
 		var allPieces = whitePieces.Concat(blackPieces).ToList();
 

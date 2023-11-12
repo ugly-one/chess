@@ -28,52 +28,36 @@ public class Game
         {
             // let's try to make the move and see if the king is under attack, if yes, move is not allowed
             var boardAfterMove = board.Move(possibleMove);
-            var king = boardAfterMove.GetKing(piece.Color);
-            if (!boardAfterMove.IsPieceUnderAttack(king))
+            if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
+            if (possibleMove.PieceToMove.Type == PieceType.King)
+            {
+                if (possibleMove.RockToMove != null)
+                {
+                    // we're castling
+                    var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
+                    var oneStepVector = moveVector.Abs().Clamp(new Vector2(0,0),new Vector2(1,0));
+                    if (board.IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
+                    {
+                        // castling not allowed
+                    }
+                    else
+                    {
+                        possibleMovesAfterFiltering.Add(possibleMove);
+                    }
+                }
+                else
+                {
+                    possibleMovesAfterFiltering.Add(possibleMove);
+                }
+            }
+            else
             {
                 possibleMovesAfterFiltering.Add(possibleMove);
             }
+            // also doing castle over an attacked field is not allowed
+            
         }
 
-        if (piece.Type != PieceType.King)
-        {
-            return possibleMovesAfterFiltering.ToArray();
-        }
-        
-        // TODO it's a bit odd that we have to add castling here. 
-        // In theory we should be able to put it in GetMoves method (the one handling the king)
-        // But the reason is that we need to call IsPieceUnderAttack and it calls GetMoves on all pieces.
-        // And then we will end-up in a stack overflow where GetMoves calls GetMoves and so on.
-        // Solution. As with other pieces: King should spit out castling as a possible move and then we should filter it out
-        // as we do filtering out here.
-        // Question: why do we have to do filtering out? Why the pieces are not smart enough to check if the move that they produce is actually not possible.
-        // Maybe it's fine. The initial idea was:
-        // let a piece spit out all possible moves, in general - regardless what state of the board we have and then filter the moves out.
-        // bishopMoves = GetBishopMoves(position) <- get all possible moves based on the position
-        // bishopMoves = GetBishopMoves(bishopMoves, board) <- filter out invalid moves
-        // I'm not sure if helps with anything. I think the problem is that IsPieceUnderAttack ends up in stack overflow
-        
-        // add castle
-        var king_ = board.GetKing(piece.Color);
-        var kingUnderAttack = board.IsPieceUnderAttack(king_);
-
-        if (kingUnderAttack)
-            return possibleMovesAfterFiltering.ToArray();
-        
-        // short castle
-        var shortCastleMove = board.TryGetCastleMove(king_, Vector2.Right, 2);
-        if (shortCastleMove != null)
-        {
-            possibleMovesAfterFiltering.Add(shortCastleMove);
-        }
-
-        // long castle
-        var longCastleMove = board.TryGetCastleMove(king_, Vector2.Left, 3);
-        if (longCastleMove != null)
-        {
-            possibleMovesAfterFiltering.Add(longCastleMove);
-        }
-        
         return possibleMovesAfterFiltering.ToArray();
     }
 

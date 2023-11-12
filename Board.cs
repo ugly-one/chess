@@ -24,6 +24,12 @@ public class Board
         return board
             .First(k => k.Type == PieceType.King && k.Color == color);
     }
+
+    public bool IsKingUnderAttack(Color color)
+    {
+        var king = GetKing(color);
+        return IsPieceUnderAttack(king);
+    }
     
     public bool IsPieceUnderAttack(Piece piece)
     {
@@ -259,9 +265,23 @@ public class Board
             king.Position + Vector2.Down + Vector2.Left,
         };
 
-        var allMoves = ConvertToMoves(king, allPositions);
+        var allMoves = ConvertToMoves(king, allPositions).ToList();
         
-        return allMoves;
+        // short castle
+        var shortCastleMove = TryGetCastleMove(king, Vector2.Right, 2);
+        if (shortCastleMove != null)
+        {
+            allMoves.Add(shortCastleMove);
+        }
+
+        // long castle
+        var longCastleMove = TryGetCastleMove(king, Vector2.Left, 3);
+        if (longCastleMove != null)
+        {
+            allMoves.Add(longCastleMove);
+        }
+        
+        return allMoves.ToArray();
     }
 
     public Move TryGetCastleMove(Piece king, Vector2 kingMoveDirection, int rockSteps)
@@ -275,14 +295,12 @@ public class Board
         if (rock == null || rock.Moved) 
             return null;
         
-        // check that there are no pieces in between king and rock
-        // step 1 find fields between king and rock
         var allFieldsInBetweenClean = true;
 
         for (int i = 1; i <= 2; i++)
         {
             var fieldToCheck = king.Position + kingMoveDirection * i;
-            if (IsFieldUnderAttack(fieldToCheck, king.Color.GetOppositeColor()) || GetPieceInPosition(fieldToCheck) != null)
+            if (GetPieceInPosition(fieldToCheck) != null)
             {
                 allFieldsInBetweenClean = false;
                 break;
