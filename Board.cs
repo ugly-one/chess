@@ -6,12 +6,12 @@ namespace Chess;
 
 public class Board
 {
-    private readonly Piece[] _board;
+    private readonly Piece[] _pieces;
     private readonly Move _lastMove;
 
     public Board(ICollection<Piece> board, Move lastMove = null)
     {
-        _board = board.ToArray();
+        _pieces = board.ToArray();
         _lastMove = lastMove;
     }
 
@@ -114,7 +114,7 @@ public class Board
     private Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
     {
         var takenPiece = move.PieceToCapture;
-        var newBoard = _board.ToList();
+        var newBoard = _pieces.ToList();
         if (takenPiece != null)
         {
             newBoard = newBoard.Where(p => p != takenPiece).ToList();
@@ -134,7 +134,6 @@ public class Board
             var newRock = rockToMove.Move(move.RockNewPosition.Value);
             newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
         }
-        newBoard.Remove(move.PieceToMove);
 
         return new Board(newBoard, move);
     }
@@ -142,7 +141,7 @@ public class Board
 
     private bool IsKingUnderAttack(Color color)
     {
-        var king = _board
+        var king = _pieces
             .First(k => k.Type == PieceType.King && k.Color == color);
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
     }
@@ -167,14 +166,14 @@ public class Board
 
     private Piece[] GetPieces(Color color)
     {
-        return _board
+        return _pieces
             .Where(p => p.Color == color)
             .ToArray();
     }
     
     public Piece[] GetPieces()
     {
-        return _board
+        return _pieces
             .ToArray();
     }
     
@@ -189,12 +188,12 @@ public class Board
     {
         var moves = piece.Type switch
         {
-            PieceType.King => King.GetKingMoves(piece, _board),
-            PieceType.Queen => Queen.GetQueenMoves(piece, _board),
-            PieceType.Pawn => Pawn.GetPawnMoves(piece, _board, _lastMove),
-            PieceType.Bishop => Bishop.GetBishopMoves(piece, _board),
-            PieceType.Rock => Rock.GetRockMoves(piece, _board),
-            PieceType.Knight => Knight.GetKnightMoves(piece, _board)
+            PieceType.King => King.GetKingMoves(piece, _pieces),
+            PieceType.Queen => Queen.GetQueenMoves(piece, _pieces),
+            PieceType.Pawn => Pawn.GetPawnMoves(piece, _pieces, _lastMove),
+            PieceType.Bishop => Bishop.GetBishopMoves(piece, _pieces),
+            PieceType.Rock => Rock.GetRockMoves(piece, _pieces),
+            PieceType.Knight => Knight.GetKnightMoves(piece, _pieces)
         };
         return moves;
     }
