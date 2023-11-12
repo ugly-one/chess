@@ -61,7 +61,7 @@ public partial class Main : Node2D
 		
 		_game = new Game(allPieces);
 
-		var piecesUI = _game.board.Select(p =>
+		var piecesUI = _game.board.GetPieces().Select(p =>
 		{
 			return pieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
 		});
@@ -97,7 +97,7 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
 	{
-		var piece = _game.board.First(p => p.Position == position);
+		var piece = _game.board.GetPieces().First(p => p.Position == position);
 		var possibleMoves = _game.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
@@ -120,7 +120,7 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _game.board.First(p => p.Position == currentPosition);
+		var pieceToMove = _game.board.GetPieces().First(p => p.Position == currentPosition);
 		var move = _game.TryMove(pieceToMove, newPosition);
 
 		if (move != null)
