@@ -44,6 +44,19 @@ public class Game
             return possibleMovesAfterFiltering.ToArray();
         }
         
+        // TODO it's a bit odd that we have to add castling here. 
+        // In theory we should be able to put it in GetMoves method (the one handling the king)
+        // But the reason is that we need to call IsPieceUnderAttack and it calls GetMoves on all pieces.
+        // And then we will end-up in a stack overflow where GetMoves calls GetMoves and so on.
+        // Solution. As with other pieces: King should spit out castling as a possible move and then we should filter it out
+        // as we do filtering out here.
+        // Question: why do we have to do filtering out? Why the pieces are not smart enough to check if the move that they produce is actually not possible.
+        // Maybe it's fine. The initial idea was:
+        // let a piece spit out all possible moves, in general - regardless what state of the board we have and then filter the moves out.
+        // bishopMoves = GetBishopMoves(position) <- get all possible moves based on the position
+        // bishopMoves = GetBishopMoves(bishopMoves, board) <- filter out invalid moves
+        // I'm not sure if helps with anything. I think the problem is that IsPieceUnderAttack ends up in stack overflow
+        
         // add castle
         var king_ = board.GetKing(piece.Color);
         var kingUnderAttack = board.IsPieceUnderAttack(king_);
