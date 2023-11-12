@@ -23,7 +23,6 @@ public class Game
         var possibleMoves = board.GetMoves(piece)
             .WithinBoard();
 
-        // TODO I think we should only filter out moves of current player - no need to loop through all possible moves
         var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
         {
