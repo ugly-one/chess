@@ -1,11 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace Chess;
 
 public partial class PieceFactory : RefCounted
 {
-	public Piece[] CreatePieces(Color color, int backRow, int frontRow)
+	public static Piece[] CreateNewGame()
+	{
+		var whitePieces = CreatePieces(Color.WHITE, 7, 6);
+		var blackPieces= CreatePieces(Color.BLACK, 0, 1);
+		return whitePieces.Concat(blackPieces).ToArray();
+	}
+	public static Piece[] CreatePieces(Color color, int backRow, int frontRow)
 	{
 		var pieces = new List<Piece>()
 		{
@@ -22,7 +29,7 @@ public partial class PieceFactory : RefCounted
 		return pieces.ToArray();
 	}
 	
-	private List<Piece> CreatePawns(Color color, int frontRow)
+	private static List<Piece> CreatePawns(Color color, int frontRow)
 	{
 		var result = new List<Piece>();
 		for (var i = 0; i < 8; i++)
@@ -32,7 +39,7 @@ public partial class PieceFactory : RefCounted
 		return result;
 	}
 
-	public PieceUI CreatePiece(Vector2 position, Color color, Texture2D texture)
+	public static PieceUI CreatePiece(Vector2 position, Color color, Texture2D texture)
 	{
 		var pieceScene = ResourceLoader.Load<PackedScene>("res://piece_csharp.tscn");
 		var pieceUI = pieceScene.Instantiate<PieceUI>();

@@ -10,6 +10,7 @@ public partial class Main : Node2D
 	private Node board;
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Board _board;
+	private Button newGameButton;
 	
 	private ColorRect GetField(Vector2 position)
 	{
@@ -36,43 +37,39 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		board = GetNode("board");
-		currentColor = Color.WHITE;
-		var pieceFactory = new PieceFactory();
-		Piece[] whitePieces;
-		Piece[] blackPieces;
-		
-		var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(4, 7));
-		var whiteRock = new Piece(PieceType.Rock, Color.WHITE, new Vector2(0, 7));
-		var whiteRock2 = new Piece(PieceType.Rock, Color.WHITE, new Vector2(7, 7));
-		var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(4, 0));
-		var blackRock = new Piece(PieceType.Rock, Color.BLACK, new Vector2(0, 0));
-		var blackRock2 = new Piece(PieceType.Rock, Color.BLACK, new Vector2(7, 0));
-		whitePieces = new Piece[]
+		newGameButton = GetNode<Button>("newGameButton");
+		newGameButton.Pressed += OnNewGameButtonPressed;
+		//SetupNewGame();
+	}
+
+	private void OnNewGameButtonPressed()
+	{
+		CleanUpCurrentGame();
+		SetupNewGame();
+	}
+
+	private void CleanUpCurrentGame()
+	{
+		foreach (var pieceUI in GetChildren().OfType<PieceUI>())
 		{
-			whiteKing, whiteRock, whiteRock2
-		};
-		blackPieces = new[] { blackKing, blackRock, blackRock2 };
-		//
-		whitePieces = pieceFactory.CreatePieces(Color.WHITE, 7, 6);
-		blackPieces= pieceFactory.CreatePieces(Color.BLACK, 0, 1);
+			pieceUI.Dropped -= PieceOnDropped;
+			pieceUI.Lifted -= OnPieceLifted;
+			pieceUI.QueueFree();
+		}
+	}
+	
+	private void SetupNewGame()
+	{
+		currentColor = Color.WHITE;
+		var allPieces = PieceFactory.CreateNewGame();
 
-		var allPieces = whitePieces.Concat(blackPieces).ToList();
-
-		// allPieces = new List<Piece>()
-		// {
-		// 	new Piece(PieceType.King, Color.WHITE, new Vector2(4, 4)),
-		// 	new Piece(PieceType.King, Color.BLACK, new Vector2(6, 6)),
-		// 	new Piece(PieceType.Pawn, Color.WHITE, new Vector2(0, 6)),
-		// };
-		
-		
 		_board = new Board(allPieces);
 
 		var piecesUI = _board.GetPieces().Select(p =>
 		{
-			return pieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
+			return PieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
 		});
-		
+
 		foreach (var piece in piecesUI)
 		{
 			AddChild(piece);
@@ -145,7 +142,7 @@ public partial class Main : Node2D
 			var pieceUIToMove = pieces.First(p => p.ChessPosition == currentPosition);
 			// this is horrible, I have the same logic in Engine
 			if (move.PieceToMove.Type == PieceType.Pawn &&
-			    (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
+				(move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
 			{
 				pieceUIToMove.MoveWithPromotion(move.PieceNewPosition, move.PieceToMove.Color.GetTexture("queen"));
 			}

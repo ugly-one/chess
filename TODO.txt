@@ -6,6 +6,8 @@ show message when the game ends
 be able to start a new game
 write an AI that makes random moves
 
+bug: check mates are not detected
+
 nice to have:
 be able to setup a board manually
 
