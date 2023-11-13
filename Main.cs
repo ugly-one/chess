@@ -11,6 +11,7 @@ public partial class Main : Node2D
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Board _board;
 	private Button newGameButton;
+	private Label gameStateLabel;
 	
 	private ColorRect GetField(Vector2 position)
 	{
@@ -39,6 +40,7 @@ public partial class Main : Node2D
 		board = GetNode("board");
 		newGameButton = GetNode<Button>("newGameButton");
 		newGameButton.Pressed += OnNewGameButtonPressed;
+		gameStateLabel = GetNode<Label>("gameStateLabel");
 	}
 
 	private void OnNewGameButtonPressed()
@@ -124,7 +126,7 @@ public partial class Main : Node2D
 			.ToArray();
 
 		var pieceToMove = _board.GetPieces().First(p => p.Position == currentPosition);
-		var (newBoard, move) = _board.TryMove(pieceToMove, newPosition);
+		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition);
 		_board = newBoard;
 		if (move != null)
 		{
@@ -166,6 +168,11 @@ public partial class Main : Node2D
 		else
 		{
 			droppedPiece.CancelMove();
+		}
+
+		if (state != GameState.InProgress)
+		{
+			gameStateLabel.Text = state.ToString();
 		}
 	}
 }

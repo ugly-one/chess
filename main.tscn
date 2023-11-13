@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dredpslxvxlbe"]
+[gd_scene load_steps=3 format=3 uid="uid://dredpslxvxlbe"]
 
 [ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
 [ext_resource type="Script" path="res://Main.cs" id="1_bu6r5"]
@@ -14,3 +14,9 @@ offset_top = 51.0
 offset_right = 482.0
 offset_bottom = 82.0
 text = "Start new game"
+
+[node name="gameStateLabel" type="Label" parent="."]
+offset_left = 392.0
+offset_top = 96.0
+offset_right = 432.0
+offset_bottom = 119.0

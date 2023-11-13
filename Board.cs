@@ -4,6 +4,13 @@ using Godot;
 
 namespace Chess;
 
+public enum GameState
+{
+    InProgress,
+    Draw,
+    WhiteWin,
+    BlackWin
+}
 public class Board
 {
     private readonly Piece[] _pieces;
@@ -15,7 +22,7 @@ public class Board
         _lastMove = lastMove;
     }
 
-    public (Board, Move) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType promotedPiece = PieceType.Queen)
+    public (Board, Move, GameState) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType promotedPiece = PieceType.Queen)
     {
         var possibleMoves = GetPossibleMoves(pieceToMove);
 
@@ -23,7 +30,7 @@ public class Board
         
         if (move is null)
         {
-            return (this, null);
+            return (this, null, GameState.InProgress);
         }
 
         var board = Move(move, promotedPiece);
@@ -32,19 +39,17 @@ public class Board
         
         if (board.GetAllPossibleMovesForColor(opponentsColor).Any())
         {
-            return (board, move);
+            return (board, move, GameState.InProgress);
         }
         
         if (board.IsKingUnderAttack(opponentsColor))
         {
-            GD.Print("CHECK MATE!!");
+            return (board, move, pieceToMove.Color == Color.WHITE ? GameState.WhiteWin : GameState.BlackWin);
         }
         else
         {
-            GD.Print("DRAW!!");
+            return (board, move, GameState.Draw);
         }
-
-        return (board, move);
     }
       
     /// <summary>
