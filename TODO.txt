@@ -3,6 +3,7 @@ add possibility to pick promoted piece:
 show captured piece
 go back to mutable Piece? too much code duplication
 write an AI that makes random moves
+support placing the board not in the edge of the screen
 
 bug: a pawn can jump over it's own piece (maybe also opponents') when doing 2 step move
 
