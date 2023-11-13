@@ -56,7 +56,7 @@ public partial class PieceUI : StaticBody2D
 		
 		if (_dragging && @event is InputEventMouseMotion motionEvent)
 		{
-			Position = motionEvent.Position;
+			Position = motionEvent.Position - GetParent<Node2D>().Position;
 		}
 		
 		var mouseButtonEvent = @event as InputEventMouseButton;

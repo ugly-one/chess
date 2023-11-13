@@ -51,7 +51,7 @@ public partial class Main : Node2D
 
 	private void CleanUpCurrentGame()
 	{
-		foreach (var pieceUI in GetChildren().OfType<PieceUI>())
+		foreach (var pieceUI in board.GetChildren().OfType<PieceUI>())
 		{
 			pieceUI.Dropped -= PieceOnDropped;
 			pieceUI.Lifted -= OnPieceLifted;
@@ -73,7 +73,7 @@ public partial class Main : Node2D
 
 		foreach (var piece in piecesUI)
 		{
-			AddChild(piece);
+			board.AddChild(piece);
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
 			if (piece.Color == currentColor)
@@ -121,7 +121,7 @@ public partial class Main : Node2D
 		}
 		highlightedFields.Clear();
 		
-		var pieces = GetChildren()
+		var pieces = board.GetChildren()
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
