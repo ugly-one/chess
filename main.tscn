@@ -21,3 +21,17 @@ offset_left = 519.0
 offset_top = 168.0
 offset_right = 559.0
 offset_bottom = 191.0
+
+[node name="whiteCapturedPieces" type="HBoxContainer" parent="."]
+offset_left = 108.0
+offset_top = 422.0
+offset_right = 426.0
+offset_bottom = 459.0
+size_flags_horizontal = 8
+
+[node name="blackCapturedPieces" type="HBoxContainer" parent="."]
+offset_left = 105.0
+offset_top = 37.0
+offset_right = 423.0
+offset_bottom = 74.0
+size_flags_horizontal = 8

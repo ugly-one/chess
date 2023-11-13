@@ -12,6 +12,8 @@ public partial class Main : Node2D
 	private Board _board;
 	private Button newGameButton;
 	private Label gameStateLabel;
+	private HBoxContainer whiteCapturedPieces;
+	private HBoxContainer blackCapturedPieces;
 	
 	private ColorRect GetField(Vector2 position)
 	{
@@ -41,6 +43,8 @@ public partial class Main : Node2D
 		newGameButton = GetNode<Button>("newGameButton");
 		newGameButton.Pressed += OnNewGameButtonPressed;
 		gameStateLabel = GetNode<Label>("gameStateLabel");
+		whiteCapturedPieces = GetNode<HBoxContainer>("whiteCapturedPieces");
+		blackCapturedPieces = GetNode<HBoxContainer>("blackCapturedPieces");
 	}
 
 	private void OnNewGameButtonPressed()
@@ -84,6 +88,15 @@ public partial class Main : Node2D
 			{
 				piece.Disable();
 			}
+		}
+
+		foreach (var capturedPiece in whiteCapturedPieces.GetChildren())
+		{
+			capturedPiece.QueueFree();
+		}
+		foreach (var capturedPiece in blackCapturedPieces.GetChildren())
+		{
+			capturedPiece.QueueFree();
 		}
 	}
 
@@ -137,6 +150,18 @@ public partial class Main : Node2D
 			if (move.PieceToCapture != null)
 			{
 				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
+				var textureRect = new TextureRect()
+				{
+					Texture = GetTexture(move.PieceToCapture.Type, move.PieceToCapture.Color)
+				};
+				if (move.PieceToCapture.Color == Color.WHITE)
+				{
+					whiteCapturedPieces.AddChild(textureRect);
+				}
+				else
+				{
+					blackCapturedPieces.AddChild(textureRect);
+				}
 				pieceUIToCapture.QueueFree();
 			}
 			

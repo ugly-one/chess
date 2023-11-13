@@ -1,15 +1,15 @@
 add possibility to pick promoted piece: 
 - when the window with options is shown, it should not be possible to make any moves
-show captured piece
-go back to mutable Piece? too much code duplication
+
 write an AI that makes random moves
-support placing the board not in the edge of the screen
 
 bug: a pawn can jump over it's own piece (maybe also opponents') when doing 2 step move
 
-nice to have:
 be able to setup a board manually
+
 undo a move(s)
+
+make UI nicer. example: captured pieces should be smaller and in 2/3 rows
 
 ################################################################
 Notes
