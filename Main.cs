@@ -39,7 +39,6 @@ public partial class Main : Node2D
 		board = GetNode("board");
 		newGameButton = GetNode<Button>("newGameButton");
 		newGameButton.Pressed += OnNewGameButtonPressed;
-		//SetupNewGame();
 	}
 
 	private void OnNewGameButtonPressed()

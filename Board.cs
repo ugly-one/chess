@@ -30,7 +30,7 @@ public class Board
 
         var opponentsColor = pieceToMove.Color.GetOppositeColor();
         
-        if (GetAllPossibleMovesForColor(opponentsColor).Any())
+        if (board.GetAllPossibleMovesForColor(opponentsColor).Any())
         {
             return (board, move);
         }
@@ -97,10 +97,10 @@ public class Board
     {
         var pieces = GetPieces(color);
         var allPossibleMoves = new List<Move>();
-        foreach (var opponentsPiece in pieces)
+        foreach (var piece in pieces)
         {
             // try to find possible moves
-            var possibleMoves = GetPossibleMoves(opponentsPiece);
+            var possibleMoves = GetPossibleMoves(piece);
             allPossibleMoves.AddRange(possibleMoves);
         }
 
