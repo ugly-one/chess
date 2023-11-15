@@ -4,7 +4,7 @@ using System.Linq;
 using Chess;
 using Godot;
 
-public static class Vector2Extention
+public static class Extentions
 {
     public static string ToChessNotation(this Vector2 position)
     {
