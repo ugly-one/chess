@@ -3,8 +3,6 @@ add possibility to pick promoted piece:
 
 write an AI that makes random moves
 
-bug: a pawn can jump over it's own piece (maybe also opponents') when doing 2 step move
-
 be able to setup a board manually
 
 undo a move(s)

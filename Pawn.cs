@@ -32,6 +32,16 @@ public static class Pawn
         if (!IsBlocked(forward, board))
         {
             moves.Add(Chess.Move.RegularMove(piece, forward));
+            
+            // two steps forward if not moved yet and not blocked
+            if (!piece.Moved)
+            {
+                var forward2Steps = piece.Position + direction + direction;
+                if (!IsBlocked(forward2Steps, board))
+                {
+                    moves.Add(Chess.Move.RegularMove(piece, forward2Steps));
+                }
+            }
         }
         
         // one down/left if there is an opponent's piece
@@ -64,13 +74,6 @@ public static class Pawn
             {
                 moves.Add(move);
             }
-        }
-        // two steps forward if not moved yet and not blocked
-        if (piece.Moved) return moves.ToArray();
-        var forward2Steps = piece.Position + direction + direction;
-        if (!IsBlocked(forward2Steps, board))
-        {
-            moves.Add(Chess.Move.RegularMove(piece, forward2Steps));
         }
 
         return moves.ToArray();
