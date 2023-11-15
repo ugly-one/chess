@@ -8,7 +8,7 @@ public partial class PieceUI : StaticBody2D
 	[Signal]
 	public delegate void DroppedEventHandler(PieceUI piece, Vector2 newPosition);
 	[Signal]
-	public delegate void LiftedEventHandler(PieceUI piece, Vector2 currentPosition);
+	public delegate void LiftedEventHandler(PieceUI piece);
 
 	public Color Color;
 	public Vector2 ChessPosition;
@@ -73,12 +73,8 @@ public partial class PieceUI : StaticBody2D
 			_dragging = true;
 			_startingPosition = Position;
 			_mouseClickPosition = mouseButtonEvent.Position;
-			GD.Print(_mouseClickPosition);
-			var x = (int) Position.X / 40;
-			var y = (int) Position.Y / 40;
-			var position = new Vector2(x, y);
 			ZIndex = 1;
-			EmitSignal(SignalName.Lifted, this, position);
+			EmitSignal(SignalName.Lifted, this);
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&

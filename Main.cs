@@ -84,9 +84,9 @@ public partial class Main : Node2D
 		}
 	}
 
-	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
+	private void OnPieceLifted(PieceUI pieceUI)
 	{
-		var piece = _board.GetPieces().First(p => p.Position == position);
+		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
 		var possibleMoves = _board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
