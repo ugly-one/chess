@@ -57,10 +57,7 @@ public partial class Main : Node2D
 
 		_board = new Board(allPieces);
 
-		var piecesUI = _board.GetPieces().Select(p =>
-		{
-			return PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture());
-		});
+		var piecesUI = _board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
 
 		foreach (var piece in piecesUI)
 		{
