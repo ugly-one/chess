@@ -162,8 +162,13 @@ public partial class Main : Node2D
 			capturedPiece?.Hide();
 			// do not move the piece yet. It has to stay in place so ProcessDrop can find it
 			// I wonder if I go away from having Piece completely decoupled from PieceUI this problem won't occur.
-			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition); 
+			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition);
 			promotionBox.Bla(droppedPiece, currentPosition, newPosition);
+			// disable all pieces so it's not possible to make any moves until the promotion is done
+			foreach (var piece in pieces)
+			{
+				piece.Disable();
+			}
 			return;
 		}
 		ProcessDrop(droppedPiece, newPosition, pieceToMove, pieces, null);
