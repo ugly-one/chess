@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Chess;
@@ -5,6 +6,27 @@ using Godot;
 
 public static class Vector2Extention
 {
+    public static string ToChessNotation(this Vector2 position)
+    {
+        var number = 8 - position.Y;
+        if (number < 1 || number > 8)
+        {
+            throw new NotSupportedException();
+        }
+        var letter = position.X switch
+        {
+            0 => "a",
+            1 => "b",
+            2 => "c",
+            3 => "d",
+            4 => "e",
+            5 => "f",
+            6 => "g",
+            7 => "h",
+            _ => throw new NotSupportedException()
+        };
+        return letter+number;
+    }
     public static Texture2D GetTexture(this Piece piece)
     {
         var color = piece.Color;

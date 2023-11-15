@@ -15,27 +15,6 @@ public partial class Main : Node2D
 	private HBoxContainer whiteCapturedPieces;
 	private HBoxContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
-	private ColorRect GetField(Vector2 position)
-	{
-		var number = 8 - position.Y;
-		if (number < 1 || number > 8)
-		{
-			throw new NotSupportedException();
-		}
-		var letter = position.X switch
-		{
-			0 => "a",
-			1 => "b",
-			2 => "c",
-			3 => "d",
-			4 => "e",
-			5 => "f",
-			6 => "g",
-			7 => "h",
-			_ => throw new NotSupportedException()
-		};
-		return board.GetNode<ColorRect>(letter+number);
-	}
 	
 	public override void _Ready()
 	{
@@ -47,18 +26,6 @@ public partial class Main : Node2D
 		blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
 		promotionBox = GetNode<PromotionBox>("%promotionBox");
 		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
-		promotionBox.Hide();
-	}
-
-	private void OnPromotionSelected(PieceUI pieceUI, Vector2 currentPosition, Vector2 newPosition, string type)
-	{
-		var typeAsEnum = Enum.Parse<PieceType>(type);
-		var pieces = board.GetChildren()
-			.OfType<Chess.PieceUI>()
-			.ToArray();
-		var piece = _board.GetPieces().First(p => p.Position == currentPosition);
-		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
-		ProcessDrop(pieceUI, newPosition, piece, pieces, typeAsEnum);
 		promotionBox.Hide();
 	}
 
@@ -125,6 +92,23 @@ public partial class Main : Node2D
 			highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
 			GetField(possibleMove.PieceNewPosition).Color = Colors.Pink;
 		}
+	}
+	
+	private ColorRect GetField(Vector2 position)
+	{
+		return board.GetNode<ColorRect>(position.ToChessNotation());
+	}
+	
+	private void OnPromotionSelected(PieceUI pieceUI, Vector2 currentPosition, Vector2 newPosition, string type)
+	{
+		var typeAsEnum = Enum.Parse<PieceType>(type);
+		var pieces = board.GetChildren()
+			.OfType<Chess.PieceUI>()
+			.ToArray();
+		var piece = _board.GetPieces().First(p => p.Position == currentPosition);
+		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
+		ProcessDrop(pieceUI, newPosition, piece, pieces, typeAsEnum);
+		promotionBox.Hide();
 	}
 
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
