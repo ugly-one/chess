@@ -22,7 +22,7 @@ public class Board
         _lastMove = lastMove;
     }
 
-    public (Board, Move, GameState) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType promotedPiece = PieceType.Queen)
+    public (Board, Move, GameState) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType? promotedPiece)
     {
         var possibleMoves = GetPossibleMoves(pieceToMove);
 
@@ -66,7 +66,8 @@ public class Board
         foreach (var possibleMove in possibleMoves)
         {
             // let's try to make the move and see if the king is under attack, if yes, move is not allowed
-            var boardAfterMove = Move(possibleMove);
+            // it doesn't matter what we promote to
+            var boardAfterMove = Move(possibleMove, PieceType.Queen);
             if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
             if (possibleMove.PieceToMove.Type == PieceType.King)
             {
@@ -112,7 +113,7 @@ public class Board
         return allPossibleMoves;
     }
 
-    private Board Move(Move move, PieceType promotedPiece = PieceType.Queen)
+    private Board Move(Move move, PieceType? promotedPiece)
     {
         var takenPiece = move.PieceToCapture;
         var newBoard = _pieces.ToList();
@@ -125,7 +126,7 @@ public class Board
         // this is horrible, I have the same logic in Main
         if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
         {
-            newPiece = new Piece(promotedPiece, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
+            newPiece = new Piece(promotedPiece.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
         }
         newBoard = newBoard.Where(p => p != move.PieceToMove).Append(newPiece).ToList();
 

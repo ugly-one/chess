@@ -14,7 +14,7 @@ public partial class Main : Node2D
 	private Label gameStateLabel;
 	private HBoxContainer whiteCapturedPieces;
 	private HBoxContainer blackCapturedPieces;
-	
+	private PromotionBox promotionBox;
 	private ColorRect GetField(Vector2 position)
 	{
 		var number = 8 - position.Y;
@@ -45,6 +45,21 @@ public partial class Main : Node2D
 		gameStateLabel = GetNode<Label>("%gameStateLabel");
 		whiteCapturedPieces = GetNode<HBoxContainer>("%whiteCapturedPieces");
 		blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
+		promotionBox = GetNode<PromotionBox>("%promotionBox");
+		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
+		promotionBox.Hide();
+	}
+
+	private void OnPromotionSelected(PieceUI pieceUI, Vector2 currentPosition, Vector2 newPosition, string type)
+	{
+		var typeAsEnum = Enum.Parse<PieceType>(type);
+		var pieces = board.GetChildren()
+			.OfType<Chess.PieceUI>()
+			.ToArray();
+		var piece = _board.GetPieces().First(p => p.Position == currentPosition);
+		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
+		ProcessDrop(pieceUI, newPosition, piece, pieces, typeAsEnum);
+		promotionBox.Hide();
 	}
 
 	private void OnNewGameButtonPressed()
@@ -139,7 +154,29 @@ public partial class Main : Node2D
 			.ToArray();
 
 		var pieceToMove = _board.GetPieces().First(p => p.Position == currentPosition);
-		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition);
+		
+		if (pieceToMove.Type == PieceType.Pawn &&
+			(newPosition.Y == 0 || newPosition.Y == 7))
+		{
+			var capturedPiece = pieces.FirstOrDefault(p => p.ChessPosition == newPosition && p != droppedPiece);
+			capturedPiece?.Hide();
+			// do not move the piece yet. It has to stay in place so ProcessDrop can find it
+			// I wonder if I go away from having Piece completely decoupled from PieceUI this problem won't occur.
+			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition); 
+			promotionBox.Bla(droppedPiece, currentPosition, newPosition);
+			return;
+		}
+		ProcessDrop(droppedPiece, newPosition, pieceToMove, pieces, null);
+	}
+
+	private void ProcessDrop(
+		PieceUI droppedPiece, 
+		Vector2 newPosition, 
+		Piece pieceToMove,
+		PieceUI[] pieces,
+		PieceType? promotedPiece)
+	{
+		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition, promotedPiece);
 		_board = newBoard;
 		if (move != null)
 		{
@@ -162,24 +199,18 @@ public partial class Main : Node2D
 				{
 					blackCapturedPieces.AddChild(textureRect);
 				}
+
 				pieceUIToCapture.QueueFree();
 			}
-			
-			var pieceUIToMove = pieces.First(p => p.ChessPosition == currentPosition);
-			// this is horrible, I have the same logic in Engine
-			if (move.PieceToMove.Type == PieceType.Pawn &&
-				(move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
-			{
-				pieceUIToMove.MoveWithPromotion(move.PieceNewPosition, move.PieceToMove.Color.GetTexture("queen"));
-			}
-			pieceUIToMove.Move(move.PieceNewPosition);
+
+			droppedPiece.Move(move.PieceNewPosition);
 
 			if (move.RockToMove != null)
 			{
 				var rockToMoveUI = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
 				rockToMoveUI.Move(move.RockNewPosition.Value);
 			}
-			
+
 			// swap current player
 			currentColor = currentColor.GetOppositeColor();
 			foreach (var piece in pieces)
