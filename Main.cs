@@ -6,10 +6,15 @@ namespace Chess;
 
 public partial class Main : Node2D
 {
+	// Game state
 	private Color currentColor;
-	private Node board;
-	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Board _board;
+	private Node board;
+	
+	// UI components
+	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
+	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
+	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Button newGameButton;
 	private Label gameStateLabel;
 	private HBoxContainer whiteCapturedPieces;
