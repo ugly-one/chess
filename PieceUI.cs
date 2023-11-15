@@ -6,7 +6,7 @@ namespace Chess;
 public partial class PieceUI : StaticBody2D
 {
 	[Signal]
-	public delegate void DroppedEventHandler(PieceUI piece, Vector2 currentPosition, Vector2 newPosition);
+	public delegate void DroppedEventHandler(PieceUI piece, Vector2 newPosition);
 	[Signal]
 	public delegate void LiftedEventHandler(PieceUI piece, Vector2 currentPosition);
 
@@ -93,7 +93,7 @@ public partial class PieceUI : StaticBody2D
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
 			ZIndex = 0;
-			EmitSignal(SignalName.Dropped, this, currentPosition, newPosition);
+			EmitSignal(SignalName.Dropped, this, newPosition);
 		}
 	}
 

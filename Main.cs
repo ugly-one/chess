@@ -101,19 +101,19 @@ public partial class Main : Node2D
 		return board.GetNode<ColorRect>(position.ToChessNotation());
 	}
 	
-	private void OnPromotionSelected(PieceUI pieceUI, Vector2 currentPosition, Vector2 newPosition, string type)
+	private void OnPromotionSelected(PieceUI pieceUI, Vector2 newPosition, string type)
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
 		var pieces = board.GetChildren()
 			.OfType<Chess.PieceUI>()
 			.ToArray();
-		var piece = _board.GetPieces().First(p => p.Position == currentPosition);
+		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
 		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
 		ProcessDrop(pieceUI, newPosition, piece, pieces, typeAsEnum);
 		promotionBox.Hide();
 	}
 
-	private void PieceOnDropped(PieceUI droppedPiece, Vector2 currentPosition, Vector2 newPosition)
+	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
 		foreach (var (field, color) in highlightedFields)
@@ -126,7 +126,7 @@ public partial class Main : Node2D
 			.OfType<Chess.PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _board.GetPieces().First(p => p.Position == currentPosition);
+		var pieceToMove = _board.GetPieces().First(p => p.Position == droppedPiece.ChessPosition);
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))
@@ -136,7 +136,7 @@ public partial class Main : Node2D
 			// do not move the piece yet. It has to stay in place so ProcessDrop can find it
 			// I wonder if I go away from having Piece completely decoupled from PieceUI this problem won't occur.
 			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition);
-			promotionBox.Bla(droppedPiece, currentPosition, newPosition);
+			promotionBox.Bla(droppedPiece, newPosition);
 			// disable all pieces so it's not possible to make any moves until the promotion is done
 			foreach (var piece in pieces)
 			{

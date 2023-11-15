@@ -4,14 +4,13 @@ using Chess;
 public partial class PromotionBox : VBoxContainer
 {
 	[Signal]
-	public delegate void PieceForPromotionSelectedEventHandler(PieceUI pieceToUpgrade, Vector2 currentPosition, Vector2 newPosition, string newPieceType);
+	public delegate void PieceForPromotionSelectedEventHandler(PieceUI pieceToUpgrade, Vector2 newPosition, string newPieceType);
 	private TextureButton bishop;
 	private TextureButton knight;
 	private TextureButton rock;
 	private TextureButton queen;
 	
 	private PieceUI pieceToMove;
-	private Vector2 currentPosition;
 	private Vector2 newPosition;
 
 	public override void _Ready()
@@ -29,13 +28,12 @@ public partial class PromotionBox : VBoxContainer
 	private void OnButtonPressed(Chess.PieceType type)
 	{
 		// bleh... I can't emit enum so we have to emit for instance a string?!?!
-		EmitSignal(SignalName.PieceForPromotionSelected, pieceToMove, currentPosition, newPosition, type.ToString());
+		EmitSignal(SignalName.PieceForPromotionSelected, pieceToMove, newPosition, type.ToString());
 	}
 
-	public void Bla(PieceUI pieceToMove, Vector2 currentPosition, Vector2 newPosition)
+	public void Bla(PieceUI pieceToMove, Vector2 newPosition)
 	{
 		this.pieceToMove = pieceToMove;
-		this.currentPosition = currentPosition;
 		this.newPosition = newPosition;
 		var color = pieceToMove.Color;
 		bishop.TextureNormal = color.GetTexture("bishop");
