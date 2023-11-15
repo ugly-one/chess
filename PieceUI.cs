@@ -74,6 +74,7 @@ public partial class PieceUI : StaticBody2D
 			var x = (int) Position.X / 40;
 			var y = (int) Position.Y / 40;
 			var position = new Vector2(x, y);
+			ZIndex = 1;
 			EmitSignal(SignalName.Lifted, this, position);
 		}
 		else if (_dragging && 
@@ -88,6 +89,7 @@ public partial class PieceUI : StaticBody2D
 			var oldX = (int) _startingPosition.X / 40;
 			var oldY = (int) _startingPosition.Y / 40;
 			var currentPosition = new Vector2(oldX, oldY);
+			ZIndex = 0;
 			EmitSignal(SignalName.Dropped, this, currentPosition, newPosition);
 		}
 	}
