@@ -39,12 +39,12 @@ public partial class Main : Node2D
 	
 	public override void _Ready()
 	{
-		board = GetNode("board");
-		newGameButton = GetNode<Button>("newGameButton");
+		board = GetNode("%board");
+		newGameButton = GetNode<Button>("%newGameButton");
 		newGameButton.Pressed += OnNewGameButtonPressed;
-		gameStateLabel = GetNode<Label>("gameStateLabel");
-		whiteCapturedPieces = GetNode<HBoxContainer>("whiteCapturedPieces");
-		blackCapturedPieces = GetNode<HBoxContainer>("blackCapturedPieces");
+		gameStateLabel = GetNode<Label>("%gameStateLabel");
+		whiteCapturedPieces = GetNode<HBoxContainer>("%whiteCapturedPieces");
+		blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
 	}
 
 	private void OnNewGameButtonPressed()

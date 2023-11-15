@@ -16,6 +16,7 @@ public partial class PieceUI : StaticBody2D
 	private bool _isMouseOver;
 	private bool _dragging;
 	private Vector2 _startingPosition;
+	private Vector2 _mouseClickPosition;
 	private bool _enabled;
 	
 	public void Init(Vector2 position, Color color, Texture2D texture)
@@ -25,7 +26,7 @@ public partial class PieceUI : StaticBody2D
 		_texture = texture;
 		Color = color;
 	}
-
+	
 	public void Move(Vector2 newPosition)
 	{
 		ChessPosition = newPosition;
@@ -56,7 +57,7 @@ public partial class PieceUI : StaticBody2D
 		
 		if (_dragging && @event is InputEventMouseMotion motionEvent)
 		{
-			Position = motionEvent.Position - GetParent<Node2D>().Position;
+			Position = _startingPosition + motionEvent.Position - _mouseClickPosition;
 		}
 		
 		var mouseButtonEvent = @event as InputEventMouseButton;
@@ -68,6 +69,8 @@ public partial class PieceUI : StaticBody2D
 		{ 
 			_dragging = true;
 			_startingPosition = Position;
+			_mouseClickPosition = mouseButtonEvent.Position;
+			GD.Print(_mouseClickPosition);
 			var x = (int) Position.X / 40;
 			var y = (int) Position.Y / 40;
 			var position = new Vector2(x, y);
