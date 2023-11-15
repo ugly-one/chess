@@ -87,7 +87,7 @@ public partial class Main : Node2D
 
 		var piecesUI = _board.GetPieces().Select(p =>
 		{
-			return PieceFactory.CreatePiece(p.Position, p.Color, GetTexture(p.Type, p.Color));
+			return PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture());
 		});
 
 		foreach (var piece in piecesUI)
@@ -113,19 +113,6 @@ public partial class Main : Node2D
 		{
 			capturedPiece.QueueFree();
 		}
-	}
-
-	private Texture2D GetTexture(PieceType argType, Color argColor)
-	{
-		return argType switch
-		{
-			PieceType.Bishop => argColor.GetTexture("bishop"),
-			PieceType.King => argColor.GetTexture("king"),
-			PieceType.Queen => argColor.GetTexture("queen"),
-			PieceType.Rock => argColor.GetTexture("rock"),
-			PieceType.Pawn => argColor.GetTexture("pawn"),
-			PieceType.Knight => argColor.GetTexture("knight"),
-		};
 	}
 
 	private void OnPieceLifted(PieceUI pieceUI, Vector2 position)
@@ -194,7 +181,7 @@ public partial class Main : Node2D
 				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
 				var textureRect = new TextureRect()
 				{
-					Texture = GetTexture(move.PieceToCapture.Type, move.PieceToCapture.Color)
+					Texture = move.PieceToCapture.GetTexture()
 				};
 				if (move.PieceToCapture.Color == Color.WHITE)
 				{
