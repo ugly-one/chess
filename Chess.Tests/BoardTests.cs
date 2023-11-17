@@ -29,12 +29,28 @@ public class BoardTests
         var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(7, 7));
         var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(3, 4), moved: false);
         var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector2(2, 3));
-
         var board = new Board(new List<Piece>(){ whiteKing, blackKing, whitePawn, blackPawn });
 
         var moves = board.GetPossibleMoves(whitePawn);
+        
         Assert.Single(moves);
         Assert.Equal(moves.First().PieceNewPosition, new Vector2(2,3));
         Assert.Equal(moves.First().PieceToCapture, blackPawn);
+    }
+
+    [Fact]
+    public void EnPassant()
+    {
+        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(3, 3));
+        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(7, 7));
+        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(3, 3), moved: true);
+        var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector2(2, 1));
+        var board = new Board(new List<Piece>(){ whiteKing, blackKing, whitePawn, blackPawn });
+        var (newBoard, move, _) = board.TryMove(blackPawn, new Vector2(2, 3), null);
+        
+        var moves = newBoard.GetPossibleMoves(whitePawn);
+        
+        Assert.Contains(moves, m => m.PieceNewPosition == new Vector2(2,2));
+        Assert.Contains(moves, m => m.PieceToCapture?.Position == move.PieceNewPosition);
     }
 }
