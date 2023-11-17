@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://dredpslxvxlbe"]
 
-[ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://board.tscn" id="1_6sajw"]
-[ext_resource type="Script" path="res://Main.cs" id="1_bu6r5"]
-[ext_resource type="Script" path="res://PromotionBox.cs" id="3_3xve1"]
+[ext_resource type="PackedScene" uid="uid://debbhx7xeg5xv" path="res://Chess.UI/board.tscn" id="1_6sajw"]
+[ext_resource type="Script" path="res://Chess.UI/Main.cs" id="1_bu6r5"]
+[ext_resource type="Script" path="res://Chess.UI/PromotionBox.cs" id="3_3xve1"]
 [ext_resource type="Texture2D" uid="uid://dqis2lfbthgxh" path="res://assets/black_bishop.svg" id="3_4j8l4"]
 [ext_resource type="Texture2D" uid="uid://bprh0vssq41ve" path="res://assets/black_rock.svg" id="4_m2a1g"]
 [ext_resource type="Texture2D" uid="uid://dy40bb116tw04" path="res://assets/black_knight.svg" id="6_bxtq4"]

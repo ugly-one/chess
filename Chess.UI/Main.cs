@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Godot;
 
-namespace Chess;
+namespace Chess.UI;
 
 public partial class Main : Node2D
 {
