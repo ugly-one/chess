@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ChessAI;
 using Godot;
 
 namespace Chess.UI;
@@ -21,6 +22,9 @@ public partial class Main : Node2D
 	private HBoxContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
 	
+	//
+	private SimpleAI ai;
+	
 	public override void _Ready()
 	{
 		board = GetNode("%board");
@@ -32,6 +36,7 @@ public partial class Main : Node2D
 		promotionBox = GetNode<PromotionBox>("%promotionBox");
 		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		promotionBox.Hide();
+		ai = new SimpleAI(Color.BLACK);
 	}
 
 	private void OnNewGameButtonPressed()
@@ -109,7 +114,8 @@ public partial class Main : Node2D
 			.ToArray();
 		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
 		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
-		ProcessDrop(pieceUI, newPosition, piece, pieces, typeAsEnum);
+		var (newBoard, move, state) = _board.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
+		ProcessMove(pieceUI, newBoard, pieces, state, move);
 		promotionBox.Hide();
 	}
 
@@ -144,60 +150,21 @@ public partial class Main : Node2D
 			}
 			return;
 		}
-		ProcessDrop(droppedPiece, newPosition, pieceToMove, pieces, null);
+		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition, promotedPiece: null);
+		ProcessMove(droppedPiece, newBoard, pieces, state, move);
 	}
 
-	private void ProcessDrop(
-		PieceUI droppedPiece, 
-		Vector2 newPosition, 
-		Piece pieceToMove,
+	private void ProcessMove(
+		PieceUI droppedPiece,
+		Board newBoard,
 		PieceUI[] pieces,
-		PieceType? promotedPiece)
+		GameState state,
+		Move move)
 	{
-		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition, promotedPiece);
 		_board = newBoard;
 		if (move != null)
 		{
-			// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
-			// it was less code with the events emitted from Piece class (events handled by UI components)
-			// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
-			// when detecting en-passant
-			if (move.PieceToCapture != null)
-			{
-				var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
-				var textureRect = new TextureRect()
-				{
-					Texture = move.PieceToCapture.GetTexture()
-				};
-				if (move.PieceToCapture.Color == Color.WHITE)
-				{
-					whiteCapturedPieces.AddChild(textureRect);
-				}
-				else
-				{
-					blackCapturedPieces.AddChild(textureRect);
-				}
-
-				pieceUIToCapture.QueueFree();
-			}
-
-			droppedPiece.Move(move.PieceNewPosition);
-
-			if (move.RockToMove != null)
-			{
-				var rockToMoveUI = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
-				rockToMoveUI.Move(move.RockNewPosition.Value);
-			}
-
-			// swap current player
-			currentColor = currentColor.GetOppositeColor();
-			foreach (var piece in pieces)
-			{
-				if (piece.Color == currentColor)
-					piece.Enable();
-				else
-					piece.Disable();
-			}
+			UpdateUi(droppedPiece, pieces, move);
 		}
 		else
 		{
@@ -207,6 +174,50 @@ public partial class Main : Node2D
 		if (state != GameState.InProgress)
 		{
 			gameStateLabel.Text = state.ToString();
+		}
+	}
+
+	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
+	{
+		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
+		// it was less code with the events emitted from Piece class (events handled by UI components)
+		// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
+		// when detecting en-passant
+		if (move.PieceToCapture != null)
+		{
+			var pieceUIToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
+			var textureRect = new TextureRect()
+			{
+				Texture = move.PieceToCapture.GetTexture()
+			};
+			if (move.PieceToCapture.Color == Color.WHITE)
+			{
+				whiteCapturedPieces.AddChild(textureRect);
+			}
+			else
+			{
+				blackCapturedPieces.AddChild(textureRect);
+			}
+
+			pieceUIToCapture.QueueFree();
+		}
+
+		droppedPiece.Move(move.PieceNewPosition);
+
+		if (move.RockToMove != null)
+		{
+			var rockToMoveUI = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
+			rockToMoveUI.Move(move.RockNewPosition.Value);
+		}
+
+		// swap current player
+		currentColor = currentColor.GetOppositeColor();
+		foreach (var piece in pieces)
+		{
+			if (piece.Color == currentColor)
+				piece.Enable();
+			else
+				piece.Disable();
 		}
 	}
 }
