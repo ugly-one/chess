@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using ChessAI;
 using Godot;
 
@@ -110,7 +108,7 @@ public partial class Main : Node2D
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
 		var pieces = board.GetChildren()
-			.OfType<Chess.PieceUI>()
+			.OfType<PieceUI>()
 			.ToArray();
 		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
 		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
@@ -129,7 +127,7 @@ public partial class Main : Node2D
 		highlightedFields.Clear();
 		
 		var pieces = board.GetChildren()
-			.OfType<Chess.PieceUI>()
+			.OfType<PieceUI>()
 			.ToArray();
 
 		var pieceToMove = _board.GetPieces().First(p => p.Position == droppedPiece.ChessPosition);

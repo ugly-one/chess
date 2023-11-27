@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Chess;
+namespace Chess.UI;
 
 public partial class PieceUI : StaticBody2D
 {

@@ -1,6 +1,8 @@
 using Godot;
 using Chess;
 
+namespace Chess.UI;
+
 public partial class PromotionBox : VBoxContainer
 {
 	[Signal]
