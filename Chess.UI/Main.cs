@@ -34,7 +34,7 @@ public partial class Main : Node2D
 		promotionBox = GetNode<PromotionBox>("%promotionBox");
 		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		promotionBox.Hide();
-		ai = new SimpleAI(Color.BLACK);
+		ai = new SimpleAI();
 	}
 
 	private void OnNewGameButtonPressed()
@@ -163,16 +163,26 @@ public partial class Main : Node2D
 		if (move != null)
 		{
 			UpdateUi(droppedPiece, pieces, move);
+			if (state != GameState.InProgress)
+			{
+				gameStateLabel.Text = state.ToString();
+			}
+			else
+			{
+				if (currentColor != Color.BLACK) return;
+				
+				var (pieceToMove, newPosition) = ai.GetMove(_board);
+				var (boardAfterAI, newMove, newState) = _board.TryMove(pieceToMove, newPosition, promotedPiece: null);
+
+				var pieceUIToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
+				ProcessMove(pieceUIToMove, boardAfterAI, pieces, newState, newMove);
+			}
 		}
 		else
 		{
 			droppedPiece.CancelMove();
 		}
 
-		if (state != GameState.InProgress)
-		{
-			gameStateLabel.Text = state.ToString();
-		}
 	}
 
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)

@@ -4,13 +4,6 @@ using Godot;
 
 namespace Chess;
 
-public enum GameState
-{
-    InProgress,
-    Draw,
-    WhiteWin,
-    BlackWin
-}
 public class Board
 {
     private readonly Piece[] _pieces;
@@ -99,6 +92,12 @@ public class Board
         return possibleMovesAfterFiltering.ToArray();
     }
 
+    public Piece[] GetPieces()
+    {
+        return _pieces
+            .ToArray();
+    }
+    
     private List<Move> GetAllPossibleMovesForColor(Color color)
     {
         var pieces = GetPieces(color);
@@ -140,7 +139,6 @@ public class Board
         return new Board(newBoard, move);
     }
 
-
     private bool IsKingUnderAttack(Color color)
     {
         var king = _pieces
@@ -170,12 +168,6 @@ public class Board
     {
         return _pieces
             .Where(p => p.Color == color)
-            .ToArray();
-    }
-    
-    public Piece[] GetPieces()
-    {
-        return _pieces
             .ToArray();
     }
     
