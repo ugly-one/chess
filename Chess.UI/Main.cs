@@ -180,6 +180,11 @@ public partial class Main : Node2D
 			var (pieceToMove, newPosition) = ai.GetMove(_game.Board);
 			var newMove = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 
+			if (newMove is null)
+			{
+				GD.Print("AI provided wrong move");
+				return;
+			}
 			var pieceUIToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
 			ProcessMove(pieceUIToMove, pieces, _game.State, newMove);
 		}
