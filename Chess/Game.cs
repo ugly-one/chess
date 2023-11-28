@@ -8,18 +8,18 @@ public class Game
 {
     public Board Board { get; private set; }
     public GameState State { get; private set; }
-    public Color CurrentPlayer { get; private set; }
+    private Color _currentPlayer;
     
     public Game(ICollection<Piece> pieces)
     {
         Board = new Board(pieces);
         State = GameState.InProgress;
-        CurrentPlayer = Color.WHITE;
+        _currentPlayer = Color.WHITE;
     }
     
     public Move? TryMove(Piece pieceToMove, Vector2 newPosition, PieceType? promotedPiece)
     {
-        if (pieceToMove.Color != CurrentPlayer)
+        if (pieceToMove.Color != _currentPlayer)
         {
             return null;
         }
@@ -36,7 +36,7 @@ public class Game
         Board = Board.Move(move, promotedPiece);
 
         var opponentsColor = pieceToMove.Color.GetOppositeColor();
-        CurrentPlayer = opponentsColor;
+        _currentPlayer = opponentsColor;
         
         if (Board.GetAllPossibleMovesForColor(opponentsColor).Any())
         {
@@ -56,7 +56,7 @@ public class Game
 
     public List<Move> GetPossibleMoves()
     {
-        var possibleMoves = Board.GetAllPossibleMovesForColor(CurrentPlayer);
+        var possibleMoves = Board.GetAllPossibleMovesForColor(_currentPlayer);
         return possibleMoves;
     }
 
