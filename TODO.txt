@@ -1,5 +1,3 @@
-write an AI that makes random moves
-
 be able to setup a board manually - nice to have
 
 undo a move(s) - nice to have
@@ -9,6 +7,8 @@ so we don't have to take care of snapping the pieces in PieceUI
 
 make UI nicer. example: captured pieces should be smaller and in 2/3 rows. 45px is spread across code base (fx: capturedPieces has it or PieceUI).
 Try to change the size of a piece and see stuff breaking
+
+have 2 AIs play a game
 
 ################################################################
 Notes
