@@ -20,7 +20,8 @@ public partial class Main : Node2D
 	private PromotionBox? _promotionBox;
 	
 	//
-	private SimpleAI? _ai;
+	private SimpleAI? _blackPlayer;
+	private SimpleAI? _whitePlayer;
 	
 	public override void _Ready()
 	{
@@ -33,17 +34,35 @@ public partial class Main : Node2D
 		_promotionBox = GetNode<PromotionBox>("%promotionBox");
 		_promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		_promotionBox.Hide();
-		_ai = new SimpleAI();
 	}
 
 	public override void _Process(double delta)
 	{
 		if (_game is null) return;
-		if (_game.CurrentPlayer != Color.BLACK) return;
-		if (!_ai.FoundMove) return;
-		
-		var (piece, position) = _ai.GetMove();
-		
+
+		if (_game.CurrentPlayer == Color.WHITE)
+		{
+			if (_whitePlayer.FoundMove)
+			{
+				var (piece, position) = _whitePlayer.GetMove();
+				NewMethod(piece, position);
+				_blackPlayer.FindMove(_game);
+			}
+		}
+		else
+		{
+			if (_blackPlayer.FoundMove)
+			{
+				var (piece, position) = _blackPlayer.GetMove();
+				NewMethod(piece, position);
+				_whitePlayer.FindMove(_game);
+			}
+		}
+	}
+
+	private void NewMethod(Piece piece, Vector2 position)
+	{
+		// TODO how can AI promote a piece??
 		var newMove = _game.TryMove(piece, position, promotedPiece: null);
 		var pieces = _board.GetChildren()
 			.OfType<PieceUI>()
@@ -70,6 +89,9 @@ public partial class Main : Node2D
 	
 	private void SetupNewGame()
 	{
+		_blackPlayer = new SimpleAI();
+		_whitePlayer = new SimpleAI();
+		
 		var allPieces = PieceFactory.CreateNewGame();
 
 		_game = new Game(allPieces);
@@ -99,6 +121,8 @@ public partial class Main : Node2D
 		{
 			capturedPiece.QueueFree();
 		}
+		
+		_whitePlayer.FindMove(_game);
 	}
 
 	private void OnPieceLifted(PieceUI pieceUi)
@@ -184,9 +208,15 @@ public partial class Main : Node2D
 		UpdateUi(droppedPiece, pieces, move);
 
 		if (_game.State != GameState.InProgress) return;
-		if (_game.CurrentPlayer != Color.BLACK) return;
 
-		_ai.FindMove(_game);
+		if (_game.CurrentPlayer == Color.WHITE)
+		{
+			_whitePlayer.FindMove(_game);
+		}
+		else
+		{
+			_blackPlayer.FindMove(_game);
+		}
 	}
 	
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)

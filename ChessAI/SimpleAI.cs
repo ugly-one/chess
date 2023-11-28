@@ -22,7 +22,7 @@ public class SimpleAI
         FoundMove = false;
         Task.Run(() =>
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(50);
             var possibleMoves = game.GetPossibleMoves();
             var randomIndex = new Random().Next(0, possibleMoves.Count());
             var randomMove = possibleMoves[randomIndex];
