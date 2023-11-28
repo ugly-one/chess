@@ -8,9 +8,11 @@ so we don't have to take care of snapping the pieces in PieceUI
 make UI nicer. example: captured pieces should be smaller and in 2/3 rows. 45px is spread across code base (fx: capturedPieces has it or PieceUI).
 Try to change the size of a piece and see stuff breaking
 
-add support for AI to select promotion piece
-
 add support to select who will play the game - player or ai
+
+when not enough material is left - draw
+
+when 50 moves without a pawn move or piece taken - draw
 
 ################################################################
 Notes

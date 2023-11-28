@@ -10,9 +10,9 @@ public class SimpleAI
     }
 
     public bool FoundMove { get; private set; }
-    private (Piece, Vector2) Move { get; set; }
+    private (Piece, Vector2, PieceType?) Move { get; set; }
 
-    public (Piece, Vector2) GetMove()
+    public (Piece, Vector2, PieceType?) GetMove()
     {
         return Move;
     }
@@ -26,7 +26,14 @@ public class SimpleAI
             var possibleMoves = game.GetPossibleMoves();
             var randomIndex = new Random().Next(0, possibleMoves.Count());
             var randomMove = possibleMoves[randomIndex];
-            Move = (randomMove.PieceToMove, randomMove.PieceNewPosition);
+            if (randomMove.PieceToMove.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)
+            {
+                Move = (randomMove.PieceToMove, randomMove.PieceNewPosition, PieceType.Queen);
+            }
+            else
+            {
+                Move = (randomMove.PieceToMove, randomMove.PieceNewPosition, null);
+            }
             FoundMove = true;
         });
     }

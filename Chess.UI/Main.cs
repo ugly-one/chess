@@ -44,26 +44,32 @@ public partial class Main : Node2D
 		{
 			if (_whitePlayer.FoundMove)
 			{
-				var (piece, position) = _whitePlayer.GetMove();
-				NewMethod(piece, position);
-				_blackPlayer.FindMove(_game);
+				var (piece, position, promotedPiece) = _whitePlayer.GetMove();
+				NewMethod(piece, position, promotedPiece);
+				if (_game.State == GameState.InProgress)
+				{
+					_blackPlayer.FindMove(_game);
+				}
 			}
 		}
 		else
 		{
 			if (_blackPlayer.FoundMove)
 			{
-				var (piece, position) = _blackPlayer.GetMove();
-				NewMethod(piece, position);
-				_whitePlayer.FindMove(_game);
+				var (piece, position, promotedPiece) = _blackPlayer.GetMove();
+				NewMethod(piece, position, promotedPiece);
+				if (_game.State == GameState.InProgress)
+				{
+					_whitePlayer.FindMove(_game);
+				}
 			}
 		}
 	}
 
-	private void NewMethod(Piece piece, Vector2 position)
+	private void NewMethod(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
 		// TODO how can AI promote a piece??
-		var newMove = _game.TryMove(piece, position, promotedPiece: null);
+		var newMove = _game.TryMove(piece, position, promotedPiece);
 		var pieces = _board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
