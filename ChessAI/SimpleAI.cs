@@ -14,7 +14,6 @@ public class SimpleAI
     /// </summary>
     /// <param name="game"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     public (Piece, Vector2) GetMove(Game game)
     {
         var possibleMoves = game.GetPossibleMoves();
