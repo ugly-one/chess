@@ -45,7 +45,7 @@ public partial class Main : Node2D
 			if (_whitePlayer.FoundMove)
 			{
 				var (piece, position, promotedPiece) = _whitePlayer.GetMove();
-				NewMethod(piece, position, promotedPiece);
+				MoveAndUpdateUi(piece, position, promotedPiece);
 				if (_game.State == GameState.InProgress)
 				{
 					_blackPlayer.FindMove(_game);
@@ -57,7 +57,7 @@ public partial class Main : Node2D
 			if (_blackPlayer.FoundMove)
 			{
 				var (piece, position, promotedPiece) = _blackPlayer.GetMove();
-				NewMethod(piece, position, promotedPiece);
+				MoveAndUpdateUi(piece, position, promotedPiece);
 				if (_game.State == GameState.InProgress)
 				{
 					_whitePlayer.FindMove(_game);
@@ -66,9 +66,8 @@ public partial class Main : Node2D
 		}
 	}
 
-	private void NewMethod(Piece piece, Vector2 position, PieceType? promotedPiece)
+	private void MoveAndUpdateUi(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
-		// TODO how can AI promote a piece??
 		var newMove = _game.TryMove(piece, position, promotedPiece);
 		var pieces = _board.GetChildren()
 			.OfType<PieceUI>()
@@ -163,7 +162,7 @@ public partial class Main : Node2D
 			pieceUi.CancelMove();
 			return;
 		}
-		ProcessMove(pieceUi, pieces, move);
+		UpdateUi(pieceUi, pieces, move);
 	}
 
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
@@ -203,28 +202,9 @@ public partial class Main : Node2D
 			droppedPiece.CancelMove();
 			return;
 		}
-		ProcessMove(droppedPiece, pieces, move);
-	}
-
-	private void ProcessMove(
-		PieceUI droppedPiece,
-		PieceUI[] pieces,
-		Move move)
-	{
 		UpdateUi(droppedPiece, pieces, move);
-
-		if (_game.State != GameState.InProgress) return;
-
-		if (_game.CurrentPlayer == Color.WHITE)
-		{
-			_whitePlayer.FindMove(_game);
-		}
-		else
-		{
-			_blackPlayer.FindMove(_game);
-		}
 	}
-	
+
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
 	{
 		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
