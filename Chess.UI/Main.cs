@@ -166,25 +166,21 @@ public partial class Main : Node2D
 		Move move)
 	{
 		UpdateUi(droppedPiece, pieces, move);
-		if (game.State != GameState.InProgress)
-		{
-			gameStateLabel.Text = game.State.ToString();
-		}
-		else
-		{
-			if (game.CurrentPlayer != Color.BLACK) return;
-			
-			var (pieceToMove, newPosition) = ai.GetMove(game);
-			var newMove = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 
-			if (newMove is null)
-			{
-				GD.Print("AI provided wrong move");
-				return;
-			}
-			var pieceUiToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
-			ProcessMove(pieceUiToMove, pieces, newMove);
+		if (game.State != GameState.InProgress) return;
+		if (game.CurrentPlayer != Color.BLACK) return;
+
+		var (pieceToMove, newPosition) = ai.GetMove(game);
+		var newMove = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
+
+		if (newMove is null)
+		{
+			GD.Print("AI provided wrong move");
+			return;
 		}
+
+		var pieceUiToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
+		UpdateUi(pieceUiToMove, pieces, newMove);
 	}
 
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
@@ -227,6 +223,11 @@ public partial class Main : Node2D
 				piece.Enable();
 			else
 				piece.Disable();
+		}
+		
+		if (game.State != GameState.InProgress)
+		{
+			gameStateLabel.Text = game.State.ToString();
 		}
 	}
 }
