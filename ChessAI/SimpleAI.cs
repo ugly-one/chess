@@ -9,16 +9,25 @@ public class SimpleAI
     {
     }
 
-    /// <summary>
-    /// Not good, now the AI cannot be used without GODOT library - due to usage of Vector2
-    /// </summary>
-    /// <param name="game"></param>
-    /// <returns></returns>
-    public (Piece, Vector2) GetMove(Game game)
+    public bool FoundMove { get; private set; }
+    private (Piece, Vector2) Move { get; set; }
+
+    public (Piece, Vector2) GetMove()
     {
-        var possibleMoves = game.GetPossibleMoves();
-        var randomIndex = new Random().Next(0, possibleMoves.Count());
-        var randomMove = possibleMoves[randomIndex];
-        return (randomMove.PieceToMove, randomMove.PieceNewPosition);
+        return Move;
+    }
+
+    public void FindMove(Game game)
+    {
+        FoundMove = false;
+        Task.Run(() =>
+        {
+            Thread.Sleep(1000);
+            var possibleMoves = game.GetPossibleMoves();
+            var randomIndex = new Random().Next(0, possibleMoves.Count());
+            var randomMove = possibleMoves[randomIndex];
+            Move = (randomMove.PieceToMove, randomMove.PieceNewPosition);
+            FoundMove = true;
+        });
     }
 }

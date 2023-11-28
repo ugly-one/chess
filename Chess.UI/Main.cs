@@ -6,34 +6,50 @@ namespace Chess.UI;
 public partial class Main : Node2D
 {
 	// Game state
-	private Game game;
-	private Node board;
+	private Game? _game;
+	private Node? _board;
 	
 	// UI components
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
-	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Button newGameButton;
-	private Label gameStateLabel;
-	private HBoxContainer whiteCapturedPieces;
-	private HBoxContainer blackCapturedPieces;
-	private PromotionBox promotionBox;
+	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
+	private Button? _newGameButton;
+	private Label? _gameStateLabel;
+	private HBoxContainer? _whiteCapturedPieces;
+	private HBoxContainer? _blackCapturedPieces;
+	private PromotionBox? _promotionBox;
 	
 	//
-	private SimpleAI ai;
+	private SimpleAI? _ai;
 	
 	public override void _Ready()
 	{
-		board = GetNode("%board");
-		newGameButton = GetNode<Button>("%newGameButton");
-		newGameButton.Pressed += OnNewGameButtonPressed;
-		gameStateLabel = GetNode<Label>("%gameStateLabel");
-		whiteCapturedPieces = GetNode<HBoxContainer>("%whiteCapturedPieces");
-		blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
-		promotionBox = GetNode<PromotionBox>("%promotionBox");
-		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
-		promotionBox.Hide();
-		ai = new SimpleAI();
+		_board = GetNode("%board");
+		_newGameButton = GetNode<Button>("%newGameButton");
+		_newGameButton.Pressed += OnNewGameButtonPressed;
+		_gameStateLabel = GetNode<Label>("%gameStateLabel");
+		_whiteCapturedPieces = GetNode<HBoxContainer>("%whiteCapturedPieces");
+		_blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
+		_promotionBox = GetNode<PromotionBox>("%promotionBox");
+		_promotionBox.PieceForPromotionSelected += OnPromotionSelected;
+		_promotionBox.Hide();
+		_ai = new SimpleAI();
+	}
+
+	public override void _Process(double delta)
+	{
+		if (_game is null) return;
+		if (_game.CurrentPlayer != Color.BLACK) return;
+		if (!_ai.FoundMove) return;
+		
+		var (piece, position) = _ai.GetMove();
+		
+		var newMove = _game.TryMove(piece, position, promotedPiece: null);
+		var pieces = _board.GetChildren()
+			.OfType<PieceUI>()
+			.ToArray();
+		var pieceUiToMove = pieces.First(p => p.ChessPosition == piece.Position);
+		UpdateUi(pieceUiToMove, pieces, newMove);
 	}
 
 	private void OnNewGameButtonPressed()
@@ -44,7 +60,7 @@ public partial class Main : Node2D
 
 	private void CleanUpCurrentGame()
 	{
-		foreach (var piece in board.GetChildren().OfType<PieceUI>())
+		foreach (var piece in _board.GetChildren().OfType<PieceUI>())
 		{
 			piece.Dropped -= PieceOnDropped;
 			piece.Lifted -= OnPieceLifted;
@@ -56,16 +72,16 @@ public partial class Main : Node2D
 	{
 		var allPieces = PieceFactory.CreateNewGame();
 
-		game = new Game(allPieces);
+		_game = new Game(allPieces);
 
-		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
+		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
 
 		foreach (var piece in piecesUi)
 		{
-			board.AddChild(piece);
+			_board.AddChild(piece);
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
-			if (piece.Color == game.CurrentPlayer)
+			if (piece.Color == _game.CurrentPlayer)
 			{
 				piece.Enable();
 			}
@@ -75,11 +91,11 @@ public partial class Main : Node2D
 			}
 		}
 
-		foreach (var capturedPiece in whiteCapturedPieces.GetChildren())
+		foreach (var capturedPiece in _whiteCapturedPieces.GetChildren())
 		{
 			capturedPiece.QueueFree();
 		}
-		foreach (var capturedPiece in blackCapturedPieces.GetChildren())
+		foreach (var capturedPiece in _blackCapturedPieces.GetChildren())
 		{
 			capturedPiece.QueueFree();
 		}
@@ -87,31 +103,31 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUi)
 	{
-		var piece = game.GetPiece(pieceUi.ChessPosition);
-		var possibleMoves = game.Board.GetPossibleMoves(piece);
+		var piece = _game.GetPiece(pieceUi.ChessPosition);
+		var possibleMoves = _game.Board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
-			highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
+			_highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
 			GetField(possibleMove.PieceNewPosition).Color = Colors.Pink;
 		}
 	}
 	
 	private ColorRect GetField(Vector2 position)
 	{
-		return board.GetNode<ColorRect>(position.ToChessNotation());
+		return _board.GetNode<ColorRect>(position.ToChessNotation());
 	}
 	
 	private void OnPromotionSelected(PieceUI pieceUi, Vector2 newPosition, string type)
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
-		var pieces = board.GetChildren()
+		var pieces = _board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
-		var piece = game.GetPiece(pieceUi.ChessPosition);
+		var piece = _game.GetPiece(pieceUi.ChessPosition);
 		pieceUi.ChangeTexture(pieceUi.Color.GetTexture(type.ToLower()));
-		promotionBox.Hide();
-		var move = game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
+		_promotionBox.Hide();
+		var move = _game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
 		if (move is null)
 		{
 			pieceUi.CancelMove();
@@ -123,17 +139,17 @@ public partial class Main : Node2D
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
-		foreach (var (field, color) in highlightedFields)
+		foreach (var (field, color) in _highlightedFields)
 		{
 			field.Color = color;
 		}
-		highlightedFields.Clear();
+		_highlightedFields.Clear();
 		
-		var pieces = board.GetChildren()
+		var pieces = _board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
 
-		var pieceToMove = game.GetPiece(droppedPiece.ChessPosition);
+		var pieceToMove = _game.GetPiece(droppedPiece.ChessPosition);
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))
@@ -143,7 +159,7 @@ public partial class Main : Node2D
 			// do not move the piece yet. It has to stay in place so ProcessDrop can find it
 			// I wonder if I go away from having Piece completely decoupled from PieceUI this problem won't occur.
 			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition);
-			promotionBox.Bla(droppedPiece, newPosition);
+			_promotionBox.Bla(droppedPiece, newPosition);
 			// disable all pieces so it's not possible to make any moves until the promotion is done
 			foreach (var piece in pieces)
 			{
@@ -151,7 +167,7 @@ public partial class Main : Node2D
 			}
 			return;
 		}
-		var move  = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
+		var move  = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 		if (move is null)
 		{
 			droppedPiece.CancelMove();
@@ -167,22 +183,12 @@ public partial class Main : Node2D
 	{
 		UpdateUi(droppedPiece, pieces, move);
 
-		if (game.State != GameState.InProgress) return;
-		if (game.CurrentPlayer != Color.BLACK) return;
+		if (_game.State != GameState.InProgress) return;
+		if (_game.CurrentPlayer != Color.BLACK) return;
 
-		var (pieceToMove, newPosition) = ai.GetMove(game);
-		var newMove = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
-
-		if (newMove is null)
-		{
-			GD.Print("AI provided wrong move");
-			return;
-		}
-
-		var pieceUiToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
-		UpdateUi(pieceUiToMove, pieces, newMove);
+		_ai.FindMove(_game);
 	}
-
+	
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
 	{
 		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
@@ -198,11 +204,11 @@ public partial class Main : Node2D
 			};
 			if (move.PieceToCapture.Color == Color.WHITE)
 			{
-				whiteCapturedPieces.AddChild(textureRect);
+				_whiteCapturedPieces.AddChild(textureRect);
 			}
 			else
 			{
-				blackCapturedPieces.AddChild(textureRect);
+				_blackCapturedPieces.AddChild(textureRect);
 			}
 
 			pieceToCapture.QueueFree();
@@ -219,15 +225,15 @@ public partial class Main : Node2D
 		// swap current player
 		foreach (var piece in pieces)
 		{
-			if (piece.Color == game.CurrentPlayer)
+			if (piece.Color == _game.CurrentPlayer)
 				piece.Enable();
 			else
 				piece.Disable();
 		}
 		
-		if (game.State != GameState.InProgress)
+		if (_game.State != GameState.InProgress)
 		{
-			gameStateLabel.Text = game.State.ToString();
+			_gameStateLabel.Text = _game.State.ToString();
 		}
 	}
 }
