@@ -15,36 +15,6 @@ public class Board
         _lastMove = lastMove;
     }
 
-    public (Board, Move, GameState) TryMove(Piece pieceToMove, Vector2 newPosition, PieceType? promotedPiece)
-    {
-        var possibleMoves = GetPossibleMoves(pieceToMove);
-
-        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
-        
-        if (move is null)
-        {
-            return (this, null, GameState.InProgress);
-        }
-
-        var board = Move(move, promotedPiece);
-
-        var opponentsColor = pieceToMove.Color.GetOppositeColor();
-        
-        if (board.GetAllPossibleMovesForColor(opponentsColor).Any())
-        {
-            return (board, move, GameState.InProgress);
-        }
-        
-        if (board.IsKingUnderAttack(opponentsColor))
-        {
-            return (board, move, pieceToMove.Color == Color.WHITE ? GameState.WhiteWin : GameState.BlackWin);
-        }
-        else
-        {
-            return (board, move, GameState.Draw);
-        }
-    }
-      
     /// <summary>
     /// Checks possible moves for the given piece
     /// </summary>
@@ -98,7 +68,7 @@ public class Board
             .ToArray();
     }
     
-    private List<Move> GetAllPossibleMovesForColor(Color color)
+    public List<Move> GetAllPossibleMovesForColor(Color color)
     {
         var pieces = GetPieces(color);
         var allPossibleMoves = new List<Move>();
@@ -112,7 +82,7 @@ public class Board
         return allPossibleMoves;
     }
 
-    private Board Move(Move move, PieceType? promotedPiece)
+    public Board Move(Move move, PieceType? promotedPiece)
     {
         var takenPiece = move.PieceToCapture;
         var newBoard = _pieces.ToList();
@@ -139,7 +109,7 @@ public class Board
         return new Board(newBoard, move);
     }
 
-    private bool IsKingUnderAttack(Color color)
+    public bool IsKingUnderAttack(Color color)
     {
         var king = _pieces
             .First(k => k.Type == PieceType.King && k.Color == color);

@@ -7,7 +7,7 @@ public partial class Main : Node2D
 {
 	// Game state
 	private Color currentColor;
-	private Board _board;
+	private Game _game;
 	private Node board;
 	
 	// UI components
@@ -58,9 +58,9 @@ public partial class Main : Node2D
 		currentColor = Color.WHITE;
 		var allPieces = PieceFactory.CreateNewGame();
 
-		_board = new Board(allPieces);
+		(_game) = new Game(allPieces);
 
-		var piecesUI = _board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
+		var piecesUI = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
 
 		foreach (var piece in piecesUI)
 		{
@@ -89,8 +89,8 @@ public partial class Main : Node2D
 
 	private void OnPieceLifted(PieceUI pieceUI)
 	{
-		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
-		var possibleMoves = _board.GetPossibleMoves(piece);
+		var piece = _game.Board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
+		var possibleMoves = _game.Board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -110,11 +110,16 @@ public partial class Main : Node2D
 		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
-		var piece = _board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
+		var piece = _game.Board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
 		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
-		var (newBoard, move, state) = _board.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
-		ProcessMove(pieceUI, newBoard, pieces, state, move);
 		promotionBox.Hide();
+		var move = _game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
+		if (move is null)
+		{
+			pieceUI.CancelMove();
+			return;
+		}
+		ProcessMove(pieceUI, pieces, _game.State, move);
 	}
 
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
@@ -130,7 +135,7 @@ public partial class Main : Node2D
 			.OfType<PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _board.GetPieces().First(p => p.Position == droppedPiece.ChessPosition);
+		var pieceToMove = _game.Board.GetPieces().First(p => p.Position == droppedPiece.ChessPosition);
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))
@@ -148,41 +153,36 @@ public partial class Main : Node2D
 			}
 			return;
 		}
-		var (newBoard, move, state) = _board.TryMove(pieceToMove, newPosition, promotedPiece: null);
-		ProcessMove(droppedPiece, newBoard, pieces, state, move);
+		var move  = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
+		if (move is null)
+		{
+			droppedPiece.CancelMove();
+			return;
+		}
+		ProcessMove(droppedPiece, pieces, _game.State, move);
 	}
 
 	private void ProcessMove(
 		PieceUI droppedPiece,
-		Board newBoard,
 		PieceUI[] pieces,
 		GameState state,
 		Move move)
 	{
-		_board = newBoard;
-		if (move != null)
+		UpdateUi(droppedPiece, pieces, move);
+		if (state != GameState.InProgress)
 		{
-			UpdateUi(droppedPiece, pieces, move);
-			if (state != GameState.InProgress)
-			{
-				gameStateLabel.Text = state.ToString();
-			}
-			else
-			{
-				if (currentColor != Color.BLACK) return;
-				
-				var (pieceToMove, newPosition) = ai.GetMove(_board);
-				var (boardAfterAI, newMove, newState) = _board.TryMove(pieceToMove, newPosition, promotedPiece: null);
-
-				var pieceUIToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
-				ProcessMove(pieceUIToMove, boardAfterAI, pieces, newState, newMove);
-			}
+			gameStateLabel.Text = state.ToString();
 		}
 		else
 		{
-			droppedPiece.CancelMove();
-		}
+			if (currentColor != Color.BLACK) return;
+			
+			var (pieceToMove, newPosition) = ai.GetMove(_game.Board);
+			var newMove = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 
+			var pieceUIToMove = pieces.First(p => p.ChessPosition == pieceToMove.Position);
+			ProcessMove(pieceUIToMove, pieces, _game.State, newMove);
+		}
 	}
 
 	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
