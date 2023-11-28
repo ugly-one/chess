@@ -110,7 +110,7 @@ public partial class Main : Node2D
 		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
-		var piece = _game.Board.GetPieces().First(p => p.Position == pieceUI.ChessPosition);
+		var piece = _game.GetPiece(pieceUI.ChessPosition);
 		pieceUI.ChangeTexture(pieceUI.Color.GetTexture(type.ToLower()));
 		promotionBox.Hide();
 		var move = _game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
@@ -135,7 +135,7 @@ public partial class Main : Node2D
 			.OfType<PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _game.Board.GetPieces().First(p => p.Position == droppedPiece.ChessPosition);
+		var pieceToMove = _game.GetPiece(droppedPiece.ChessPosition);
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))

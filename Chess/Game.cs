@@ -53,4 +53,16 @@ public class Game
         }
         return move;
     }
+
+    public List<Move> GetPossibleMoves()
+    {
+        var possibleMoves = Board.GetAllPossibleMovesForColor(CurrentPlayer);
+        return possibleMoves;
+    }
+
+    public Piece GetPiece(Vector2 position)
+    {
+        var piece = Board.GetPieces().First(p => p.Position == position);
+        return piece;
+    }
 }
