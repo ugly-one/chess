@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -157,7 +158,8 @@ public class Board
             PieceType.Pawn => Pawn.GetPawnMoves(piece, _pieces, _lastMove),
             PieceType.Bishop => Bishop.GetBishopMoves(piece, _pieces),
             PieceType.Rock => Rock.GetRockMoves(piece, _pieces),
-            PieceType.Knight => Knight.GetKnightMoves(piece, _pieces)
+            PieceType.Knight => Knight.GetKnightMoves(piece, _pieces),
+            _ => throw new ArgumentOutOfRangeException()
         };
         return moves;
     }
