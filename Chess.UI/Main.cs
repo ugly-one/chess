@@ -40,6 +40,11 @@ public partial class Main : Node2D
 	{
 		if (_game is null) return;
 
+		if (_game.State != GameState.InProgress)
+		{
+			return;
+		}
+		
 		if (_game.CurrentPlayer == Color.WHITE)
 		{
 			if (_whitePlayer.FoundMove)
@@ -69,11 +74,7 @@ public partial class Main : Node2D
 	private void MoveAndUpdateUi(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
 		var newMove = _game.TryMove(piece, position, promotedPiece);
-		var pieces = _board.GetChildren()
-			.OfType<PieceUI>()
-			.ToArray();
-		var pieceUiToMove = pieces.First(p => p.ChessPosition == piece.Position);
-		UpdateUi(pieceUiToMove, pieces, newMove);
+		UpdateUi(newMove);
 	}
 
 	private void OnNewGameButtonPressed()
@@ -150,9 +151,6 @@ public partial class Main : Node2D
 	private void OnPromotionSelected(PieceUI pieceUi, Vector2 newPosition, string type)
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
-		var pieces = _board.GetChildren()
-			.OfType<PieceUI>()
-			.ToArray();
 		var piece = _game.GetPiece(pieceUi.ChessPosition);
 		pieceUi.ChangeTexture(pieceUi.Color.GetTexture(type.ToLower()));
 		_promotionBox.Hide();
@@ -162,7 +160,7 @@ public partial class Main : Node2D
 			pieceUi.CancelMove();
 			return;
 		}
-		UpdateUi(pieceUi, pieces, move);
+		UpdateUi(move);
 	}
 
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
@@ -202,11 +200,15 @@ public partial class Main : Node2D
 			droppedPiece.CancelMove();
 			return;
 		}
-		UpdateUi(droppedPiece, pieces, move);
+		UpdateUi(move);
 	}
 
-	private void UpdateUi(PieceUI droppedPiece, PieceUI[] pieces, Move move)
+	private void UpdateUi(Move move)
 	{
+		var pieces = _board.GetChildren()
+			.OfType<PieceUI>()
+			.ToArray();
+		var pieceToMove = pieces.First(p => p.ChessPosition == move.PieceToMove.Position);
 		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
 		// it was less code with the events emitted from Piece class (events handled by UI components)
 		// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
@@ -230,7 +232,7 @@ public partial class Main : Node2D
 			pieceToCapture.QueueFree();
 		}
 
-		droppedPiece.Move(move.PieceNewPosition);
+		pieceToMove.Move(move.PieceNewPosition);
 
 		if (move.RockToMove != null)
 		{

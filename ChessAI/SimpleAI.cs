@@ -14,6 +14,7 @@ public class SimpleAI
 
     public (Piece, Vector2, PieceType?) GetMove()
     {
+        FoundMove = false;
         return Move;
     }
 
