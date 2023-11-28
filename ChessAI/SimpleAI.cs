@@ -15,11 +15,9 @@ public class SimpleAI
     /// <param name="board"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public (Piece, Vector2) GetMove(Board board)
+    public (Piece, Vector2) GetMove(Game game)
     {
-        // TODO this can make move as wrong player
-        var pieces = board.GetPieces();
-        var possibleMoves = pieces.SelectMany(board.GetPossibleMoves).ToArray();
+        var possibleMoves = game.Board.GetAllPossibleMovesForColor(game.CurrentPlayer);
 
         var randomIndex = new Random().Next(0, possibleMoves.Count());
 

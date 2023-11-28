@@ -177,7 +177,7 @@ public partial class Main : Node2D
 		{
 			if (currentColor != Color.BLACK) return;
 			
-			var (pieceToMove, newPosition) = ai.GetMove(_game.Board);
+			var (pieceToMove, newPosition) = ai.GetMove(_game);
 			var newMove = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 
 			if (newMove is null)
