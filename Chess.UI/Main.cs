@@ -17,6 +17,7 @@ public partial class Main : Node2D
 	private Button? _newGameButton;
 	private Button? _pauseGameButton;
 	private Label? _gameStateLabel;
+	private Label? _movesSinceLastPawnOrCapture;
 	private GridContainer? _whiteCapturedPieces;
 	private GridContainer? _blackCapturedPieces;
 	private PromotionBox? _promotionBox;
@@ -33,6 +34,7 @@ public partial class Main : Node2D
 		_pauseGameButton = GetNode<Button>("%pauseGameButton");
 		_pauseGameButton.Pressed += OnPauseGameButtonPressed;
 		_gameStateLabel = GetNode<Label>("%gameStateLabel");
+		_movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
 		_whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
 		_blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
 		_promotionBox = GetNode<PromotionBox>("%promotionBox");
@@ -272,5 +274,7 @@ public partial class Main : Node2D
 		{
 			_gameStateLabel.Text = _game.State.ToString();
 		}
+
+		_movesSinceLastPawnOrCapture.Text = (_game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
 	}
 }

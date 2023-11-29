@@ -12,8 +12,6 @@ add support to select who will play the game - player or ai
 
 when not enough material is left - draw
 
-when 50 moves without a pawn move or piece taken - draw
-
 something is weird with pawns moving all over the place
 
 ################################################################

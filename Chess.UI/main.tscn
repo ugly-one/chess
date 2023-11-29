@@ -83,3 +83,7 @@ texture_normal = ExtResource("6_bxtq4")
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("7_uf7hn")
+
+[node name="movesSinceLastPawnOrCapture" type="Label" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
