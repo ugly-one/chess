@@ -121,6 +121,10 @@ public partial class Main : Node2D
 		_pauseGameButton.Disabled = false;
 		var allPieces = PieceFactory.CreateNewGame();
 
+		var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
+		var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
+		var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
+		allPieces = new[] { blackKing, whiteKing, whitePawn };
 		_game = new Game(allPieces);
 
 		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
@@ -173,7 +177,6 @@ public partial class Main : Node2D
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
 		var piece = _game.GetPiece(pieceUi.ChessPosition);
-		pieceUi.ChangeTexture(pieceUi.Color.GetTexture(type.ToLower()));
 		_promotionBox.Hide();
 		var move = _game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
 		if (move is null)
@@ -254,7 +257,11 @@ public partial class Main : Node2D
 		}
 
 		pieceToMove.Move(move.PieceNewPosition);
-
+		if (move.PromotedType != null)
+		{
+			pieceToMove.ChangeTexture(pieceToMove.Color.GetTexture(move.PromotedType.Value.ToString().ToLower()));
+		}
+		
 		if (move.RockToMove != null)
 		{
 			var rockToMove = pieces.First(p => p.ChessPosition == move.RockToMove.Position);

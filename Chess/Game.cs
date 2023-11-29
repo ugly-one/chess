@@ -35,6 +35,10 @@ public class Game
             return null;
         }
 
+        if (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7)
+        {
+            move = move with { PromotedType = promotedPiece };
+        }
         Board = Board.Move(move, promotedPiece);
 
         var opponentsColor = pieceToMove.Color.GetOppositeColor();

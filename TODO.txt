@@ -1,7 +1,5 @@
 be able to setup a board manually - nice to have
 
-undo a move(s) - nice to have
-
 create `ChessField` which will take care of it's own color (highlighting it and reseting the color) and will host pieces
 so we don't have to take care of snapping the pieces in PieceUI
 
@@ -10,7 +8,9 @@ Try to change the size of a piece and see stuff breaking
 
 add support to select who will play the game - player or ai
 
-something is weird with pawns moving all over the place
+undo a move(s) - needed to debug games
+
+promotion logic needs some love - nice to have
 
 ################################################################
 Notes
