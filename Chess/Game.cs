@@ -49,9 +49,13 @@ public class Game
             MovesSinceLastPawnMoveOrPieceTake += 1;
         }
 
+        if (Board.CalculateInsufficientMatingMaterial())
+        {
+            State = GameState.Draw;
+            return move;
+        }
 
         var possibleMovesForOpponent = Board.GetAllPossibleMovesForColor(opponentsColor);
-
         
         if (Board.IsKingUnderAttack(opponentsColor) && possibleMovesForOpponent.Count == 0)
         {

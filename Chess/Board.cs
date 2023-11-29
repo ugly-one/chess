@@ -16,6 +16,47 @@ public class Board
         _lastMove = lastMove;
     }
 
+    public bool CalculateInsufficientMatingMaterial()
+    {
+        if (_pieces.Length == 2)
+        {
+            // only 2 kings left
+            return true;
+        }
+
+        var whitePieces = _pieces.Where(p => p.Color == Color.WHITE).ToArray();
+        var blackPieces = _pieces.Where(p => p.Color == Color.BLACK).ToArray();
+
+        if (whitePieces.Length == 1)
+        {
+            if (HasOnlyKingAndBishopOrKnight(blackPieces))
+            {
+                return true;
+            }
+        }
+
+        if (blackPieces.Length == 1)
+        {
+            if (HasOnlyKingAndBishopOrKnight(whitePieces))
+            {
+                return true;
+            }
+        }
+
+        if (HasOnlyKingAndBishopOrKnight(whitePieces) && HasOnlyKingAndBishopOrKnight(blackPieces))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
+    private static bool HasOnlyKingAndBishopOrKnight(Piece[] blackPieces)
+    {
+        return blackPieces.Length == 2 &&
+               blackPieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
+    }
+
     /// <summary>
     /// Checks possible moves for the given piece
     /// </summary>
