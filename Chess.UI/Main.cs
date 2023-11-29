@@ -15,8 +15,8 @@ public partial class Main : Node2D
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Button? _newGameButton;
 	private Label? _gameStateLabel;
-	private HBoxContainer? _whiteCapturedPieces;
-	private HBoxContainer? _blackCapturedPieces;
+	private GridContainer? _whiteCapturedPieces;
+	private GridContainer? _blackCapturedPieces;
 	private PromotionBox? _promotionBox;
 	
 	//
@@ -29,8 +29,8 @@ public partial class Main : Node2D
 		_newGameButton = GetNode<Button>("%newGameButton");
 		_newGameButton.Pressed += OnNewGameButtonPressed;
 		_gameStateLabel = GetNode<Label>("%gameStateLabel");
-		_whiteCapturedPieces = GetNode<HBoxContainer>("%whiteCapturedPieces");
-		_blackCapturedPieces = GetNode<HBoxContainer>("%blackCapturedPieces");
+		_whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
+		_blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
 		_promotionBox = GetNode<PromotionBox>("%promotionBox");
 		_promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		_promotionBox.Hide();
