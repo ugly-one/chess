@@ -8,12 +8,14 @@ public partial class Main : Node2D
 	// Game state
 	private Game? _game;
 	private Node? _board;
+	private bool _gamePaused;
 	
 	// UI components
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Button? _newGameButton;
+	private Button? _pauseGameButton;
 	private Label? _gameStateLabel;
 	private GridContainer? _whiteCapturedPieces;
 	private GridContainer? _blackCapturedPieces;
@@ -22,12 +24,14 @@ public partial class Main : Node2D
 	//
 	private SimpleAI? _blackPlayer;
 	private SimpleAI? _whitePlayer;
-	
+
 	public override void _Ready()
 	{
 		_board = GetNode("%board");
 		_newGameButton = GetNode<Button>("%newGameButton");
 		_newGameButton.Pressed += OnNewGameButtonPressed;
+		_pauseGameButton = GetNode<Button>("%pauseGameButton");
+		_pauseGameButton.Pressed += OnPauseGameButtonPressed;
 		_gameStateLabel = GetNode<Label>("%gameStateLabel");
 		_whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
 		_blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
@@ -36,12 +40,26 @@ public partial class Main : Node2D
 		_promotionBox.Hide();
 	}
 
+	private void OnPauseGameButtonPressed()
+	{
+		if (_gamePaused)
+		{
+			_pauseGameButton.Text = "Pause";
+		}
+		else
+		{
+			_pauseGameButton.Text = "Resume";
+		}
+		_gamePaused = !_gamePaused;
+	}
+
 	public override void _Process(double delta)
 	{
-		if (_game is null) return;
+		if (_game is null || _gamePaused) return;
 
 		if (_game.State != GameState.InProgress)
 		{
+			_pauseGameButton.Disabled = true;
 			return;
 		}
 		
@@ -97,7 +115,8 @@ public partial class Main : Node2D
 	{
 		_blackPlayer = new SimpleAI();
 		_whitePlayer = new SimpleAI();
-		
+
+		_pauseGameButton.Disabled = false;
 		var allPieces = PieceFactory.CreateNewGame();
 
 		_game = new Game(allPieces);
