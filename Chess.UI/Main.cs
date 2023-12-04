@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using ChessAI;
 using Godot;
 
@@ -21,7 +23,8 @@ public partial class Main : Node2D
 	private GridContainer? _whiteCapturedPieces;
 	private GridContainer? _blackCapturedPieces;
 	private PromotionBox? _promotionBox;
-	
+
+	private AnalysePanel? _analysePanel;
 	//
 	private SimpleAI? _blackPlayer;
 	private SimpleAI? _whitePlayer;
@@ -29,6 +32,7 @@ public partial class Main : Node2D
 	public override void _Ready()
 	{
 		_board = GetNode("%board");
+		_analysePanel = GetNode<AnalysePanel>("%analysePanel");
 		_newGameButton = GetNode<Button>("%newGameButton");
 		_newGameButton.Pressed += OnNewGameButtonPressed;
 		_pauseGameButton = GetNode<Button>("%pauseGameButton");
@@ -111,6 +115,17 @@ public partial class Main : Node2D
 			piece.Lifted -= OnPieceLifted;
 			piece.QueueFree();
 		}
+		
+		foreach (var capturedPiece in _whiteCapturedPieces.GetChildren())
+		{
+			capturedPiece.QueueFree();
+		}
+		foreach (var capturedPiece in _blackCapturedPieces.GetChildren())
+		{
+			capturedPiece.QueueFree();
+		}
+		
+		_analysePanel.Reset();
 	}
 	
 	private void SetupNewGame()
@@ -144,14 +159,7 @@ public partial class Main : Node2D
 			}
 		}
 
-		foreach (var capturedPiece in _whiteCapturedPieces.GetChildren())
-		{
-			capturedPiece.QueueFree();
-		}
-		foreach (var capturedPiece in _blackCapturedPieces.GetChildren())
-		{
-			capturedPiece.QueueFree();
-		}
+		_analysePanel.Display(_game.Board);
 		
 		_whitePlayer.FindMove(_game);
 	}
@@ -283,5 +291,8 @@ public partial class Main : Node2D
 		}
 
 		_movesSinceLastPawnOrCapture.Text = (_game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
+
+
+		_analysePanel.Display(_game.Board);
 	}
 }
