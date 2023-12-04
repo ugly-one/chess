@@ -5,6 +5,7 @@ be able to setup a board manually - needed to debug specific positions
 
 BUG:
 promotionBox shows up even though a pawn cannot be promoted
+A game played by AIs can be interrupted by a human and then it's impossible to return to AI mode
 
 ---------- NICE TO HAVE ----------------
 
