@@ -9,8 +9,11 @@ public partial class AnalysePanel : VBoxContainer
 	private Node? _analysisBoard;
 	private Button? _nextMoveButton;
 	private Button? _previousMoveButton;
+	private Button? _firstMoveButton;
+	private Button? _lastMoveButton;
 	private List<Board> _boards;
 	private int _currentBoardIndex = 0;
+
 	public override void _Ready()
 	{
 		_analysisBoard = GetNode("%analysis_board");
@@ -18,10 +21,13 @@ public partial class AnalysePanel : VBoxContainer
 		_nextMoveButton.Pressed += OnNextMoveButtonPressed;
 		_previousMoveButton = GetNode<Button>("%previousMoveButton");
 		_previousMoveButton.Pressed += OnPreviousMoveButtonPressed;
+		_firstMoveButton = GetNode<Button>("%firstMoveButton");
+		_firstMoveButton.Pressed += OnFirstMoveButtonPressed;
+		_lastMoveButton = GetNode<Button>("%lastMoveButton");
+		_lastMoveButton.Pressed += OnLastMoveButtonPressed;
 		_boards = new List<Board>();
 	}
-	
-	
+
 	public void Display(Board gameBoard)
 	{
 		_boards.Add(gameBoard);
@@ -55,7 +61,19 @@ public partial class AnalysePanel : VBoxContainer
 		_currentBoardIndex += 1;
 		DisplayPrivate(_boards[_currentBoardIndex]);
 	}
+	
+	
+	private void OnLastMoveButtonPressed()
+	{
+		_currentBoardIndex = _boards.Count - 1;
+		DisplayPrivate(_boards[_currentBoardIndex]);
+	}
 
+	private void OnFirstMoveButtonPressed()
+	{
+		_currentBoardIndex = 0;
+		DisplayPrivate(_boards[_currentBoardIndex]);
+	}
 
 	private void DisplayPrivate(Board gameBoard)
 	{

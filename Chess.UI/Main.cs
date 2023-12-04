@@ -136,10 +136,10 @@ public partial class Main : Node2D
 		_pauseGameButton.Disabled = false;
 		var allPieces = PieceFactory.CreateNewGame();
 
-		var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
-		var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
-		var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
-		allPieces = new[] { blackKing, whiteKing, whitePawn };
+		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
+		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
+		// var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
+		// allPieces = new[] { blackKing, whiteKing, whitePawn };
 		_game = new Game(allPieces);
 
 		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));

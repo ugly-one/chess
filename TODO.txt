@@ -1,8 +1,6 @@
 ----------- TODO ----------------------
 
 add support to select who will play the game - player or ai
-
-undo a move(s) - needed to debug games
 be able to setup a board manually - needed to debug specific positions
 
 ---------- NICE TO HAVE ----------------

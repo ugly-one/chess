@@ -104,6 +104,11 @@ size_flags_vertical = 3
 unique_name_in_owner = true
 position = Vector2(41, 43)
 
+[node name="firstMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "First move"
+
 [node name="previousMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -113,3 +118,8 @@ text = "Previous move"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Next move"
+
+[node name="lastMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Last move"
