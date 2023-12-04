@@ -2,6 +2,7 @@
 
 add support to select who will play the game - player or ai
 be able to setup a board manually - needed to debug specific positions
+load a DLL with an AI - test if it's possible to debug such bot
 
 BUG:
 promotionBox shows up even though a pawn cannot be promoted
@@ -9,7 +10,9 @@ A game played by AIs can be interrupted by a human and then it's impossible to r
 
 ---------- NICE TO HAVE ----------------
 
-create `ChessField` which will take care of it's own color (highlighting it and reseting the color) and will host pieces
+exporting/importing games - it would be cool to share games with others
+
+create `ChessField` which will take care of its own color (highlighting it and reseting the color) and will host pieces
 so we don't have to take care of snapping the pieces in PieceUI
 
 make UI nicer. example: captured pieces should be smaller and in 2/3 rows. 45px is spread across code base (fx: capturedPieces has it or PieceUI).
