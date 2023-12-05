@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bprh0vssq41ve" path="res://assets/black_rock.svg" id="4_m2a1g"]
 [ext_resource type="Texture2D" uid="uid://dy40bb116tw04" path="res://assets/black_knight.svg" id="6_bxtq4"]
 [ext_resource type="Texture2D" uid="uid://cdaica524gsf2" path="res://assets/black_queen.svg" id="7_uf7hn"]
-[ext_resource type="Script" path="res://AnalysePanel.cs" id="8_gb4np"]
+[ext_resource type="PackedScene" uid="uid://bmys140eqvckn" path="res://analyse_panel.tscn" id="8_wigqk"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_bu6r5")
@@ -89,37 +89,6 @@ texture_normal = ExtResource("7_uf7hn")
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="analysePanel" type="VBoxContainer" parent="HBoxContainer"]
+[node name="analysePanel" parent="HBoxContainer" instance=ExtResource("8_wigqk")]
 unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("8_gb4np")
-
-[node name="Panel" type="Panel" parent="HBoxContainer/analysePanel"]
-custom_minimum_size = Vector2(400, 400)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="analysis_board" parent="HBoxContainer/analysePanel/Panel" instance=ExtResource("1_6sajw")]
-unique_name_in_owner = true
-position = Vector2(41, 43)
-
-[node name="firstMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "First move"
-
-[node name="previousMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Previous move"
-
-[node name="nextMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Next move"
-
-[node name="lastMoveButton" type="Button" parent="HBoxContainer/analysePanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Last move"

@@ -124,7 +124,8 @@ public partial class Main : Node2D
 		{
 			capturedPiece.QueueFree();
 		}
-		
+
+		_gameStateLabel.Text = "";
 		_analysePanel.Reset();
 	}
 	
