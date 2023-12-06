@@ -78,16 +78,12 @@ public partial class PieceUI : StaticBody2D
 		}
 		else if (_dragging && 
 				 mouseButtonEvent.IsReleased() &&
-				 mouseButtonEvent.ButtonIndex == MouseButton.Left
-				)
+				 mouseButtonEvent.ButtonIndex == MouseButton.Left)
 		{
 			_dragging = false;
 			var x = (int) Position.X / 40;
 			var y = (int) Position.Y / 40;
 			var newPosition = new Vector2(x, y);
-			var oldX = (int) _startingPosition.X / 40;
-			var oldY = (int) _startingPosition.Y / 40;
-			var currentPosition = new Vector2(oldX, oldY);
 			ZIndex = 0;
 			EmitSignal(SignalName.Dropped, this, newPosition);
 		}
