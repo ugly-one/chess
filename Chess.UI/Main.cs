@@ -26,8 +26,8 @@ public partial class Main : Node2D
 
 	private AnalysePanel? _analysePanel;
 	//
-	private SimpleAI? _blackPlayer;
-	private SimpleAI? _whitePlayer;
+	// private SimpleAI? _blackPlayer;
+	// private SimpleAI? _whitePlayer;
 
 	public override void _Ready()
 	{
@@ -61,38 +61,38 @@ public partial class Main : Node2D
 
 	public override void _Process(double delta)
 	{
-		if (_game is null || _gamePaused) return;
-
-		if (_game.State != GameState.InProgress)
-		{
-			_pauseGameButton.Disabled = true;
-			return;
-		}
-		
-		if (_game.CurrentPlayer == Color.WHITE)
-		{
-			if (_whitePlayer.FoundMove)
-			{
-				var (piece, position, promotedPiece) = _whitePlayer.GetMove();
-				MoveAndUpdateUi(piece, position, promotedPiece);
-				if (_game.State == GameState.InProgress)
-				{
-					_blackPlayer.FindMove(_game);
-				}
-			}
-		}
-		else
-		{
-			if (_blackPlayer.FoundMove)
-			{
-				var (piece, position, promotedPiece) = _blackPlayer.GetMove();
-				MoveAndUpdateUi(piece, position, promotedPiece);
-				if (_game.State == GameState.InProgress)
-				{
-					_whitePlayer.FindMove(_game);
-				}
-			}
-		}
+		// if (_game is null || _gamePaused) return;
+		//
+		// if (_game.State != GameState.InProgress)
+		// {
+		// 	_pauseGameButton.Disabled = true;
+		// 	return;
+		// }
+		//
+		// if (_game.CurrentPlayer == Color.WHITE)
+		// {
+		// 	if (_whitePlayer.FoundMove)
+		// 	{
+		// 		var (piece, position, promotedPiece) = _whitePlayer.GetMove();
+		// 		MoveAndUpdateUi(piece, position, promotedPiece);
+		// 		if (_game.State == GameState.InProgress)
+		// 		{
+		// 			_blackPlayer.FindMove(_game);
+		// 		}
+		// 	}
+		// }
+		// else
+		// {
+		// 	if (_blackPlayer.FoundMove)
+		// 	{
+		// 		var (piece, position, promotedPiece) = _blackPlayer.GetMove();
+		// 		MoveAndUpdateUi(piece, position, promotedPiece);
+		// 		if (_game.State == GameState.InProgress)
+		// 		{
+		// 			_whitePlayer.FindMove(_game);
+		// 		}
+		// 	}
+		// }
 	}
 
 	private void MoveAndUpdateUi(Piece piece, Vector2 position, PieceType? promotedPiece)
@@ -131,8 +131,8 @@ public partial class Main : Node2D
 	
 	private void SetupNewGame()
 	{
-		_blackPlayer = new SimpleAI();
-		_whitePlayer = new SimpleAI();
+		// _blackPlayer = new SimpleAI();
+		// _whitePlayer = new SimpleAI();
 
 		_pauseGameButton.Disabled = false;
 		var allPieces = PieceFactory.CreateNewGame();
@@ -162,7 +162,7 @@ public partial class Main : Node2D
 
 		_analysePanel.Display(_game.Board);
 		
-		_whitePlayer.FindMove(_game);
+		// _whitePlayer.FindMove(_game);
 	}
 
 	private void OnPieceLifted(PieceUI pieceUi)
