@@ -1,5 +1,8 @@
 using Godot;
 using Chess;
+using System;
+
+namespace Chess.UI;
 
 public static class TextureProvider
 {
@@ -14,6 +17,7 @@ public static class TextureProvider
 			PieceType.Rock => color.GetTexture("rock"),
 			PieceType.Pawn => color.GetTexture("pawn"),
 			PieceType.Knight => color.GetTexture("knight"),
+			_ => throw new NotImplementedException(),
 		};
 	}
 	/// <summary>

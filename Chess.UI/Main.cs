@@ -8,23 +8,23 @@ namespace Chess.UI;
 public partial class Main : Node2D
 {
 	// Game state
-	private Game? _game;
-	private Node? _board;
+	private Game _game;
+	private Node _board;
 	private bool _gamePaused;
 	
 	// UI components
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Button? _newGameButton;
-	private Button? _pauseGameButton;
-	private Label? _gameStateLabel;
-	private Label? _movesSinceLastPawnOrCapture;
-	private GridContainer? _whiteCapturedPieces;
-	private GridContainer? _blackCapturedPieces;
-	private PromotionBox? _promotionBox;
+	private Button _newGameButton;
+	private Button _pauseGameButton;
+	private Label _gameStateLabel;
+	private Label _movesSinceLastPawnOrCapture;
+	private GridContainer _whiteCapturedPieces;
+	private GridContainer _blackCapturedPieces;
+	private PromotionBox _promotionBox;
 
-	private AnalysePanel? _analysePanel;
+	private AnalysePanel _analysePanel;
 	//
 	// private SimpleAI? _blackPlayer;
 	// private SimpleAI? _whitePlayer;

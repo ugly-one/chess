@@ -6,11 +6,11 @@ namespace Chess.UI;
 
 public partial class AnalysePanel : VBoxContainer
 {
-	private Node? _analysisBoard;
-	private Button? _nextMoveButton;
-	private Button? _previousMoveButton;
-	private Button? _firstMoveButton;
-	private Button? _lastMoveButton;
+	private Node _analysisBoard;
+	private Button _nextMoveButton;
+	private Button _previousMoveButton;
+	private Button _firstMoveButton;
+	private Button _lastMoveButton;
 	private List<Board> _boards;
 	private int _currentBoardIndex = 0;
 
