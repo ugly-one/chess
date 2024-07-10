@@ -26,7 +26,8 @@ public static class TextureProvider
 	public static Texture2D GetTexture(this Color color, string piece)
 	{
 		var colorAsString = color == Color.WHITE ? "white" : "black";
-		var image = Image.LoadFromFile("res://assets/" + colorAsString + "_" + piece + ".svg");
-		return ImageTexture.CreateFromImage(image);
+		var path = "res://assets/" + colorAsString + "_" + piece + ".svg";
+		var texture = (Texture2D)GD.Load(path);
+		return texture;
 	}
 }
