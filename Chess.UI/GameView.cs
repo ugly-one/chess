@@ -19,6 +19,7 @@ public partial class GameView : HBoxContainer
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
 	private SimpleAI blackAI;
+	private SimpleAI whiteAI;
 	private Label endOfGameLabel;
 
 	public override void _Ready()
@@ -33,10 +34,13 @@ public partial class GameView : HBoxContainer
 		endOfGameLabel.Hide();
 	}
 
-	public void StartNewGame(Game game, SimpleAI black = null)
+	public void StartNewGame(Game game, 
+		SimpleAI black = null,
+		SimpleAI white = null)
 	{
 		this.game = game;
 		this.blackAI = black;
+		this.whiteAI = white;
 		// make sure we have UI aligned with game state
 		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
 		foreach (var piece in piecesUi)
@@ -53,6 +57,10 @@ public partial class GameView : HBoxContainer
 				piece.Disable();
 			}
 		}
+		if (whiteAI != null)
+		{
+			whiteAI.FindMove(game);
+		}
 	}
 
 	public override void _Process(double delta)
@@ -62,17 +70,15 @@ public partial class GameView : HBoxContainer
 			return;
 		}
 		
-		if (game.CurrentPlayer == Color.WHITE)
+		if (game.CurrentPlayer == Color.WHITE && (whiteAI?.FoundMove ?? false))
 		{
-			
+			var (piece, position, promotedPiece) = whiteAI.GetMove();
+			TryMove(piece, position, promotedPiece);
 		}
-		else
+		else if(game.CurrentPlayer == Color.BLACK && (blackAI?.FoundMove ?? false))
 		{
-			if (blackAI?.FoundMove ?? false)
-			{
-				var (piece, position, promotedPiece) = blackAI.GetMove();
-				TryMove(piece, position, promotedPiece);
-			}
+			var (piece, position, promotedPiece) = blackAI.GetMove();
+			TryMove(piece, position, promotedPiece);
 		}
 	}
 
@@ -93,6 +99,11 @@ public partial class GameView : HBoxContainer
 		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
 		{
 			blackAI.FindMove(game);
+		}
+		
+		if (game.CurrentPlayer == Color.WHITE && whiteAI != null)
+		{
+			whiteAI.FindMove(game);
 		}
 		return true;
 	}

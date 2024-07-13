@@ -28,6 +28,7 @@ public partial class MainView : VBoxContainer
 		var game = gameScene.Instantiate() as GameView;
 		AddChild(game);
 		var isBlackAI = GetNode<CheckBox>("%BlackCheckBox").ButtonPressed;
+		var isWhiteAI = GetNode<CheckBox>("%WhiteCheckBox").ButtonPressed;
 		var allPieces = PieceFactory.CreateNewGame();
 		var gameState = new Game(allPieces);
 		SimpleAI blackAI = null;
@@ -35,7 +36,12 @@ public partial class MainView : VBoxContainer
 		{
 			blackAI = new SimpleAI();
 		}
-		game.StartNewGame(gameState, blackAI);
+		SimpleAI whiteAI = null;
+		if (isWhiteAI)
+		{
+			whiteAI = new SimpleAI();
+		}
+		game.StartNewGame(gameState, black: blackAI, white: whiteAI);
 		game.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
 		newGameMenu.Hide();
 		currentGameMenu.Show();
