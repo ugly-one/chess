@@ -45,7 +45,7 @@ public class BoardTests
         var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 3), moved: true);
         var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 1));
         var game = new Game(new List<Piece>(){ whiteKing, blackKing, whitePawn, blackPawn });
-        var move = game.TryMove(blackPawn, new Vector(2, 3), null);
+        var move = game.TryMove(blackPawn, new Vector(2, 3), null)!;
         
         var moves = game.Board.GetPossibleMoves(whitePawn);
         

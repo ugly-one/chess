@@ -7,24 +7,29 @@ public static class Something
 {
     public static Piece GetPieceInPosition(this Piece[] board, Vector position)
     {
-        return board.FirstOrDefault(p => p.Position == position);
+        return board.First(p => p.Position == position);
     }
     
     public static Move[] ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
     {
-        return allPositions.Select(p =>
+        var result = new List<Move>();
+
+        foreach(var p in allPositions)
         {
             var pieceOnTheWay = board.GetPieceInPosition(p);
             if (pieceOnTheWay is null)
             {
-                return Move.RegularMove(piece, p);
+                result.Add(Move.RegularMove(piece, p));
             }
-            if (pieceOnTheWay.Color != piece.Color)
+            else
             {
-                return Move.Capture(piece, p, pieceOnTheWay);
+                if (pieceOnTheWay.Color != piece.Color)
+                {
+                    result.Add(Move.Capture(piece, p, pieceOnTheWay));
+                }
             }
-            return null;
-        }).Where(m => m != null).ToArray();
+        }
+        return result.ToArray();
     }
     
     public static IEnumerable<Move> GetMovesInDirection(

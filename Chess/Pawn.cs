@@ -21,7 +21,7 @@ public static class Queen
 }
 public static class Pawn
 {
-    public static Move[] GetPawnMoves(Piece piece, Piece[] board, Move lastMove)
+    public static Move[] GetPawnMoves(Piece piece, Piece[] board, Move? lastMove)
     {
         var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
@@ -77,7 +77,7 @@ public static class Pawn
 
         return moves.ToArray();
     }
-    private static Move TryGetEnPassant(Piece piece, Vector capturePosition, Piece[] board, Move lastMove)
+    private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Piece[] board, Move? lastMove)
     {
         if (lastMove == null) return null;
         

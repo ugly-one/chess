@@ -1,6 +1,6 @@
 namespace Chess;
 
-public record Move(Piece PieceToMove, Vector PieceNewPosition, Piece PieceToCapture, Piece RockToMove,
+public record Move(Piece PieceToMove, Vector PieceNewPosition, Piece? PieceToCapture, Piece? RockToMove,
     Vector? RockNewPosition, PieceType? PromotedType = null)
 {
     public static Move RegularMove(Piece pieceToMove, Vector newPosition)

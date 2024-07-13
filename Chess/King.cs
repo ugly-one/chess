@@ -38,7 +38,7 @@ public static class King
         return allMoves.ToArray();
     }
 
-    private static Move TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[] _board)
+    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[] _board)
     {
         if (king.Moved)
             return null;

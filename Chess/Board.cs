@@ -7,9 +7,9 @@ namespace Chess;
 public class Board
 {
     private readonly Piece[] _pieces;
-    private readonly Move _lastMove;
+    private readonly Move? _lastMove;
 
-    public Board(ICollection<Piece> board, Move lastMove = null)
+    public Board(ICollection<Piece> board, Move? lastMove = null)
     {
         _pieces = board.ToArray();
         _lastMove = lastMove;
@@ -136,14 +136,14 @@ public class Board
         // this is horrible, I have the same logic in Main
         if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
         {
-            newPiece = new Piece(promotedPiece.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
+            newPiece = new Piece(promotedPiece!.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
         }
         newBoard = newBoard.Where(p => p != move.PieceToMove).Append(newPiece).ToList();
 
         var rockToMove = move.RockToMove;
         if (rockToMove != null)
         {
-            var newRock = rockToMove.Move(move.RockNewPosition);
+            var newRock = rockToMove.Move(move.RockNewPosition!);
             newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
         }
 
