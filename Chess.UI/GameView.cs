@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
-using ChessAI;
 using Godot;
 
 namespace Chess.UI;
 
-public partial class Main : Node2D
+public partial class GameView : Node2D
 {
 	// Game state
 	private Game _game;
@@ -16,7 +15,7 @@ public partial class Main : Node2D
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Button _newGameButton;
+
 	private Button _pauseGameButton;
 	private Label _gameStateLabel;
 	private Label _movesSinceLastPawnOrCapture;
@@ -29,13 +28,16 @@ public partial class Main : Node2D
 	// private SimpleAI? _blackPlayer;
 	// private SimpleAI? _whitePlayer;
 
+	public GameView()
+	{
+		Console.WriteLine("constr");
+	}
 	public override void _Ready()
 	{
 		_board = GetNode("%board");
 		_analysePanel = GetNode<AnalysePanel>("%analysePanel");
-		_newGameButton = GetNode<Button>("%newGameButton");
-		_newGameButton.Pressed += OnNewGameButtonPressed;
 		_pauseGameButton = GetNode<Button>("%pauseGameButton");
+		_pauseGameButton.Disabled = false;
 		_pauseGameButton.Pressed += OnPauseGameButtonPressed;
 		_gameStateLabel = GetNode<Label>("%gameStateLabel");
 		_movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
@@ -44,6 +46,39 @@ public partial class Main : Node2D
 		_promotionBox = GetNode<PromotionBox>("%promotionBox");
 		_promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		_promotionBox.Hide();
+	}
+
+	public void StartNewGame()
+	{
+		// _blackPlayer = new SimpleAI();
+		// _whitePlayer = new SimpleAI();
+
+		var allPieces = PieceFactory.CreateNewGame();
+
+		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
+		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
+		// var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
+		// allPieces = new[] { blackKing, whiteKing, whitePawn };
+		_game = new Game(allPieces);
+
+		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
+
+		foreach (var piece in piecesUi)
+		{
+			_board.AddChild(piece);
+			piece.Dropped += PieceOnDropped;
+			piece.Lifted += OnPieceLifted;
+			if (piece.Color == _game.CurrentPlayer)
+			{
+				piece.Enable();
+			}
+			else
+			{
+				piece.Disable();
+			}
+		}
+
+		_analysePanel.Display(_game.Board);
 	}
 
 	private void OnPauseGameButtonPressed()

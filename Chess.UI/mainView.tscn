@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://di8uupfhxsqpq"]
+
+[ext_resource type="Script" path="res://MainView.cs" id="1_4dxnr"]
+
+[node name="Bla" type="Node2D"]
+script = ExtResource("1_4dxnr")
+
+[node name="newGameButton" type="Button" parent="."]
+unique_name_in_owner = true
+text = "Start new game"

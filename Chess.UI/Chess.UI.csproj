@@ -2,10 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <Nullable>disable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ChessAI\ChessAI.csproj" />
-    <ProjectReference Include="..\Chess\Chess.csproj" />
-  </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Chess\Chess.csproj" />
+    </ItemGroup>
 </Project>
