@@ -11,27 +11,19 @@ public partial class GameView : Node2D
 	private Game game;
 	private Node board;
 	private bool gamePaused;
-	
 	// UI components
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-
 	private Button pauseGameButton;
 	private Label gameStateLabel;
 	private Label movesSinceLastPawnOrCapture;
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
-
 	private AnalysePanel analysePanel;
-
 	private SimpleAI blackAI;
 
-	public GameView()
-	{
-		Console.WriteLine("constr");
-	}
 	public override void _Ready()
 	{
 		board = GetNode("%board");
@@ -72,19 +64,6 @@ public partial class GameView : Node2D
 		analysePanel.Display(game.Board);
 	}
 
-	private void OnPauseGameButtonPressed()
-	{
-		if (gamePaused)
-		{
-			pauseGameButton.Text = "Pause";
-		}
-		else
-		{
-			pauseGameButton.Text = "Resume";
-		}
-		gamePaused = !gamePaused;
-	}
-
 	public override void _Process(double delta)
 	{
 		if (game is null || gamePaused) return;
@@ -122,28 +101,6 @@ public partial class GameView : Node2D
 		return true;
 	}
 
-	private void CleanUpCurrentGame()
-	{
-		foreach (var piece in board.GetChildren().OfType<PieceUI>())
-		{
-			piece.Dropped -= PieceOnDropped;
-			piece.Lifted -= OnPieceLifted;
-			piece.QueueFree();
-		}
-		
-		foreach (var capturedPiece in whiteCapturedPieces.GetChildren())
-		{
-			capturedPiece.QueueFree();
-		}
-		foreach (var capturedPiece in blackCapturedPieces.GetChildren())
-		{
-			capturedPiece.QueueFree();
-		}
-
-		gameStateLabel.Text = "";
-		analysePanel.Reset();
-	}
-	
 	private void OnPieceLifted(PieceUI pieceUi)
 	{
 		var piece = game.GetPiece(pieceUi.ChessPosition);
@@ -151,14 +108,10 @@ public partial class GameView : Node2D
 		
 		foreach (var possibleMove in possibleMoves)
 		{
-			highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
-			GetField(possibleMove.PieceNewPosition).Color = Colors.Pink;
+			var field = board.GetNode<ColorRect>(possibleMove.PieceNewPosition.ToChessNotation());
+			highlightedFields.Add(field, field.Color);			
+			field.Color = Colors.Pink;
 		}
-	}
-	
-	private ColorRect GetField(Vector2 position)
-	{
-		return board.GetNode<ColorRect>(position.ToChessNotation());
 	}
 	
 	private void OnPromotionSelected(PieceUI pieceUi, Vector2 newPosition, string type)
@@ -271,5 +224,18 @@ public partial class GameView : Node2D
 		movesSinceLastPawnOrCapture.Text = (game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
 
 		analysePanel.Display(game.Board);
+	}
+
+	private void OnPauseGameButtonPressed()
+	{
+		if (gamePaused)
+		{
+			pauseGameButton.Text = "Pause";
+		}
+		else
+		{
+			pauseGameButton.Text = "Resume";
+		}
+		gamePaused = !gamePaused;
 	}
 }
