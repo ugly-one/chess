@@ -3,23 +3,36 @@
 [ext_resource type="Script" path="res://MainView.cs" id="1_4dxnr"]
 
 [node name="MainView" type="VBoxContainer"]
+offset_right = 1001.0
+offset_bottom = 599.0
+size_flags_vertical = 3
 script = ExtResource("1_4dxnr")
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="NewGameMenu" type="VBoxContainer" parent="."]
 layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="NewGameButton" type="Button" parent="Menu"]
+[node name="NewGameButton" type="Button" parent="NewGameMenu"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Start new game"
 
-[node name="BlackAI" type="HBoxContainer" parent="Menu"]
+[node name="BlackAI" type="HBoxContainer" parent="NewGameMenu"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Menu/BlackAI"]
+[node name="Label" type="Label" parent="NewGameMenu/BlackAI"]
 layout_mode = 2
 text = "Black AI: "
 
-[node name="BlackCheckBox" type="CheckBox" parent="Menu/BlackAI"]
+[node name="BlackCheckBox" type="CheckBox" parent="NewGameMenu/BlackAI"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="CurrentGameMenu" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="MainMenuButton" type="Button" parent="CurrentGameMenu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Main menu"

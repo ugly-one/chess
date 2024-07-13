@@ -5,7 +5,7 @@ using Godot;
 
 namespace Chess.UI;
 
-public partial class GameView : Node2D
+public partial class GameView : HBoxContainer
 {
 	// Game state
 	private Game game;
@@ -15,7 +15,6 @@ public partial class GameView : Node2D
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Label gameStateLabel;
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
@@ -24,10 +23,9 @@ public partial class GameView : Node2D
 	public override void _Ready()
 	{
 		board = GetNode("%board");
-		gameStateLabel = GetNode<Label>("%gameStateLabel");
-		whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
-		blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
-		promotionBox = GetNode<PromotionBox>("%promotionBox");
+		whiteCapturedPieces = GetNode<GridContainer>("%WhiteCapturedPieces");
+		blackCapturedPieces = GetNode<GridContainer>("%BlackCapturedPieces");
+		promotionBox = GetNode<PromotionBox>("%PromotionBox");
 		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		promotionBox.Hide();
 	}
@@ -201,11 +199,6 @@ public partial class GameView : Node2D
 				piece.Enable();
 			else
 				piece.Disable();
-		}
-		
-		if (game.State != GameState.InProgress)
-		{
-			gameStateLabel.Text = game.State.ToString();
 		}
 	}
 }

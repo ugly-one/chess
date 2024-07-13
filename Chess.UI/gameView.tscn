@@ -8,67 +8,57 @@
 [ext_resource type="Texture2D" uid="uid://dy40bb116tw04" path="res://assets/black_knight.svg" id="6_bxtq4"]
 [ext_resource type="Texture2D" uid="uid://cdaica524gsf2" path="res://assets/black_queen.svg" id="7_uf7hn"]
 
-[node name="main" type="Node2D"]
+[node name="GameView" type="HBoxContainer"]
+offset_right = 587.0
+offset_bottom = 590.0
 script = ExtResource("1_bu6r5")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-offset_left = 31.0
-offset_right = 565.0
-offset_bottom = 588.0
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
+[node name="Board" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="whiteCapturedPieces" type="GridContainer" parent="HBoxContainer/VBoxContainer2"]
+[node name="WhiteCapturedPieces" type="GridContainer" parent="Board"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 columns = 8
 
-[node name="Panel" type="Panel" parent="HBoxContainer/VBoxContainer2"]
+[node name="Panel" type="Panel" parent="Board"]
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="board" parent="HBoxContainer/VBoxContainer2/Panel" instance=ExtResource("1_6sajw")]
+[node name="board" parent="Board/Panel" instance=ExtResource("1_6sajw")]
 unique_name_in_owner = true
 position = Vector2(41, 43)
 
-[node name="blackCapturedPieces" type="GridContainer" parent="HBoxContainer/VBoxContainer2"]
+[node name="BlackCapturedPieces" type="GridContainer" parent="Board"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 columns = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-layout_mode = 2
-
-[node name="gameStateLabel" type="Label" parent="HBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="promotionBox" type="VBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="PromotionBox" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("3_3xve1")
 
-[node name="bishop" type="TextureButton" parent="HBoxContainer/VBoxContainer/promotionBox"]
+[node name="bishop" type="TextureButton" parent="PromotionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("3_4j8l4")
 
-[node name="rock" type="TextureButton" parent="HBoxContainer/VBoxContainer/promotionBox"]
+[node name="rock" type="TextureButton" parent="PromotionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("4_m2a1g")
 
-[node name="knight" type="TextureButton" parent="HBoxContainer/VBoxContainer/promotionBox"]
+[node name="knight" type="TextureButton" parent="PromotionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("6_bxtq4")
 
-[node name="queen" type="TextureButton" parent="HBoxContainer/VBoxContainer/promotionBox"]
+[node name="queen" type="TextureButton" parent="PromotionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("7_uf7hn")

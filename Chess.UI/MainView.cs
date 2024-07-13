@@ -7,13 +7,19 @@ using System;
 public partial class MainView : VBoxContainer
 {
 	private Button newGameButton;
-	private Control menu;
+	private Button goToMainMenuButton;
+	private Control newGameMenu;
+	private Control currentGameMenu;
 
 	public override void _Ready()
 	{
 		newGameButton = GetNode<Button>("%NewGameButton");
-		menu = GetNode<Control>("Menu");
+		goToMainMenuButton = GetNode<Button>("%MainMenuButton");
+		newGameMenu = GetNode<Control>("NewGameMenu");
+		currentGameMenu = GetNode<Control>("CurrentGameMenu");
+		currentGameMenu.Hide();
 		newGameButton.Pressed += OnNewGameButtonPressed;
+		goToMainMenuButton.Pressed += OnGoToMainMenuButtonPressed;
 	}
 
 	private void OnNewGameButtonPressed()
@@ -30,6 +36,16 @@ public partial class MainView : VBoxContainer
 			blackAI = new SimpleAI();
 		}
 		game.StartNewGame(gameState, blackAI);
-		menu.Hide();
+		game.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+		newGameMenu.Hide();
+		currentGameMenu.Show();
+	}
+
+	private void OnGoToMainMenuButtonPressed()
+	{
+		var game = GetNode<GameView>("GameView");
+		game.QueueFree();
+		currentGameMenu.Hide();
+		newGameMenu.Show();
 	}
 }
