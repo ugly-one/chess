@@ -2,9 +2,35 @@
 
 [ext_resource type="Script" path="res://MainView.cs" id="1_4dxnr"]
 
-[node name="Bla" type="Node2D"]
+[node name="MainView" type="VBoxContainer"]
 script = ExtResource("1_4dxnr")
 
-[node name="newGameButton" type="Button" parent="."]
+[node name="Menu" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="Menu"]
 unique_name_in_owner = true
+layout_mode = 2
 text = "Start new game"
+
+[node name="WhiteAI" type="HBoxContainer" parent="Menu"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/WhiteAI"]
+layout_mode = 2
+text = "White AI:"
+
+[node name="WhiteCheckBox" type="CheckBox" parent="Menu/WhiteAI"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BlackAI" type="HBoxContainer" parent="Menu"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/BlackAI"]
+layout_mode = 2
+text = "Black AI: "
+
+[node name="BlackCheckBox" type="CheckBox" parent="Menu/BlackAI"]
+unique_name_in_owner = true
+layout_mode = 2

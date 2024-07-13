@@ -1,15 +1,19 @@
+using Chess;
 using Chess.UI;
+using ChessAI;
 using Godot;
 using System;
 
-public partial class MainView : Node2D
+public partial class MainView : VBoxContainer
 {
-	private Button _newGameButton;
+	private Button newGameButton;
+	private Control menu;
 
 	public override void _Ready()
 	{
-		_newGameButton = GetNode<Button>("%newGameButton");
-		_newGameButton.Pressed += OnNewGameButtonPressed;
+		newGameButton = GetNode<Button>("%NewGameButton");
+		menu = GetNode<Control>("Menu");
+		newGameButton.Pressed += OnNewGameButtonPressed;
 	}
 
 	private void OnNewGameButtonPressed()
@@ -17,7 +21,15 @@ public partial class MainView : Node2D
 		var gameScene = GD.Load<PackedScene>("res://gameView.tscn");
 		var game = gameScene.Instantiate() as GameView;
 		AddChild(game);
-		game.StartNewGame();
-		_newGameButton.Hide();
+		var isBlackAI = GetNode<CheckBox>("%BlackCheckBox").ButtonPressed;
+		var allPieces = PieceFactory.CreateNewGame();
+		var gameState = new Game(allPieces);
+		SimpleAI blackAI = null;
+		if (isBlackAI)
+		{
+			blackAI = new SimpleAI();
+		}
+		game.StartNewGame(gameState, blackAI);
+		menu.Hide();
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ChessAI;
 using Godot;
 
 namespace Chess.UI;
@@ -7,26 +8,25 @@ namespace Chess.UI;
 public partial class GameView : Node2D
 {
 	// Game state
-	private Game _game;
-	private Node _board;
-	private bool _gamePaused;
+	private Game game;
+	private Node board;
+	private bool gamePaused;
 	
 	// UI components
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
-	private Godot.Collections.Dictionary<ColorRect, Godot.Color> _highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
+	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 
-	private Button _pauseGameButton;
-	private Label _gameStateLabel;
-	private Label _movesSinceLastPawnOrCapture;
-	private GridContainer _whiteCapturedPieces;
-	private GridContainer _blackCapturedPieces;
-	private PromotionBox _promotionBox;
+	private Button pauseGameButton;
+	private Label gameStateLabel;
+	private Label movesSinceLastPawnOrCapture;
+	private GridContainer whiteCapturedPieces;
+	private GridContainer blackCapturedPieces;
+	private PromotionBox promotionBox;
 
-	private AnalysePanel _analysePanel;
-	//
-	// private SimpleAI? _blackPlayer;
-	// private SimpleAI? _whitePlayer;
+	private AnalysePanel analysePanel;
+
+	private SimpleAI blackAI;
 
 	public GameView()
 	{
@@ -34,41 +34,32 @@ public partial class GameView : Node2D
 	}
 	public override void _Ready()
 	{
-		_board = GetNode("%board");
-		_analysePanel = GetNode<AnalysePanel>("%analysePanel");
-		_pauseGameButton = GetNode<Button>("%pauseGameButton");
-		_pauseGameButton.Disabled = false;
-		_pauseGameButton.Pressed += OnPauseGameButtonPressed;
-		_gameStateLabel = GetNode<Label>("%gameStateLabel");
-		_movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
-		_whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
-		_blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
-		_promotionBox = GetNode<PromotionBox>("%promotionBox");
-		_promotionBox.PieceForPromotionSelected += OnPromotionSelected;
-		_promotionBox.Hide();
+		board = GetNode("%board");
+		analysePanel = GetNode<AnalysePanel>("%analysePanel");
+		pauseGameButton = GetNode<Button>("%pauseGameButton");
+		pauseGameButton.Disabled = false;
+		pauseGameButton.Pressed += OnPauseGameButtonPressed;
+		gameStateLabel = GetNode<Label>("%gameStateLabel");
+		movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
+		whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
+		blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
+		promotionBox = GetNode<PromotionBox>("%promotionBox");
+		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
+		promotionBox.Hide();
 	}
 
-	public void StartNewGame()
+	public void StartNewGame(Game game, SimpleAI black = null)
 	{
-		// _blackPlayer = new SimpleAI();
-		// _whitePlayer = new SimpleAI();
-
-		var allPieces = PieceFactory.CreateNewGame();
-
-		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
-		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
-		// var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
-		// allPieces = new[] { blackKing, whiteKing, whitePawn };
-		_game = new Game(allPieces);
-
-		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
-
+		this.game = game;
+		this.blackAI = black;
+		// make sure we have UI aligned with game state
+		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
 		foreach (var piece in piecesUi)
 		{
-			_board.AddChild(piece);
+			board.AddChild(piece);
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
-			if (piece.Color == _game.CurrentPlayer)
+			if (piece.Color == game.CurrentPlayer)
 			{
 				piece.Enable();
 			}
@@ -78,151 +69,97 @@ public partial class GameView : Node2D
 			}
 		}
 
-		_analysePanel.Display(_game.Board);
+		analysePanel.Display(game.Board);
 	}
 
 	private void OnPauseGameButtonPressed()
 	{
-		if (_gamePaused)
+		if (gamePaused)
 		{
-			_pauseGameButton.Text = "Pause";
+			pauseGameButton.Text = "Pause";
 		}
 		else
 		{
-			_pauseGameButton.Text = "Resume";
+			pauseGameButton.Text = "Resume";
 		}
-		_gamePaused = !_gamePaused;
+		gamePaused = !gamePaused;
 	}
 
 	public override void _Process(double delta)
 	{
-		// if (_game is null || _gamePaused) return;
-		//
-		// if (_game.State != GameState.InProgress)
-		// {
-		// 	_pauseGameButton.Disabled = true;
-		// 	return;
-		// }
-		//
-		// if (_game.CurrentPlayer == Color.WHITE)
-		// {
-		// 	if (_whitePlayer.FoundMove)
-		// 	{
-		// 		var (piece, position, promotedPiece) = _whitePlayer.GetMove();
-		// 		MoveAndUpdateUi(piece, position, promotedPiece);
-		// 		if (_game.State == GameState.InProgress)
-		// 		{
-		// 			_blackPlayer.FindMove(_game);
-		// 		}
-		// 	}
-		// }
-		// else
-		// {
-		// 	if (_blackPlayer.FoundMove)
-		// 	{
-		// 		var (piece, position, promotedPiece) = _blackPlayer.GetMove();
-		// 		MoveAndUpdateUi(piece, position, promotedPiece);
-		// 		if (_game.State == GameState.InProgress)
-		// 		{
-		// 			_whitePlayer.FindMove(_game);
-		// 		}
-		// 	}
-		// }
+		if (game is null || gamePaused) return;
+		
+		if (game.State != GameState.InProgress)
+		{
+			pauseGameButton.Disabled = true;
+			return;
+		}
+		
+		if (game.CurrentPlayer == Color.WHITE)
+		{
+			
+		}
+		else
+		{
+			if (blackAI?.FoundMove ?? false)
+			{
+				var (piece, position, promotedPiece) = blackAI.GetMove();
+				MoveAndUpdateUi(piece, position, promotedPiece);
+			}
+		}
 	}
 
 	private void MoveAndUpdateUi(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
-		var newMove = _game.TryMove(piece, position, promotedPiece);
+		var newMove = game.TryMove(piece, position, promotedPiece);
 		UpdateUi(newMove);
-	}
-
-	private void OnNewGameButtonPressed()
-	{
-		CleanUpCurrentGame();
-		SetupNewGame();
 	}
 
 	private void CleanUpCurrentGame()
 	{
-		foreach (var piece in _board.GetChildren().OfType<PieceUI>())
+		foreach (var piece in board.GetChildren().OfType<PieceUI>())
 		{
 			piece.Dropped -= PieceOnDropped;
 			piece.Lifted -= OnPieceLifted;
 			piece.QueueFree();
 		}
 		
-		foreach (var capturedPiece in _whiteCapturedPieces.GetChildren())
+		foreach (var capturedPiece in whiteCapturedPieces.GetChildren())
 		{
 			capturedPiece.QueueFree();
 		}
-		foreach (var capturedPiece in _blackCapturedPieces.GetChildren())
+		foreach (var capturedPiece in blackCapturedPieces.GetChildren())
 		{
 			capturedPiece.QueueFree();
 		}
 
-		_gameStateLabel.Text = "";
-		_analysePanel.Reset();
+		gameStateLabel.Text = "";
+		analysePanel.Reset();
 	}
 	
-	private void SetupNewGame()
-	{
-		// _blackPlayer = new SimpleAI();
-		// _whitePlayer = new SimpleAI();
-
-		_pauseGameButton.Disabled = false;
-		var allPieces = PieceFactory.CreateNewGame();
-
-		// var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector2(3, 3));
-		// var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector2(5, 5));
-		// var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector2(7, 1));
-		// allPieces = new[] { blackKing, whiteKing, whitePawn };
-		_game = new Game(allPieces);
-
-		var piecesUi = _game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
-
-		foreach (var piece in piecesUi)
-		{
-			_board.AddChild(piece);
-			piece.Dropped += PieceOnDropped;
-			piece.Lifted += OnPieceLifted;
-			if (piece.Color == _game.CurrentPlayer)
-			{
-				piece.Enable();
-			}
-			else
-			{
-				piece.Disable();
-			}
-		}
-
-		_analysePanel.Display(_game.Board);
-		
-		// _whitePlayer.FindMove(_game);
-	}
-
 	private void OnPieceLifted(PieceUI pieceUi)
 	{
-		var piece = _game.GetPiece(pieceUi.ChessPosition);
-		var possibleMoves = _game.Board.GetPossibleMoves(piece);
+		var piece = game.GetPiece(pieceUi.ChessPosition);
+		var possibleMoves = game.Board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
 		{
-			_highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
+			highlightedFields.Add(GetField(possibleMove.PieceNewPosition), GetField(possibleMove.PieceNewPosition).Color);			
 			GetField(possibleMove.PieceNewPosition).Color = Colors.Pink;
 		}
 	}
 	
 	private ColorRect GetField(Vector2 position)
 	{
-		return _board.GetNode<ColorRect>(position.ToChessNotation());
+		return board.GetNode<ColorRect>(position.ToChessNotation());
 	}
 	
 	private void OnPromotionSelected(PieceUI pieceUi, Vector2 newPosition, string type)
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
-		var piece = _game.GetPiece(pieceUi.ChessPosition);
-		_promotionBox.Hide();
-		var move = _game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
+		var piece = game.GetPiece(pieceUi.ChessPosition);
+		promotionBox.Hide();
+		var move = game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
 		if (move is null)
 		{
 			pieceUi.CancelMove();
@@ -234,17 +171,17 @@ public partial class GameView : Node2D
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
 	{
 		// reset the board so nothing is highlighted
-		foreach (var (field, color) in _highlightedFields)
+		foreach (var (field, color) in highlightedFields)
 		{
 			field.Color = color;
 		}
-		_highlightedFields.Clear();
+		highlightedFields.Clear();
 		
-		var pieces = _board.GetChildren()
+		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
 
-		var pieceToMove = _game.GetPiece(droppedPiece.ChessPosition);
+		var pieceToMove = game.GetPiece(droppedPiece.ChessPosition);
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))
@@ -254,7 +191,7 @@ public partial class GameView : Node2D
 			// do not move the piece yet. It has to stay in place so ProcessDrop can find it
 			// I wonder if I go away from having Piece completely decoupled from PieceUI this problem won't occur.
 			droppedPiece.SnapToPositionWithoutChangingChessPosition(newPosition);
-			_promotionBox.Bla(droppedPiece, newPosition);
+			promotionBox.Bla(droppedPiece, newPosition);
 			// disable all pieces so it's not possible to make any moves until the promotion is done
 			foreach (var piece in pieces)
 			{
@@ -262,18 +199,23 @@ public partial class GameView : Node2D
 			}
 			return;
 		}
-		var move  = _game.TryMove(pieceToMove, newPosition, promotedPiece: null);
+		var move  = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
 		if (move is null)
 		{
 			droppedPiece.CancelMove();
 			return;
 		}
 		UpdateUi(move);
+		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
+		{
+			blackAI.FindMove(game);
+		}
+
 	}
 
 	private void UpdateUi(Move move)
 	{
-		var pieces = _board.GetChildren()
+		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
 		var pieceToMove = pieces.First(p => p.ChessPosition == move.PieceToMove.Position);
@@ -290,11 +232,11 @@ public partial class GameView : Node2D
 			};
 			if (move.PieceToCapture.Color == Color.WHITE)
 			{
-				_whiteCapturedPieces.AddChild(textureRect);
+				whiteCapturedPieces.AddChild(textureRect);
 			}
 			else
 			{
-				_blackCapturedPieces.AddChild(textureRect);
+				blackCapturedPieces.AddChild(textureRect);
 			}
 
 			pieceToCapture.QueueFree();
@@ -315,20 +257,19 @@ public partial class GameView : Node2D
 		// swap current player
 		foreach (var piece in pieces)
 		{
-			if (piece.Color == _game.CurrentPlayer)
+			if (piece.Color == game.CurrentPlayer)
 				piece.Enable();
 			else
 				piece.Disable();
 		}
 		
-		if (_game.State != GameState.InProgress)
+		if (game.State != GameState.InProgress)
 		{
-			_gameStateLabel.Text = _game.State.ToString();
+			gameStateLabel.Text = game.State.ToString();
 		}
 
-		_movesSinceLastPawnOrCapture.Text = (_game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
+		movesSinceLastPawnOrCapture.Text = (game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
 
-
-		_analysePanel.Display(_game.Board);
+		analysePanel.Display(game.Board);
 	}
 }
