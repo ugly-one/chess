@@ -5,9 +5,9 @@ namespace Chess;
 
 public static class Something
 {
-    public static Piece GetPieceInPosition(this Piece[] board, Vector position)
+    public static Piece? GetPieceInPosition(this Piece[] board, Vector position)
     {
-        return board.First(p => p.Position == position);
+        return board.FirstOrDefault(p => p.Position == position);
     }
     
     public static Move[] ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
