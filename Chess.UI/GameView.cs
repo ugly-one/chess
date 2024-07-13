@@ -19,13 +19,11 @@ public partial class GameView : Node2D
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
-	private AnalysePanel analysePanel;
 	private SimpleAI blackAI;
 
 	public override void _Ready()
 	{
 		board = GetNode("%board");
-		analysePanel = GetNode<AnalysePanel>("%analysePanel");
 		gameStateLabel = GetNode<Label>("%gameStateLabel");
 		whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
 		blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
@@ -54,8 +52,6 @@ public partial class GameView : Node2D
 				piece.Disable();
 			}
 		}
-
-		analysePanel.Display(game.Board);
 	}
 
 	public override void _Process(double delta)
@@ -211,7 +207,5 @@ public partial class GameView : Node2D
 		{
 			gameStateLabel.Text = game.State.ToString();
 		}
-
-		analysePanel.Display(game.Board);
 	}
 }
