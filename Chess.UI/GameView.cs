@@ -15,7 +15,6 @@ public partial class GameView : Node2D
 	// I think I need better fields, something with methods: Highlight(), Reset(), so we don't have to keep track of it here
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
-	private Button pauseGameButton;
 	private Label gameStateLabel;
 	private Label movesSinceLastPawnOrCapture;
 	private GridContainer whiteCapturedPieces;
@@ -28,9 +27,6 @@ public partial class GameView : Node2D
 	{
 		board = GetNode("%board");
 		analysePanel = GetNode<AnalysePanel>("%analysePanel");
-		pauseGameButton = GetNode<Button>("%pauseGameButton");
-		pauseGameButton.Disabled = false;
-		pauseGameButton.Pressed += OnPauseGameButtonPressed;
 		gameStateLabel = GetNode<Label>("%gameStateLabel");
 		movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
 		whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
@@ -66,11 +62,8 @@ public partial class GameView : Node2D
 
 	public override void _Process(double delta)
 	{
-		if (game is null || gamePaused) return;
-		
 		if (game.State != GameState.InProgress)
 		{
-			pauseGameButton.Disabled = true;
 			return;
 		}
 		
@@ -224,18 +217,5 @@ public partial class GameView : Node2D
 		movesSinceLastPawnOrCapture.Text = (game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
 
 		analysePanel.Display(game.Board);
-	}
-
-	private void OnPauseGameButtonPressed()
-	{
-		if (gamePaused)
-		{
-			pauseGameButton.Text = "Pause";
-		}
-		else
-		{
-			pauseGameButton.Text = "Resume";
-		}
-		gamePaused = !gamePaused;
 	}
 }
