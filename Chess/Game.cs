@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 namespace Chess;
 
@@ -19,7 +18,7 @@ public class Game
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
     
-    public Move? TryMove(Piece pieceToMove, Vector2 newPosition, PieceType? promotedPiece)
+    public Move? TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
     {
         if (pieceToMove.Color != CurrentPlayer)
         {
@@ -89,7 +88,7 @@ public class Game
         return possibleMoves;
     }
 
-    public Piece GetPiece(Vector2 position)
+    public Piece GetPiece(Vector position)
     {
         var piece = Board.GetPieces().First(p => p.Position == position);
         return piece;

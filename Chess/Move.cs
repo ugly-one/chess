@@ -1,31 +1,29 @@
-using Godot;
-
 namespace Chess;
 
-public record Move(Piece PieceToMove, Vector2 PieceNewPosition, Piece PieceToCapture, Piece RockToMove,
-    Vector2? RockNewPosition, PieceType? PromotedType = null)
+public record Move(Piece PieceToMove, Vector PieceNewPosition, Piece PieceToCapture, Piece RockToMove,
+    Vector? RockNewPosition, PieceType? PromotedType = null)
 {
-    public static Move RegularMove(Piece pieceToMove, Vector2 newPosition)
+    public static Move RegularMove(Piece pieceToMove, Vector newPosition)
     {
         return new Move(pieceToMove, newPosition, null, null, null);
     }
 
-    public static Move RegularPromotion(Piece pieceToMove, Vector2 newPosition, PieceType newType)
+    public static Move RegularPromotion(Piece pieceToMove, Vector newPosition, PieceType newType)
     {
         return new Move(pieceToMove, newPosition, null, null, null, newType);
     }
     
-    public static Move PromotionWithCapture(Piece pieceToMove, Vector2 newPosition, Piece pieceToCapture, PieceType newType)
+    public static Move PromotionWithCapture(Piece pieceToMove, Vector newPosition, Piece pieceToCapture, PieceType newType)
     {
         return new Move(pieceToMove, newPosition, pieceToCapture, null, null, newType);
     }
     
-    public static Move Capture(Piece pieceToMove, Vector2 newPosition, Piece pieceToCapture)
+    public static Move Capture(Piece pieceToMove, Vector newPosition, Piece pieceToCapture)
     {
         return new Move(pieceToMove, newPosition, pieceToCapture, null, null);
     }
 
-    public static Move Castle(Piece king, Vector2 kingNewPosition, Piece rock, Vector2 rockNewPosition)
+    public static Move Castle(Piece king, Vector kingNewPosition, Piece rock, Vector rockNewPosition)
     {
         return new Move(king, kingNewPosition, null, rock, rockNewPosition);
         

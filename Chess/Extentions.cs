@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Chess;
-using Godot;
 
 public static class Extentions
 {
-    public static string ToChessNotation(this Vector2 position)
+    public static string ToChessNotation(this Vector position)
     {
         var number = 8 - position.Y;
         if (number < 1 || number > 8)
@@ -33,7 +32,7 @@ public static class Extentions
         return color == Color.BLACK ? Color.WHITE : Color.BLACK;
     }
     
-    public static bool IsOccupiedBy(this Vector2 position, Color color, IEnumerable<Piece> allPieces)
+    public static bool IsOccupiedBy(this Vector position, Color color, IEnumerable<Piece> allPieces)
     {
         foreach (var piece in allPieces)
         {
@@ -45,7 +44,7 @@ public static class Extentions
         return false;
     }
     
-    public static bool IsWithinBoard(this Vector2 position)
+    public static bool IsWithinBoard(this Vector position)
     {
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
     }

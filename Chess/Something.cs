@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 namespace Chess;
 
 public static class Something
 {
-    public static Piece GetPieceInPosition(this Piece[] board, Vector2 position)
+    public static Piece GetPieceInPosition(this Piece[] board, Vector position)
     {
         return board.FirstOrDefault(p => p.Position == position);
     }
     
-    public static Move[] ConvertToMoves(Piece piece, List<Vector2> allPositions, Piece[] board)
+    public static Move[] ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
     {
         return allPositions.Select(p =>
         {
@@ -31,7 +30,7 @@ public static class Something
     public static IEnumerable<Move> GetMovesInDirection(
         this Piece[] board,
         Piece piece,
-        Vector2 step, 
+        Vector step, 
         Color color)
     {
         var newPos = piece.Position + step;

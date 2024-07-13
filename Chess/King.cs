@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 namespace Chess;
 
@@ -8,29 +7,29 @@ public static class King
 {
     public static Move[] GetKingMoves(Piece king, Piece[] board)
     {
-        var allPositions = new List<Vector2>()
+        var allPositions = new List<Vector>()
         {
-            king.Position + Vector2.Up,
-            king.Position + Vector2.Down,
-            king.Position + Vector2.Left,
-            king.Position + Vector2.Right,
-            king.Position + Vector2.Up + Vector2.Right,
-            king.Position + Vector2.Up + Vector2.Left,
-            king.Position + Vector2.Down + Vector2.Right,
-            king.Position + Vector2.Down + Vector2.Left,
+            king.Position + Vector.Up,
+            king.Position + Vector.Down,
+            king.Position + Vector.Left,
+            king.Position + Vector.Right,
+            king.Position + Vector.Up + Vector.Right,
+            king.Position + Vector.Up + Vector.Left,
+            king.Position + Vector.Down + Vector.Right,
+            king.Position + Vector.Down + Vector.Left,
         };
 
         var allMoves = Something.ConvertToMoves(king, allPositions, board).ToList();
         
         // short castle
-        var shortCastleMove = TryGetCastleMove(king, Vector2.Right, 2, board);
+        var shortCastleMove = TryGetCastleMove(king, Vector.Right, 2, board);
         if (shortCastleMove != null)
         {
             allMoves.Add(shortCastleMove);
         }
 
         // long castle
-        var longCastleMove = TryGetCastleMove(king, Vector2.Left, 3, board);
+        var longCastleMove = TryGetCastleMove(king, Vector.Left, 3, board);
         if (longCastleMove != null)
         {
             allMoves.Add(longCastleMove);
@@ -39,7 +38,7 @@ public static class King
         return allMoves.ToArray();
     }
 
-    private static Move TryGetCastleMove(Piece king, Vector2 kingMoveDirection, int rockSteps, Piece[] _board)
+    private static Move TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[] _board)
     {
         if (king.Moved)
             return null;

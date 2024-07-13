@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 namespace Chess;
 
@@ -80,7 +79,7 @@ public class Board
                 {
                     // we're castling
                     var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
-                    var oneStepVector = moveVector.Abs().Clamp(new Vector2(0,0),new Vector2(1,0));
+                    var oneStepVector = moveVector.Abs().Clamp(new Vector(0,0),new Vector(1,0));
                     if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
                     {
                         // castling not allowed
@@ -144,7 +143,7 @@ public class Board
         var rockToMove = move.RockToMove;
         if (rockToMove != null)
         {
-            var newRock = rockToMove.Move(move.RockNewPosition.Value);
+            var newRock = rockToMove.Move(move.RockNewPosition);
             newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
         }
 
@@ -162,7 +161,7 @@ public class Board
     /// Check if given field is under attack by given color's pieces
     /// </summary>
     /// <returns></returns>
-    private bool IsFieldUnderAttack(Vector2 field, Color color)
+    private bool IsFieldUnderAttack(Vector field, Color color)
     {
         var pieces = GetPieces(color);
         foreach (var piece in pieces)

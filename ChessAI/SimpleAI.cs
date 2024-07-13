@@ -1,5 +1,4 @@
 ﻿using Chess;
-using Godot;
 
 namespace ChessAI;
 
@@ -10,9 +9,9 @@ public class SimpleAI : IPlayer
     }
 
     public bool FoundMove { get; private set; }
-    private (Piece, Vector2, PieceType?) Move { get; set; }
+    private (Piece, Vector, PieceType?) Move { get; set; }
 
-    public (Piece, Vector2, PieceType?) GetMove()
+    public (Piece, Vector, PieceType?) GetMove()
     {
         FoundMove = false;
         return Move;

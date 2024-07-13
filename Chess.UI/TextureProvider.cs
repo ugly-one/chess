@@ -4,6 +4,18 @@ using System;
 
 namespace Chess.UI;
 
+public static class VectorExtension
+{
+	public static Vector2 ToVector2(this Vector vector)
+	{
+		return new Vector2(vector.X, vector.Y);
+	}
+
+	public static Vector ToVector(this Vector2 vector)
+	{
+		return new Vector((int)vector.X, (int)vector.Y);
+	}
+}
 public static class TextureProvider
 {
 	public static Texture2D GetTexture(this Piece piece)

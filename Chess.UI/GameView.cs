@@ -42,7 +42,7 @@ public partial class GameView : HBoxContainer
 		this.blackAI = black;
 		this.whiteAI = white;
 		// make sure we have UI aligned with game state
-		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position, p.Color, p.GetTexture()));
+		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position.ToVector2(), p.Color, p.GetTexture()));
 		foreach (var piece in piecesUi)
 		{
 			board.AddChild(piece);
@@ -70,18 +70,18 @@ public partial class GameView : HBoxContainer
 		if (game.CurrentPlayer == Color.WHITE && (whiteAI?.FoundMove ?? false))
 		{
 			var (piece, position, promotedPiece) = whiteAI.GetMove();
-			TryMove(piece, position, promotedPiece);
+			TryMove(piece, position.ToVector2(), promotedPiece);
 		}
 		else if(game.CurrentPlayer == Color.BLACK && (blackAI?.FoundMove ?? false))
 		{
 			var (piece, position, promotedPiece) = blackAI.GetMove();
-			TryMove(piece, position, promotedPiece);
+			TryMove(piece, position.ToVector2(), promotedPiece);
 		}
 	}
 
 	private bool TryMove(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
-		var newMove = game.TryMove(piece, position, promotedPiece);
+		var newMove = game.TryMove(piece, position.ToVector(), promotedPiece);
 		if (newMove == null) 
 			return false;
 		UpdateUi(newMove);
@@ -136,7 +136,7 @@ public partial class GameView : HBoxContainer
 
 	private void OnPieceLifted(PieceUI pieceUi)
 	{
-		var piece = game.GetPiece(pieceUi.ChessPosition);
+		var piece = game.GetPiece(pieceUi.ChessPosition.ToVector());
 		var possibleMoves = game.Board.GetPossibleMoves(piece);
 		
 		foreach (var possibleMove in possibleMoves)
@@ -150,9 +150,9 @@ public partial class GameView : HBoxContainer
 	private void OnPromotionSelected(PieceUI pieceUi, Vector2 newPosition, string type)
 	{
 		var typeAsEnum = Enum.Parse<PieceType>(type);
-		var piece = game.GetPiece(pieceUi.ChessPosition);
+		var piece = game.GetPiece(pieceUi.ChessPosition.ToVector());
 		promotionBox.Hide();
-		var move = game.TryMove(piece, newPosition, promotedPiece: typeAsEnum);
+		var move = game.TryMove(piece, newPosition.ToVector(), promotedPiece: typeAsEnum);
 		if (move is null)
 		{
 			pieceUi.CancelMove();
@@ -174,7 +174,7 @@ public partial class GameView : HBoxContainer
 			.OfType<PieceUI>()
 			.ToArray();
 
-		var pieceToMove = game.GetPiece(droppedPiece.ChessPosition);
+		var pieceToMove = game.GetPiece(droppedPiece.ChessPosition.ToVector());
 		
 		if (pieceToMove.Type == PieceType.Pawn &&
 			(newPosition.Y == 0 || newPosition.Y == 7))
@@ -204,14 +204,14 @@ public partial class GameView : HBoxContainer
 		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
-		var pieceToMove = pieces.First(p => p.ChessPosition == move.PieceToMove.Position);
+		var pieceToMove = pieces.First(p => p.ChessPosition == move.PieceToMove.Position.ToVector2());
 		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
 		// it was less code with the events emitted from Piece class (events handled by UI components)
 		// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
 		// when detecting en-passant
 		if (move.PieceToCapture != null)
 		{
-			var pieceToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position);
+			var pieceToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position.ToVector2());
 			var textureRect = new TextureRect()
 			{
 				Texture = move.PieceToCapture.GetTexture()
@@ -228,7 +228,7 @@ public partial class GameView : HBoxContainer
 			pieceToCapture.QueueFree();
 		}
 
-		pieceToMove.Move(move.PieceNewPosition);
+		pieceToMove.Move(move.PieceNewPosition.ToVector2());
 		if (move.PromotedType != null)
 		{
 			pieceToMove.ChangeTexture(pieceToMove.Color.GetTexture(move.PromotedType.Value.ToString().ToLower()));
@@ -236,8 +236,8 @@ public partial class GameView : HBoxContainer
 		
 		if (move.RockToMove != null)
 		{
-			var rockToMove = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
-			rockToMove.Move(move.RockNewPosition.Value);
+			var rockToMove = pieces.First(p => p.ChessPosition == move.RockToMove.Position.ToVector2());
+			rockToMove.Move(move.RockNewPosition.ToVector2());
 		}
 	}
 }
