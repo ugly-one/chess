@@ -48,16 +48,13 @@ public partial class GameView : HBoxContainer
 			board.AddChild(piece);
 			piece.Dropped += PieceOnDropped;
 			piece.Lifted += OnPieceLifted;
-			if (piece.Color == game.CurrentPlayer)
-			{
-				piece.Enable();
-			}
-			else
-			{
-				piece.Disable();
-			}
 		}
-		if (whiteAI != null)
+
+		if (whiteAI == null)
+		{
+			EnableColor(Color.WHITE);
+		}
+		else
 		{
 			whiteAI.FindMove(game);
 		}
@@ -96,16 +93,45 @@ public partial class GameView : HBoxContainer
 			return true;
 		}
 
-		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
+		if (game.CurrentPlayer == Color.BLACK)
 		{
-			blackAI.FindMove(game);
-		}
+			if (blackAI == null)
+			{
+				EnableColor(Color.BLACK);
+			}
+			else
+			{
+				blackAI.FindMove(game);
+			}
+		} 
 		
-		if (game.CurrentPlayer == Color.WHITE && whiteAI != null)
+		if (game.CurrentPlayer == Color.WHITE)
 		{
-			whiteAI.FindMove(game);
+			if (whiteAI == null)
+			{
+				EnableColor(Color.WHITE);
+			}
+			else
+			{
+				whiteAI.FindMove(game);
+			}
 		}
 		return true;
+	}
+
+	private void EnableColor(Color color)
+	{
+		var allPieces = board.GetChildren()
+			.OfType<PieceUI>();
+
+		foreach (var piece in allPieces.Where(p => p.Color == color))
+		{
+			piece.Enable();
+		}
+		foreach (var piece in allPieces.Where(p => p.Color != color))
+		{
+			piece.Disable();
+		}
 	}
 
 	private void OnPieceLifted(PieceUI pieceUi)
@@ -212,15 +238,6 @@ public partial class GameView : HBoxContainer
 		{
 			var rockToMove = pieces.First(p => p.ChessPosition == move.RockToMove.Position);
 			rockToMove.Move(move.RockNewPosition.Value);
-		}
-
-		// swap current player
-		foreach (var piece in pieces)
-		{
-			if (piece.Color == game.CurrentPlayer)
-				piece.Enable();
-			else
-				piece.Disable();
 		}
 	}
 }
