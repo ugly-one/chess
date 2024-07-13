@@ -104,15 +104,22 @@ public partial class GameView : Node2D
 			if (blackAI?.FoundMove ?? false)
 			{
 				var (piece, position, promotedPiece) = blackAI.GetMove();
-				MoveAndUpdateUi(piece, position, promotedPiece);
+				TryMove(piece, position, promotedPiece);
 			}
 		}
 	}
 
-	private void MoveAndUpdateUi(Piece piece, Vector2 position, PieceType? promotedPiece)
+	private bool TryMove(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
 		var newMove = game.TryMove(piece, position, promotedPiece);
+		if (newMove == null) 
+			return false;
 		UpdateUi(newMove);
+		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
+		{
+			blackAI.FindMove(game);
+		}
+		return true;
 	}
 
 	private void CleanUpCurrentGame()
@@ -199,18 +206,11 @@ public partial class GameView : Node2D
 			}
 			return;
 		}
-		var move  = game.TryMove(pieceToMove, newPosition, promotedPiece: null);
-		if (move is null)
+		var moved = TryMove(pieceToMove, newPosition, promotedPiece: null);
+		if (!moved)
 		{
 			droppedPiece.CancelMove();
-			return;
 		}
-		UpdateUi(move);
-		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
-		{
-			blackAI.FindMove(game);
-		}
-
 	}
 
 	private void UpdateUi(Move move)
