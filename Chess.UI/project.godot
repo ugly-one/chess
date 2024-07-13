@@ -21,7 +21,7 @@ Extensions="*res://extensions.gd"
 [display]
 
 window/size/viewport_width=1000
-window/size/viewport_height=600
+window/size/viewport_height=700
 
 [dotnet]
 

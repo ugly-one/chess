@@ -4,13 +4,23 @@
 
 [node name="MainView" type="VBoxContainer"]
 offset_right = 1001.0
-offset_bottom = 599.0
+offset_bottom = 697.0
 size_flags_vertical = 3
 script = ExtResource("1_4dxnr")
+
+[node name="CurrentGameMenu" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="MainMenuButton" type="Button" parent="CurrentGameMenu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Main menu"
 
 [node name="NewGameMenu" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 6
 
 [node name="NewGameButton" type="Button" parent="NewGameMenu"]
 unique_name_in_owner = true
@@ -27,12 +37,3 @@ text = "Black AI: "
 [node name="BlackCheckBox" type="CheckBox" parent="NewGameMenu/BlackAI"]
 unique_name_in_owner = true
 layout_mode = 2
-
-[node name="CurrentGameMenu" type="VBoxContainer" parent="."]
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="MainMenuButton" type="Button" parent="CurrentGameMenu"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Main menu"
