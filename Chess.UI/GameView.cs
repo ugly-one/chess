@@ -18,8 +18,8 @@ public partial class GameView : HBoxContainer
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
-	private SimpleAI blackAI;
-	private SimpleAI whiteAI;
+	private IPlayer blackAI;
+	private IPlayer whiteAI;
 	private Label endOfGameLabel;
 
 	public override void _Ready()
@@ -35,8 +35,8 @@ public partial class GameView : HBoxContainer
 	}
 
 	public void StartNewGame(Game game, 
-		SimpleAI black = null,
-		SimpleAI white = null)
+		IPlayer black = null,
+		IPlayer white = null)
 	{
 		this.game = game;
 		this.blackAI = black;

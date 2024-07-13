@@ -3,7 +3,7 @@ using Godot;
 
 namespace ChessAI;
 
-public class SimpleAI
+public class SimpleAI : IPlayer
 {
     public SimpleAI()
     {
