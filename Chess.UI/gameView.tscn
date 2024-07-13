@@ -74,10 +74,6 @@ unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("7_uf7hn")
 
-[node name="movesSinceLastPawnOrCapture" type="Label" parent="HBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
 [node name="analysePanel" parent="HBoxContainer" instance=ExtResource("8_wigqk")]
 unique_name_in_owner = true
 layout_mode = 2

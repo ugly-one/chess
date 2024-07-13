@@ -16,7 +16,6 @@ public partial class GameView : Node2D
 	// Plus, I think it might be good if the pieces will be as children of the fields and not as siblings as it is now.
 	private Godot.Collections.Dictionary<ColorRect, Godot.Color> highlightedFields = new Godot.Collections.Dictionary<ColorRect, Godot.Color>();
 	private Label gameStateLabel;
-	private Label movesSinceLastPawnOrCapture;
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
@@ -28,7 +27,6 @@ public partial class GameView : Node2D
 		board = GetNode("%board");
 		analysePanel = GetNode<AnalysePanel>("%analysePanel");
 		gameStateLabel = GetNode<Label>("%gameStateLabel");
-		movesSinceLastPawnOrCapture = GetNode<Label>("%movesSinceLastPawnOrCapture");
 		whiteCapturedPieces = GetNode<GridContainer>("%whiteCapturedPieces");
 		blackCapturedPieces = GetNode<GridContainer>("%blackCapturedPieces");
 		promotionBox = GetNode<PromotionBox>("%promotionBox");
@@ -213,8 +211,6 @@ public partial class GameView : Node2D
 		{
 			gameStateLabel.Text = game.State.ToString();
 		}
-
-		movesSinceLastPawnOrCapture.Text = (game.MovesSinceLastPawnMoveOrPieceTake / 2).ToString();
 
 		analysePanel.Display(game.Board);
 	}
