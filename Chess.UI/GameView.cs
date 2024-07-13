@@ -19,6 +19,7 @@ public partial class GameView : HBoxContainer
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
 	private SimpleAI blackAI;
+	private Label endOfGameLabel;
 
 	public override void _Ready()
 	{
@@ -28,6 +29,8 @@ public partial class GameView : HBoxContainer
 		promotionBox = GetNode<PromotionBox>("%PromotionBox");
 		promotionBox.PieceForPromotionSelected += OnPromotionSelected;
 		promotionBox.Hide();
+		endOfGameLabel = GetNode<Label>("%EndOfGameLabel");
+		endOfGameLabel.Hide();
 	}
 
 	public void StartNewGame(Game game, SimpleAI black = null)
@@ -79,6 +82,14 @@ public partial class GameView : HBoxContainer
 		if (newMove == null) 
 			return false;
 		UpdateUi(newMove);
+
+		if (game.State != GameState.InProgress)
+		{
+			endOfGameLabel.Text = game.State.ToString();
+			endOfGameLabel.Show();
+			return true;
+		}
+
 		if (game.CurrentPlayer == Color.BLACK && blackAI != null)
 		{
 			blackAI.FindMove(game);
