@@ -15,7 +15,7 @@ public class Board
         _lastMove = lastMove;
     }
 
-    public bool CalculateInsufficientMatingMaterial()
+    public bool HasInsufficientMatingMaterial()
     {
         if (_pieces.Length == 2)
         {

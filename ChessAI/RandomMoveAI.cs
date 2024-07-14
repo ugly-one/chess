@@ -4,9 +4,11 @@ namespace ChessAI;
 
 public class RandomMoveAI  : IPlayer
 {
-    public Move GetMove(Game game)
+    private Color color;
+
+    public Move GetMove(Board board)
     {
-        var possibleMoves = game.GetPossibleMoves();
+        var possibleMoves = board.GetAllPossibleMovesForColor(color);
         var randomIndex = new Random().Next(0, possibleMoves.Count());
         var randomMove = possibleMoves[randomIndex];
         if (randomMove.PieceToMove.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)
@@ -17,5 +19,32 @@ public class RandomMoveAI  : IPlayer
         {
             return randomMove;
         }
+    }
+
+    public void SetColor(Color color)
+    {
+        this.color = color;
+    }
+}
+
+public class GiveMeCheckAI  : IPlayer
+{
+    private Color color;
+
+    public Move GetMove(Board board)
+    {
+        var possibleMoves = board.GetAllPossibleMovesForColor(color);
+        foreach (var move in possibleMoves)
+        {
+            var newBoard = board.Move(move, PieceType.Queen);
+            if (newBoard.IsKingUnderAttack(color.GetOppositeColor()))
+                return move with {PromotedType = PieceType.Queen};
+        }
+        return possibleMoves[0];
+    }
+
+    public void SetColor(Color color)
+    {
+        this.color = color;
     }
 }

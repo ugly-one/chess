@@ -2,5 +2,6 @@ using Chess;
 
 public interface IPlayer
 {
-	Move GetMove(Game game);
+	void SetColor(Color color);
+	Move GetMove(Board board);
 }

@@ -27,7 +27,7 @@ public class PlayerHost
         Task.Run(() =>
         {
             Thread.Sleep(50);
-            move = ai.GetMove(game);
+            move = ai.GetMove(game.Board);
             FoundMove = true;
         });
     }

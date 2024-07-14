@@ -52,7 +52,7 @@ public class Game
             MovesSinceLastPawnMoveOrPieceTake += 1;
         }
 
-        if (Board.CalculateInsufficientMatingMaterial())
+        if (Board.HasInsufficientMatingMaterial())
         {
             State = GameState.Draw;
             return move;
