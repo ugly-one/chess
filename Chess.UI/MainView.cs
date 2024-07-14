@@ -31,15 +31,15 @@ public partial class MainView : VBoxContainer
 		var isWhiteAI = GetNode<CheckBox>("%WhiteCheckBox").ButtonPressed;
 		var allPieces = PieceFactory.CreateNewGame();
 		var gameState = new Game(allPieces);
-		SimpleAI blackAI = null;
+		PlayerHost blackAI = null;
 		if (isBlackAI)
 		{
-			blackAI = new SimpleAI();
+			blackAI = new PlayerHost(new RandomMoveAI());
 		}
-		SimpleAI whiteAI = null;
+		PlayerHost whiteAI = null;
 		if (isWhiteAI)
 		{
-			whiteAI = new SimpleAI();
+			whiteAI = new PlayerHost(new RandomMoveAI());
 		}
 		game.StartNewGame(gameState, black: blackAI, white: whiteAI);
 		game.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;

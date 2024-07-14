@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using ChessAI;
 using Godot;
 
 namespace Chess.UI;
@@ -18,8 +17,8 @@ public partial class GameView : HBoxContainer
 	private GridContainer whiteCapturedPieces;
 	private GridContainer blackCapturedPieces;
 	private PromotionBox promotionBox;
-	private IPlayer blackAI;
-	private IPlayer whiteAI;
+	private PlayerHost blackAI;
+	private PlayerHost whiteAI;
 	private Label endOfGameLabel;
 
 	public override void _Ready()
@@ -35,8 +34,8 @@ public partial class GameView : HBoxContainer
 	}
 
 	public void StartNewGame(Game game, 
-		IPlayer black = null,
-		IPlayer white = null)
+		PlayerHost black = null,
+		PlayerHost white = null)
 	{
 		this.game = game;
 		this.blackAI = black;
@@ -69,13 +68,13 @@ public partial class GameView : HBoxContainer
 		
 		if (game.CurrentPlayer == Color.WHITE && (whiteAI?.FoundMove ?? false))
 		{
-			var (piece, position, promotedPiece) = whiteAI.GetMove();
-			TryMove(piece, position.ToVector2(), promotedPiece);
+			var move = whiteAI.GetMove();
+			TryMove(move.PieceToMove, move.PieceNewPosition.ToVector2(), move.PromotedType);
 		}
 		else if(game.CurrentPlayer == Color.BLACK && (blackAI?.FoundMove ?? false))
 		{
-			var (piece, position, promotedPiece) = blackAI.GetMove();
-			TryMove(piece, position.ToVector2(), promotedPiece);
+			var move = blackAI.GetMove();
+			TryMove(move.PieceToMove, move.PieceNewPosition.ToVector2(), move.PromotedType);
 		}
 	}
 
