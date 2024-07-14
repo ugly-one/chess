@@ -6,6 +6,11 @@ public class RandomMoveAI  : IPlayer
 {
     private Color color;
 
+    public RandomMoveAI(Color color)
+    {
+        this.color = color;
+    }
+
     public Move GetMove(Board board)
     {
         var possibleMoves = board.GetAllPossibleMovesForColor(color);
@@ -20,16 +25,16 @@ public class RandomMoveAI  : IPlayer
             return randomMove;
         }
     }
-
-    public void SetColor(Color color)
-    {
-        this.color = color;
-    }
 }
 
 public class GiveMeCheckAI  : IPlayer
 {
     private Color color;
+
+    public GiveMeCheckAI(Color color)
+    {
+        this.color = color;
+    }
 
     public Move GetMove(Board board)
     {
@@ -41,10 +46,5 @@ public class GiveMeCheckAI  : IPlayer
                 return move with {PromotedType = PieceType.Queen};
         }
         return possibleMoves[0];
-    }
-
-    public void SetColor(Color color)
-    {
-        this.color = color;
     }
 }

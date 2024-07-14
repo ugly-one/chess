@@ -34,12 +34,12 @@ public partial class MainView : VBoxContainer
 		PlayerHost blackAI = null;
 		if (isBlackAI)
 		{
-			blackAI = new PlayerHost(new RandomMoveAI());
+			blackAI = new PlayerHost(new RandomMoveAI(Color.BLACK));
 		}
 		PlayerHost whiteAI = null;
 		if (isWhiteAI)
 		{
-			whiteAI = new PlayerHost(new RandomMoveAI());
+			whiteAI = new PlayerHost(new GiveMeCheckAI(Color.WHITE));
 		}
 		game.StartNewGame(gameState, black: blackAI, white: whiteAI);
 		game.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
