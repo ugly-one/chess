@@ -45,6 +45,6 @@ public class GiveMeCheckAI  : IPlayer
             if (newBoard.IsKingUnderAttack(color.GetOppositeColor()))
                 return move with {PromotedType = PieceType.Queen};
         }
-        return possibleMoves[0];
+        return possibleMoves[0] with {PromotedType = PieceType.Queen};
     }
 }

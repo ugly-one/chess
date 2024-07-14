@@ -83,6 +83,8 @@ public partial class GameView : HBoxContainer
 		var newMove = game.TryMove(piece, position.ToVector(), promotedPiece);
 		if (newMove == null) 
 			return false;
+
+		GD.Print($"[{piece.Color}] Piece:{newMove.PieceToMove.Type}. Pos: {newMove.PieceNewPosition}. [Capture: {newMove.PieceToCapture?.Type}]. [Castle: {newMove.RockNewPosition}]. [Promotion: {newMove.PromotedType}]");
 		UpdateUi(newMove);
 
 		if (game.State != GameState.InProgress)
