@@ -42,6 +42,8 @@ public class Game
             return null;
         }
 
+        // The same logic is in Board. There should be a way how to get (from Board) what moved
+        // so we do not have to set PromotedType here 
         if (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7)
         {
             if (move.PieceToMove.Type == PieceType.Pawn)

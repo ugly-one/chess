@@ -124,6 +124,9 @@ public class Board
         return allPossibleMoves;
     }
 
+    // This is a bit funny that someone can tell the engine to promote non-pawn pieces
+    // and also I can do it for any moves - including moves in the center of the board
+    // but, I do not see an obvious way how to prevent it.
     public Board Move(Move move, PieceType? promotedPiece)
     {
         var takenPiece = move.PieceToCapture;
