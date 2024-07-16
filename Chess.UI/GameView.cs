@@ -38,6 +38,7 @@ public partial class GameView : HBoxContainer
 		PlayerHost white = null)
 	{
 		this.game = game;
+		GetNode<AnalysePanel>("analysePanel").Display(game.Board);
 		this.blackAI = black;
 		this.whiteAI = white;
 		// make sure we have UI aligned with game state
@@ -87,6 +88,7 @@ public partial class GameView : HBoxContainer
 		GD.Print($"[{piece.Color}] Piece:{newMove.PieceToMove.Type}. Pos: {newMove.PieceNewPosition}. [Capture: {newMove.PieceToCapture?.Type}]. [Castle: {newMove.RockNewPosition}]. [Promotion: {newMove.PromotedType}]");
 		UpdateUi(newMove);
 
+		GetNode<AnalysePanel>("analysePanel").Display(game.Board);
 		if (game.State != GameState.InProgress)
 		{
 			endOfGameLabel.Text = game.State.ToString();

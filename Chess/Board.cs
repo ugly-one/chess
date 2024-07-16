@@ -11,6 +11,7 @@ public class Board
 
     public Board(ICollection<Piece> board, Move? lastMove = null)
     {
+        // TODO validate given pieces - they could be in invalid positions
         _pieces = board.ToArray();
         _lastMove = lastMove;
     }

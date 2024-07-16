@@ -10,6 +10,14 @@ public class Game
     public Color CurrentPlayer { get; private set; }
     public int MovesSinceLastPawnMoveOrPieceTake { get; private set; }
     
+    public Game(Color startingColor, params Piece[] pieces)
+    {
+        Board = new Board(pieces);
+        State = GameState.InProgress;
+        CurrentPlayer = startingColor;
+        MovesSinceLastPawnMoveOrPieceTake = 0;
+    }
+
     public Game(ICollection<Piece> pieces)
     {
         Board = new Board(pieces);
@@ -36,7 +44,12 @@ public class Game
 
         if (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7)
         {
-            move = move with { PromotedType = promotedPiece };
+            if (move.PieceToMove.Type == PieceType.Pawn)
+            {
+                // no need to check the color - white pawns will never reach first row 
+                // and black pawns will never reach the last row
+                move = move with { PromotedType = promotedPiece };
+            }
         }
         Board = Board.Move(move, promotedPiece);
 
