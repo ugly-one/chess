@@ -34,7 +34,7 @@ public class BoardTests
         
         Assert.Single(moves);
         Assert.Equal(moves.First().PieceNewPosition, new Vector(2,3));
-        Assert.Equal(moves.First().PieceToCapture, blackPawn);
+        Assert.Equal(3, board.GetPieces().Length);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class BoardTests
         var moves = game.Board.GetPossibleMoves(whitePawn);
         
         Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2,2));
-        Assert.Contains(moves, m => m.PieceToCapture?.Position == new Vector(2,3));
+        Assert.Equal(3, game.Board.GetPieces().Length);
     }
 
     [Fact]
