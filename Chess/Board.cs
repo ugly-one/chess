@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Chess;
 
@@ -14,6 +15,26 @@ public class Board
         // TODO validate given pieces - they could be in invalid positions
         _pieces = board.ToArray();
         _lastMove = lastMove;
+    }
+
+    public override string ToString()
+    {
+        var boardMatrix = new Piece?[8, 8];
+        foreach (var piece in _pieces)
+        {
+            boardMatrix[piece.Position.X, piece.Position.Y] = piece;
+        }
+
+        var stringRepresentation = new StringBuilder();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+                stringRepresentation.Append(boardMatrix[x, y]?.ToString() ?? "\u00B7");
+
+            stringRepresentation.Append('\n');
+        }
+
+        return stringRepresentation.ToString();
     }
 
     public bool HasInsufficientMatingMaterial()
@@ -47,7 +68,7 @@ public class Board
         {
             return true;
         }
-        
+
         return false;
     }
 
@@ -109,7 +130,7 @@ public class Board
         return _pieces
             .ToArray();
     }
-    
+
     public List<Move> GetAllPossibleMovesForColor(Color color)
     {
         var pieces = GetPieces(color);
@@ -160,7 +181,7 @@ public class Board
             .First(k => k.Type == PieceType.King && k.Color == color);
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
     }
-    
+
     /// <summary>
     /// Check if given field is under attack by given color's pieces
     /// </summary>
@@ -185,7 +206,7 @@ public class Board
             .Where(p => p.Color == color)
             .ToArray();
     }
-    
+
     /// <summary>
     /// Get moves for the piece without taking into consideration all the rules
     /// But then we should put the logic somewhere to detect that we can't jump over other pieces.
