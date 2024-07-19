@@ -6,7 +6,7 @@ namespace Chess.UI;
 public class PlayerHost
 {
     private readonly IPlayer ai;
-    private Move move;
+    private MoveWithPromotion move;
 
     public PlayerHost(IPlayer ai)
     {
@@ -15,7 +15,7 @@ public class PlayerHost
 
     public bool FoundMove { get; private set; }
 
-    public Move GetMove()
+    public MoveWithPromotion GetMove()
     {
         FoundMove = false;
         return move!;

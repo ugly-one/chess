@@ -64,8 +64,7 @@ public class Board
     /// <returns></returns>
     public Move[] GetPossibleMoves(Piece piece)
     {
-        var possibleMoves = GetMoves(piece)
-            .WithinBoard();
+        var possibleMoves = GetMoves(piece).WithinBoard();
 
         var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
@@ -110,6 +109,11 @@ public class Board
             .ToArray();
     }
     
+    /// <summary>
+    /// Maybe it would be better if we return List<Board>?
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
     public List<Move> GetAllPossibleMovesForColor(Color color)
     {
         var pieces = GetPieces(color);
@@ -118,16 +122,30 @@ public class Board
         {
             // try to find possible moves
             var possibleMoves = GetPossibleMoves(piece);
-            allPossibleMoves.AddRange(possibleMoves);
+            allPossibleMoves.AddRange(
+                possibleMoves.Select(m => new Move(m.PieceToMove, m.PieceNewPosition)));
         }
 
         return allPossibleMoves;
     }
 
+    public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece)
+    {
+        var possibleMoves = GetPossibleMoves(piece);
+        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition); 
+        if (move == null)
+        {
+            return (false, this);
+        }
+
+        var newBoard = Move(move, promotedPiece);
+
+        return (true, newBoard);
+    }
     // This is a bit funny that someone can tell the engine to promote non-pawn pieces
     // and also I can do it for any moves - including moves in the center of the board
     // but, I do not see an obvious way how to prevent it.
-    public Board Move(Move move, PieceType? promotedPiece)
+    private Board Move(Move move, PieceType? promotedPiece)
     {
         var takenPiece = move.PieceToCapture;
         var newBoard = _pieces.ToList();

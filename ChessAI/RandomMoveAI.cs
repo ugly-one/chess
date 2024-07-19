@@ -11,18 +11,18 @@ public class RandomMoveAI  : IPlayer
         this.color = color;
     }
 
-    public Move GetMove(Board board)
+    public MoveWithPromotion GetMove(Board board)
     {
         var possibleMoves = board.GetAllPossibleMovesForColor(color);
         var randomIndex = new Random().Next(0, possibleMoves.Count());
         var randomMove = possibleMoves[randomIndex];
         if (randomMove.PieceToMove.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)
         {
-            return randomMove with { PromotedType = PieceType.Queen};
+            return new MoveWithPromotion(randomMove.PieceToMove, randomMove.PieceNewPosition, PieceType.Queen);
         }
         else
         {
-            return randomMove;
+            return new MoveWithPromotion(randomMove.PieceToMove, randomMove.PieceNewPosition, PromotedPiece: null);
         }
     }
 }

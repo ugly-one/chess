@@ -3,23 +3,7 @@ using System.Linq;
 
 namespace Chess;
 
-public static class Queen
-{
-    public static Move[] GetQueenMoves(Piece piece, Piece[] board)
-    {
-        var moves = new List<Move>();
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Right,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Left,    piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down + Vector.Left,  piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down + Vector.Right, piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up,       piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Left,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Right, piece.Color));
-        return moves.ToArray();
-    }
-}
-public static class Pawn
+internal static class Pawn
 {
     public static Move[] GetPawnMoves(Piece piece, Piece[] board, Move? lastMove)
     {
@@ -30,7 +14,7 @@ public static class Pawn
         var forward = piece.Position + direction;
         if (!IsBlocked(forward, board))
         {
-            moves.Add(Chess.Move.RegularMove(piece, forward));
+            moves.Add(new Move(piece, forward));
             
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
@@ -38,7 +22,7 @@ public static class Pawn
                 var forward2Steps = piece.Position + direction + direction;
                 if (!IsBlocked(forward2Steps, board))
                 {
-                    moves.Add(Chess.Move.RegularMove(piece, forward2Steps));
+                    moves.Add(new Move(piece, forward2Steps));
                 }
             }
         }
@@ -48,11 +32,11 @@ public static class Pawn
         var possiblyCapturedPiece = board.GetPieceInPosition(takeLeft);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(Chess.Move.Capture(piece, takeLeft, possiblyCapturedPiece));
+            moves.Add(new Move(piece, takeLeft));
         }
         else
         {
-            var move = Pawn.TryGetEnPassant(piece, takeLeft, board, lastMove);
+            var move = Pawn.TryGetEnPassant(piece, takeLeft, lastMove);
             if (move != null)
             {
                 moves.Add(move);
@@ -64,11 +48,11 @@ public static class Pawn
         possiblyCapturedPiece = board.GetPieceInPosition(takeRight);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(Chess.Move.Capture(piece, takeRight, possiblyCapturedPiece));
+            moves.Add(new Move(piece, takeRight));
         }
         else
         {
-            var move = Pawn.TryGetEnPassant(piece, takeRight, board, lastMove);
+            var move = Pawn.TryGetEnPassant(piece, takeRight, lastMove);
             if (move != null)
             {
                 moves.Add(move);
@@ -77,7 +61,7 @@ public static class Pawn
 
         return moves.ToArray();
     }
-    private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Piece[] board, Move? lastMove)
+    private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Move? lastMove)
     {
         if (lastMove == null) return null;
         
@@ -88,8 +72,7 @@ public static class Pawn
             is2StepMove && // was it a 2 step move
             isThePawnNowNextToUs) // was it move next to us 
         {
-            return Chess.Move.Capture(piece, capturePosition,
-                board.GetPieceInPosition(lastMove.PieceNewPosition));
+            return new Move(piece, capturePosition);
         }
 
         return null;
