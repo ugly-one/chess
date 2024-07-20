@@ -70,23 +70,22 @@ public partial class GameView : HBoxContainer
 		if (game.CurrentPlayer == Color.WHITE && (whiteAI?.FoundMove ?? false))
 		{
 			var move = whiteAI.GetMove();
-			TryMove(move.PieceToMove, move.PieceNewPosition.ToVector2(), move.PromotedType);
+			TryMove(move.Piece, move.Position.ToVector2(), move.PromotedPiece);
 		}
 		else if(game.CurrentPlayer == Color.BLACK && (blackAI?.FoundMove ?? false))
 		{
 			var move = blackAI.GetMove();
-			TryMove(move.PieceToMove, move.PieceNewPosition.ToVector2(), move.PromotedType);
+			TryMove(move.Piece, move.Position.ToVector2(), move.PromotedPiece);
 		}
 	}
 
 	private bool TryMove(Piece piece, Vector2 position, PieceType? promotedPiece)
 	{
-		var newMove = game.TryMove(piece, position.ToVector(), promotedPiece);
-		if (newMove == null) 
+		var success = game.TryMove(piece, position.ToVector(), promotedPiece);
+		if (!success) 
 			return false;
 
-		GD.Print($"[{piece.Color}] Piece:{newMove.PieceToMove.Type}. Pos: {newMove.PieceNewPosition}. [Capture: {newMove.PieceToCapture?.Type}]. [Castle: {newMove.RockNewPosition}]. [Promotion: {newMove.PromotedType}]");
-		UpdateUi(newMove);
+		UpdateUi();
 
 		GetNode<AnalysePanel>("analysePanel").Display(game.Board);
 		if (game.State != GameState.InProgress)
@@ -155,13 +154,13 @@ public partial class GameView : HBoxContainer
 		var typeAsEnum = Enum.Parse<PieceType>(type);
 		var piece = game.GetPiece(pieceUi.ChessPosition.ToVector());
 		promotionBox.Hide();
-		var move = game.TryMove(piece, newPosition.ToVector(), promotedPiece: typeAsEnum);
-		if (move is null)
+		var success = game.TryMove(piece, newPosition.ToVector(), promotedPiece: typeAsEnum);
+		if (!success)
 		{
 			pieceUi.CancelMove();
 			return;
 		}
-		UpdateUi(move);
+		UpdateUi();
 	}
 
 	private void PieceOnDropped(PieceUI droppedPiece, Vector2 newPosition)
@@ -202,45 +201,25 @@ public partial class GameView : HBoxContainer
 		}
 	}
 
-	private void UpdateUi(Move move)
+	private void UpdateUi()
 	{
 		var pieces = board.GetChildren()
 			.OfType<PieceUI>()
 			.ToArray();
-		var pieceToMove = pieces.First(p => p.ChessPosition == move.PieceToMove.Position.ToVector2());
-		// not sure I like the fact that I have to manually update the positions (or kill them) of UI components now
-		// it was less code with the events emitted from Piece class (events handled by UI components)
-		// but that would mean that Piece class should not be immutable - I think this is a problem because I'm using the previous position of a piece
-		// when detecting en-passant
-		if (move.PieceToCapture != null)
-		{
-			var pieceToCapture = pieces.FirstOrDefault(p => p.ChessPosition == move.PieceToCapture.Position.ToVector2());
-			var textureRect = new TextureRect()
-			{
-				Texture = move.PieceToCapture.GetTexture()
-			};
-			if (move.PieceToCapture.Color == Color.WHITE)
-			{
-				whiteCapturedPieces.AddChild(textureRect);
-			}
-			else
-			{
-				blackCapturedPieces.AddChild(textureRect);
-			}
 
-			pieceToCapture.QueueFree();
+		foreach (var piece in pieces)
+		{
+			piece.Dropped -= PieceOnDropped;
+			piece.Lifted -= OnPieceLifted;
+			piece.QueueFree();
 		}
 
-		pieceToMove.Move(move.PieceNewPosition.ToVector2());
-		if (move.PromotedType != null)
+		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position.ToVector2(), p.Color, p.GetTexture()));
+		foreach (var piece in piecesUi)
 		{
-			pieceToMove.ChangeTexture(pieceToMove.Color.GetTexture(move.PromotedType.Value.ToString().ToLower()));
-		}
-		
-		if (move.RockToMove != null)
-		{
-			var rockToMove = pieces.First(p => p.ChessPosition == move.RockToMove.Position.ToVector2());
-			rockToMove.Move(move.RockNewPosition.ToVector2());
+			board.AddChild(piece);
+			piece.Dropped += PieceOnDropped;
+			piece.Lifted += OnPieceLifted;
 		}
 	}
 }

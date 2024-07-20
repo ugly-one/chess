@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Chess;
 
-public static class Extentions
+
+public static class OtherExtensions
 {
     public static string ToChessNotation(this Vector position)
     {
@@ -31,7 +32,10 @@ public static class Extentions
     {
         return color == Color.BLACK ? Color.WHITE : Color.BLACK;
     }
-    
+}
+
+internal static class Extentions
+{
     public static bool IsOccupiedBy(this Vector position, Color color, IEnumerable<Piece> allPieces)
     {
         foreach (var piece in allPieces)

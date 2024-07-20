@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Chess;
 
-public static class Knight
+internal static class Knight
 {
     public static Move[] GetKnightMoves(Piece piece, Piece[] board)
     {

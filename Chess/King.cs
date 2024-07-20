@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Chess;
 
-public static class King
+internal static class King
 {
     public static Move[] GetKingMoves(Piece king, Piece[] board)
     {
@@ -64,11 +64,8 @@ public static class King
         if (!allFieldsInBetweenClean) return null;
         
         var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
-        return Chess.Move.Castle(
+        return new Move(
             king,
-            king.Position + kingMoveDirection * 2,
-            rock,
-            rock.Position + rockMoveDirection * rockSteps);
-
+            king.Position + kingMoveDirection * 2);
     }
 }

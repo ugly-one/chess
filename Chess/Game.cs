@@ -26,39 +26,27 @@ public class Game
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
     
-    public Move? TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
+    public bool TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
     {
         if (pieceToMove.Color != CurrentPlayer)
         {
-            return null;
+            return false;
         }
-        
-        var possibleMoves = Board.GetPossibleMoves(pieceToMove);
 
-        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
-        
-        if (move is null)
+        var (success, newBoard) = Board.TryMove(pieceToMove, newPosition, promotedPiece);
+
+        if (!success)
         {
-            return null;
+            return false;
         }
 
-        // The same logic is in Board. There should be a way how to get (from Board) what moved
-        // so we do not have to set PromotedType here 
-        if (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7)
-        {
-            if (move.PieceToMove.Type == PieceType.Pawn)
-            {
-                // no need to check the color - white pawns will never reach first row 
-                // and black pawns will never reach the last row
-                move = move with { PromotedType = promotedPiece };
-            }
-        }
-        Board = Board.Move(move, promotedPiece);
-
+        var previousBoard = Board;
+        Board = newBoard;
         var opponentsColor = pieceToMove.Color.GetOppositeColor();
         CurrentPlayer = opponentsColor;
         
-        if (move.PieceToMove.Type == PieceType.Pawn || move.PieceToCapture != null)
+        var somethingWasCaptured = Board.GetPieces().Count() != previousBoard.GetPieces().Count();
+        if (pieceToMove.Type == PieceType.Pawn || somethingWasCaptured)
         {
             MovesSinceLastPawnMoveOrPieceTake = 0;
         }
@@ -70,7 +58,7 @@ public class Game
         if (Board.HasInsufficientMatingMaterial())
         {
             State = GameState.Draw;
-            return move;
+            return true;
         }
 
         var possibleMovesForOpponent = Board.GetAllPossibleMovesForColor(opponentsColor);
@@ -78,29 +66,23 @@ public class Game
         if (Board.IsKingUnderAttack(opponentsColor) && possibleMovesForOpponent.Count == 0)
         {
             State = pieceToMove.Color == Color.WHITE ? GameState.WhiteWin : GameState.BlackWin;
-            return move;
+            return true;
         }
         
         if (MovesSinceLastPawnMoveOrPieceTake == 100)
         {
             State = GameState.Draw;
-            return move;
+            return true;
         }
         
         if (possibleMovesForOpponent.Any())
         {
-            return move;
+            return true;
         }
         
         // no possible moves, king not under attack
         State = GameState.Draw;
-        return move;
-    }
-
-    public List<Move> GetPossibleMoves()
-    {
-        var possibleMoves = Board.GetAllPossibleMovesForColor(CurrentPlayer);
-        return possibleMoves;
+        return true;
     }
 
     public Piece GetPiece(Vector position)

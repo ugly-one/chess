@@ -85,8 +85,7 @@ public class Board
     /// <returns></returns>
     public Move[] GetPossibleMoves(Piece piece)
     {
-        var possibleMoves = GetMoves(piece)
-            .WithinBoard();
+        var possibleMoves = GetMoves(piece).WithinBoard();
 
         var possibleMovesAfterFiltering = new List<Move>();
         foreach (var possibleMove in possibleMoves)
@@ -97,9 +96,11 @@ public class Board
             if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
             if (possibleMove.PieceToMove.Type == PieceType.King)
             {
-                if (possibleMove.RockToMove != null)
+                // TODO find out if we're castling.
+                // checking if king moved more than 1 square is enough but won't work in CHess960 :D
+                var isCastleMove = false;
+                if (isCastleMove)
                 {
-                    // we're castling
                     var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
                     var oneStepVector = moveVector.Abs().Clamp(new Vector(0,0),new Vector(1,0));
                     if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
@@ -131,6 +132,11 @@ public class Board
             .ToArray();
     }
 
+    /// <summary>
+    /// Maybe it would be better if we return List<Board>?
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
     public List<Move> GetAllPossibleMovesForColor(Color color)
     {
         var pieces = GetPieces(color);
@@ -139,40 +145,62 @@ public class Board
         {
             // try to find possible moves
             var possibleMoves = GetPossibleMoves(piece);
-            allPossibleMoves.AddRange(possibleMoves);
+            allPossibleMoves.AddRange(
+                possibleMoves.Select(m => new Move(m.PieceToMove, m.PieceNewPosition)));
         }
 
         return allPossibleMoves;
     }
 
+    public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece)
+    {
+        var possibleMoves = GetPossibleMoves(piece);
+        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
+        if (move == null)
+        {
+            return (false, this);
+        }
+
+        var newBoard = Move(move, promotedPiece);
+
+        return (true, newBoard);
+    }
     // This is a bit funny that someone can tell the engine to promote non-pawn pieces
     // and also I can do it for any moves - including moves in the center of the board
     // but, I do not see an obvious way how to prevent it.
-    public Board Move(Move move, PieceType? promotedPiece)
+    private Board Move(Move move, PieceType? promotedPiece)
     {
-        var takenPiece = move.PieceToCapture;
-        var newBoard = _pieces.ToList();
-        if (takenPiece != null)
-        {
-            newBoard = newBoard.Where(p => p != takenPiece).ToList();
-        }
-        var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
-        // convert a pawn into something better if necessary
-        // this is horrible, I have the same logic in Main
-        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
-        {
-            newPiece = new Piece(promotedPiece!.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
-        }
-        newBoard = newBoard.Where(p => p != move.PieceToMove).Append(newPiece).ToList();
+        // TODO
+        // 1) detect if a piece is captured. en passant is tricky
+        // 2) detect castle and move the rook
+        // 3) move the moved piece
+        // 4) construct new board
 
-        var rockToMove = move.RockToMove;
-        if (rockToMove != null)
-        {
-            var newRock = rockToMove.Move(move.RockNewPosition!);
-            newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
-        }
+        throw new NotImplementedException();
 
-        return new Board(newBoard, move);
+        // var takenPiece = move.PieceToCapture;
+        // var newBoard = _pieces.ToList();
+        // if (takenPiece != null)
+        // {
+        //     newBoard = newBoard.Where(p => p != takenPiece).ToList();
+        // }
+        // var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
+        // // convert a pawn into something better if necessary
+        // // this is horrible, I have the same logic in Main
+        // if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
+        // {
+        //     newPiece = new Piece(promotedPiece!.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
+        // }
+        // newBoard = newBoard.Where(p => p != move.PieceToMove).Append(newPiece).ToList();
+
+        // var rockToMove = move.RockToMove;
+        // if (rockToMove != null)
+        // {
+        //     var newRock = rockToMove.Move(move.RockNewPosition!);
+        //     newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
+        // }
+
+        // return new Board(newBoard, move);
     }
 
     public bool IsKingUnderAttack(Color color)

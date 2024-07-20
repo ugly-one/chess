@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Chess;
 
-public static class Something
+internal static class Something
 {
     public static Piece? GetPieceInPosition(this Piece[] board, Vector position)
     {
@@ -19,13 +19,13 @@ public static class Something
             var pieceOnTheWay = board.GetPieceInPosition(p);
             if (pieceOnTheWay is null)
             {
-                result.Add(Move.RegularMove(piece, p));
+                result.Add(new Move(piece, p));
             }
             else
             {
                 if (pieceOnTheWay.Color != piece.Color)
                 {
-                    result.Add(Move.Capture(piece, p, pieceOnTheWay));
+                    result.Add(new Move(piece, p));
                 }
             }
         }
@@ -47,12 +47,12 @@ public static class Something
             if (capturedPiece != null)
             {
                 breakAfterAdding = true;
-                yield return Move.Capture(piece, newPos, capturedPiece);
+                yield return new Move(piece, newPos);
                 
             }
             else
             {
-                yield return Move.RegularMove(piece, newPos);
+                yield return new Move(piece, newPos);
             }
             newPos += step;
             if (breakAfterAdding)

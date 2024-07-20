@@ -11,15 +11,18 @@ public class GiveMeCheckAI  : IPlayer
         this.color = color;
     }
 
-    public Move GetMove(Board board)
+    public MoveWithPromotion GetMove(Board board)
     {
-        var possibleMoves = board.GetAllPossibleMovesForColor(color);
-        foreach (var move in possibleMoves)
+        var moveRequests = board.GetAllPossibleMovesForColor(color);
+        foreach (var moveRequest in moveRequests)
         {
-            var newBoard = board.Move(move, PieceType.Queen);
+            var (success, newBoard) = board.TryMove(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
+            if (!success)
+                throw new Exception("The engine game me a move that is not valid :/");
+
             if (newBoard.IsKingUnderAttack(color.GetOppositeColor()))
-                return move with {PromotedType = PieceType.Queen};
+                return new MoveWithPromotion(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
         }
-        return possibleMoves[0] with {PromotedType = PieceType.Queen};
+        return new MoveWithPromotion(moveRequests[0].PieceToMove, moveRequests[0].PieceNewPosition, PieceType.Queen);
     }
 }

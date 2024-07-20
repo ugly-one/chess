@@ -2,5 +2,5 @@ using Chess;
 
 public interface IPlayer
 {
-	Move GetMove(Board board);
+	MoveWithPromotion GetMove(Board board);
 }
