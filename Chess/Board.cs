@@ -174,6 +174,11 @@ public class Board
         return allPossibleMoves;
     }
 
+    public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
+    {
+        return TryMove(move.PieceToMove, move.PieceNewPosition, promotedPiece);
+    }
+
     public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece = null)
     {
         var possibleMoves = GetPossibleMoves(piece);
@@ -187,6 +192,7 @@ public class Board
 
         return (true, newBoard);
     }
+
     // This is a bit funny that someone can tell the engine to promote non-pawn pieces
     // and also I can do it for any moves - including moves in the center of the board
     // but, I do not see an obvious way how to prevent it.
