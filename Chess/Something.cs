@@ -25,7 +25,7 @@ internal static class Something
             {
                 if (pieceOnTheWay.Color != piece.Color)
                 {
-                    result.Add(new Move(piece, p));
+                    result.Add(new Capture(piece, p, pieceOnTheWay));
                 }
             }
         }
@@ -47,8 +47,7 @@ internal static class Something
             if (capturedPiece != null)
             {
                 breakAfterAdding = true;
-                yield return new Move(piece, newPos);
-                
+                yield return new Capture(piece, newPos, capturedPiece);
             }
             else
             {

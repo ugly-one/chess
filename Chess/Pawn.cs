@@ -32,7 +32,7 @@ internal static class Pawn
         var possiblyCapturedPiece = board.GetPieceInPosition(takeLeft);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(new Move(piece, takeLeft));
+            moves.Add(new Capture(piece, takeLeft, possiblyCapturedPiece));
         }
         else
         {
@@ -48,7 +48,7 @@ internal static class Pawn
         possiblyCapturedPiece = board.GetPieceInPosition(takeRight);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(new Move(piece, takeRight));
+            moves.Add(new Capture(piece, takeRight, possiblyCapturedPiece));
         }
         else
         {
@@ -61,6 +61,7 @@ internal static class Pawn
 
         return moves.ToArray();
     }
+
     private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Move? lastMove)
     {
         if (lastMove == null) return null;
@@ -72,7 +73,8 @@ internal static class Pawn
             is2StepMove && // was it a 2 step move
             isThePawnNowNextToUs) // was it move next to us 
         {
-            return new Move(piece, capturePosition);
+            var pieceToCapture = lastMove.PieceToMove.Move(lastMove.PieceNewPosition);
+            return new Capture(piece, capturePosition, pieceToCapture);
         }
 
         return null;

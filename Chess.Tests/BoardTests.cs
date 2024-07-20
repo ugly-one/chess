@@ -26,7 +26,7 @@ public class BoardTests
     {
         var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 3));
         var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(7, 7));
-        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 4), moved: false);
+        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 4), Moved: false);
         var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 3));
         var board = new Board(new List<Piece>(){ whiteKing, blackKing, whitePawn, blackPawn });
 
@@ -34,7 +34,10 @@ public class BoardTests
         
         Assert.Single(moves);
         Assert.Equal(moves.First().PieceNewPosition, new Vector(2,3));
-        Assert.Equal(3, board.GetPieces().Length);
+
+        var (success, newBoard) = board.TryMove(whitePawn, moves.First().PieceNewPosition);
+
+        Assert.Equal(3, newBoard.GetPieces().Length);
     }
 
     [Fact]
@@ -42,7 +45,7 @@ public class BoardTests
     {
         var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 3));
         var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(7, 7));
-        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 3), moved: true);
+        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 3), Moved: true);
         var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 1));
         var game = new Game(Color.BLACK, whiteKing, blackKing, whitePawn, blackPawn);
         game.TryMove(blackPawn, new Vector(2, 3), null);
@@ -50,7 +53,6 @@ public class BoardTests
         var moves = game.Board.GetPossibleMoves(whitePawn);
         
         Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2,2));
-        Assert.Equal(3, game.Board.GetPieces().Length);
     }
 
     [Fact]
@@ -66,5 +68,19 @@ public class BoardTests
         // TODO we have a nasty way of getting a piece at given position
         // game.Board.GetPiece(x,y) would be better. Or game.GetPiece(x,y)
         Assert.Equal(PieceType.Bishop, game.Board.GetPieces().FirstOrDefault(p => p.Position == new Vector(7, 7)).Type);
+    }
+
+    [Fact]
+    public void PromotingToQueen()
+    {
+        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 7));
+        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(3, 0));
+        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(6, 1), Moved: true);
+        var board = new Board(new [] {whiteKing, blackKing, whitePawn});
+
+        var (success, newBoard) = board.TryMove(whitePawn, new Vector(6,0), PieceType.Queen);
+
+        Assert.True(success);
+        Assert.Contains(newBoard.GetPieces(), p => p.Type == PieceType.Queen);
     }
 }

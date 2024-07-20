@@ -64,8 +64,10 @@ internal static class King
         if (!allFieldsInBetweenClean) return null;
         
         var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
-        return new Move(
+        return new Castle(
             king,
-            king.Position + kingMoveDirection * 2);
+            king.Position + kingMoveDirection * 2,
+            rock,
+            rock.Position + rockMoveDirection * rockSteps);
     }
 }
