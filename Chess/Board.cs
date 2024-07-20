@@ -151,6 +151,13 @@ public class Board
     {
         // move the piece
         var movedPiece = move.PieceToMove.Move(move.PieceNewPosition);
+        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
+        {
+            if (promotedPiece is null)
+                movedPiece = movedPiece with { Type = PieceType.Queen };
+            else
+                movedPiece = movedPiece with { Type = promotedPiece.Value };
+        }
         var newBoard = _pieces
             .Where(p => p != move.PieceToMove)
             .Append(movedPiece);
