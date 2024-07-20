@@ -131,7 +131,7 @@ public class Board
         return allPossibleMoves;
     }
 
-    public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece)
+    public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece = null)
     {
         var possibleMoves = GetPossibleMoves(piece);
         var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition); 

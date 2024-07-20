@@ -32,7 +32,7 @@ internal static class Pawn
         var possiblyCapturedPiece = board.GetPieceInPosition(takeLeft);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(new Move(piece, takeLeft));
+            moves.Add(new Capture(piece, takeLeft, possiblyCapturedPiece));
         }
         else
         {
@@ -48,7 +48,7 @@ internal static class Pawn
         possiblyCapturedPiece = board.GetPieceInPosition(takeRight);
         if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
         {
-            moves.Add(new Move(piece, takeRight));
+            moves.Add(new Capture(piece, takeRight, possiblyCapturedPiece));
         }
         else
         {

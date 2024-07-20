@@ -34,6 +34,10 @@ public class BoardTests
         
         Assert.Single(moves);
         Assert.Equal(moves.First().PieceNewPosition, new Vector(2,3));
+
+        var (success, newBoard) = board.TryMove(whitePawn, moves.First().PieceNewPosition);
+
+        Assert.Equal(3, newBoard.GetPieces().Length);
     }
 
     [Fact]
