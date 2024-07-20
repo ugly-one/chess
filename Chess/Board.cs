@@ -149,37 +149,26 @@ public class Board
     // but, I do not see an obvious way how to prevent it.
     private Board Move(Move move, PieceType? promotedPiece)
     {
-        // TODO 
-        // 1) detect if a piece is captured. en passant is tricky
-        // 2) detect castle and move the rook
-        // 3) move the moved piece
-        // 4) construct new board 
+        // move the piece
+        var movedPiece = move.PieceToMove.Move(move.PieceNewPosition);
+        var newBoard = _pieces
+            .Where(p => p != move.PieceToMove)
+            .Append(movedPiece);
 
-        throw new NotImplementedException();
-
-        // var takenPiece = move.PieceToCapture;
-        // var newBoard = _pieces.ToList();
-        // if (takenPiece != null)
-        // {
-        //     newBoard = newBoard.Where(p => p != takenPiece).ToList();
-        // }
-        // var newPiece = move.PieceToMove.Move(move.PieceNewPosition);
-        // // convert a pawn into something better if necessary
-        // // this is horrible, I have the same logic in Main
-        // if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
-        // {
-        //     newPiece = new Piece(promotedPiece!.Value, move.PieceToMove.Color, move.PieceNewPosition, moved: true);
-        // }
-        // newBoard = newBoard.Where(p => p != move.PieceToMove).Append(newPiece).ToList();
-
-        // var rockToMove = move.RockToMove;
-        // if (rockToMove != null)
-        // {
-        //     var newRock = rockToMove.Move(move.RockNewPosition!);
-        //     newBoard = newBoard.Where(p => p != move.RockToMove).Append(newRock).ToList();
-        // }
-
-        // return new Board(newBoard, move);
+        if (move is Capture capture)
+        {
+            newBoard = newBoard
+                .Where(piece => piece != capture.CapturedPiece);
+        }
+        else if (move is Castle castle)
+        {
+            var newRock = castle.Rook.Move(castle.RookPosition);
+            newBoard = newBoard
+                .Where(p => p != castle.Rook)
+                .Append(newRock);
+        }
+        
+        return new Board(newBoard.ToArray(), move);
     }
 
     public bool IsKingUnderAttack(Color color)
