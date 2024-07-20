@@ -25,6 +25,14 @@ public class Game
         CurrentPlayer = Color.WHITE;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
+
+    public Game()
+    {
+        Board = new Board();
+        State = GameState.InProgress;
+        CurrentPlayer = Color.WHITE;
+        MovesSinceLastPawnMoveOrPieceTake = 0;
+    }
     
     public bool TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
     {
