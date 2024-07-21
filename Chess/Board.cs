@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Chess;
 
@@ -90,8 +91,28 @@ public class Board
         {
             return true;
         }
-        
+
         return false;
+    }
+
+    public override string ToString()
+    {
+        var boardMatrix = new Piece?[8, 8];
+        foreach (var piece in _pieces)
+        {
+            boardMatrix[piece.Position.X, piece.Position.Y] = piece;
+        }
+
+        var stringRepresentation = new StringBuilder();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+                stringRepresentation.Append(boardMatrix[x, y]?.ToString() ?? "\u00B7");
+
+            stringRepresentation.Append('\n');
+        }
+
+        return stringRepresentation.ToString();
     }
 
     private static bool HasOnlyKingAndBishopOrKnight(Piece[] blackPieces)
@@ -118,7 +139,7 @@ public class Board
             if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
             if (possibleMove.PieceToMove.Type == PieceType.King)
             {
-                // TODO find out if we're castling. 
+                // TODO find out if we're castling.
                 // checking if king moved more than 1 square is enough but won't work in CHess960 :D
                 var isCastleMove = false;
                 if (isCastleMove)
@@ -153,7 +174,7 @@ public class Board
         return _pieces
             .ToArray();
     }
-    
+
     /// <summary>
     /// Maybe it would be better if we return List<Board>?
     /// </summary>
@@ -182,7 +203,7 @@ public class Board
     public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece = null)
     {
         var possibleMoves = GetPossibleMoves(piece);
-        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition); 
+        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
         if (move == null)
         {
             return (false, this);
@@ -223,7 +244,7 @@ public class Board
                 .Where(p => p != castle.Rook)
                 .Append(newRock);
         }
-        
+
         return new Board(newBoard.ToArray(), move);
     }
 
@@ -233,7 +254,7 @@ public class Board
             .First(k => k.Type == PieceType.King && k.Color == color);
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
     }
-    
+
     /// <summary>
     /// Check if given field is under attack by given color's pieces
     /// </summary>
@@ -258,7 +279,7 @@ public class Board
             .Where(p => p.Color == color)
             .ToArray();
     }
-    
+
     /// <summary>
     /// Get moves for the piece without taking into consideration all the rules
     /// But then we should put the logic somewhere to detect that we can't jump over other pieces.
