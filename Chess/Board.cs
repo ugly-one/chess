@@ -7,19 +7,24 @@ namespace Chess;
 
 public class Board
 {
-    private readonly Piece[] _pieces;
+    // private readonly Piece[] _pieces;
+    private readonly Piece[] whitePieces;
+    private readonly Piece[] blackPieces;
+    private readonly Piece[] pieces;
     private readonly Move? _lastMove;
 
-    public Board(ICollection<Piece> board, Move? lastMove = null)
+    public Board(IEnumerable<Piece> board, Move? lastMove = null)
     {
         // TODO validate given pieces - they could be in invalid positions
-        _pieces = board.ToArray();
+        pieces = board.ToArray();
+        whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
+        blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
         _lastMove = lastMove;
     }
 
     public Board()
     {
-        _pieces = new Piece[32]
+        pieces = new Piece[32]
         {
             new Piece(PieceType.Rock, Color.WHITE, new Vector(0, 7)),
             new Piece(PieceType.Knight, Color.WHITE, new Vector(1, 7)),
@@ -57,19 +62,18 @@ public class Board
             new Piece(PieceType.Pawn, Color.BLACK, new Vector(6, 1)),
             new Piece(PieceType.Pawn, Color.BLACK, new Vector(7, 1)),
         };
+        whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
+        blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
         _lastMove = null;
     }
 
     public bool HasInsufficientMatingMaterial()
     {
-        if (_pieces.Length == 2)
+        if (whitePieces.Length == 1 && blackPieces.Length == 1)
         {
             // only 2 kings left
             return true;
         }
-
-        var whitePieces = _pieces.Where(p => p.Color == Color.WHITE).ToArray();
-        var blackPieces = _pieces.Where(p => p.Color == Color.BLACK).ToArray();
 
         if (whitePieces.Length == 1)
         {
@@ -98,7 +102,7 @@ public class Board
     public override string ToString()
     {
         var boardMatrix = new Piece?[8, 8];
-        foreach (var piece in _pieces)
+        foreach (var piece in whitePieces.Concat(blackPieces))
         {
             boardMatrix[piece.Position.X, piece.Position.Y] = piece;
         }
@@ -115,10 +119,10 @@ public class Board
         return stringRepresentation.ToString();
     }
 
-    private static bool HasOnlyKingAndBishopOrKnight(Piece[] blackPieces)
+    private static bool HasOnlyKingAndBishopOrKnight(Piece[] pieces)
     {
-        return blackPieces.Length == 2 &&
-               blackPieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
+        return pieces.Length == 2 &&
+               pieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
     }
 
     /// <summary>
@@ -171,8 +175,7 @@ public class Board
 
     public Piece[] GetPieces()
     {
-        return _pieces
-            .ToArray();
+        return whitePieces.Concat(blackPieces).ToArray();
     }
 
     /// <summary>
@@ -228,30 +231,45 @@ public class Board
             else
                 movedPiece = movedPiece with { Type = promotedPiece.Value };
         }
-        var newBoard = _pieces
+        
+        IEnumerable<Piece> currentColorPieces = move.PieceToMove.Color == Color.WHITE ?
+            whitePieces : blackPieces;
+
+        IEnumerable<Piece> oppositeColorPieces = move.PieceToMove.Color == Color.WHITE ?
+            blackPieces : whitePieces;
+
+        currentColorPieces = currentColorPieces
             .Where(p => p != move.PieceToMove)
             .Append(movedPiece);
 
         if (move is Capture capture)
         {
-            newBoard = newBoard
+            oppositeColorPieces = oppositeColorPieces
                 .Where(piece => piece != capture.CapturedPiece);
         }
         else if (move is Castle castle)
         {
             var newRock = castle.Rook.Move(castle.RookPosition);
-            newBoard = newBoard
+            currentColorPieces = currentColorPieces
                 .Where(p => p != castle.Rook)
                 .Append(newRock);
         }
 
-        return new Board(newBoard.ToArray(), move);
+        return new Board(currentColorPieces.Concat(oppositeColorPieces), move);
     }
 
     public bool IsKingUnderAttack(Color color)
     {
-        var king = _pieces
-            .First(k => k.Type == PieceType.King && k.Color == color);
+        Piece king;
+        if (color == Color.WHITE)
+        {
+            king = whitePieces.First(p => p.Type == PieceType.King);
+        }
+        else 
+        {
+            king = blackPieces.First(p => p.Type == PieceType.King);
+        }
+        
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
     }
 
@@ -275,9 +293,8 @@ public class Board
 
     private Piece[] GetPieces(Color color)
     {
-        return _pieces
-            .Where(p => p.Color == color)
-            .ToArray();
+        if (color == Color.WHITE) return whitePieces;
+        else return blackPieces;
     }
 
     /// <summary>
@@ -287,16 +304,16 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    private Move[] GetMoves(Piece piece)
+    private ICollection<Move> GetMoves(Piece piece)
     {
         var moves = piece.Type switch
         {
-            PieceType.King => King.GetKingMoves(piece, _pieces),
-            PieceType.Queen => Queen.GetQueenMoves(piece, _pieces),
-            PieceType.Pawn => Pawn.GetPawnMoves(piece, _pieces, _lastMove),
-            PieceType.Bishop => Bishop.GetBishopMoves(piece, _pieces),
-            PieceType.Rock => Rock.GetRockMoves(piece, _pieces),
-            PieceType.Knight => Knight.GetKnightMoves(piece, _pieces),
+            PieceType.King => King.GetKingMoves(piece, pieces),
+            PieceType.Queen => Queen.GetQueenMoves(piece, pieces),
+            PieceType.Pawn => Pawn.GetPawnMoves(piece, pieces, _lastMove),
+            PieceType.Bishop => Bishop.GetBishopMoves(piece, pieces),
+            PieceType.Rock => Rock.GetRockMoves(piece, pieces),
+            PieceType.Knight => Knight.GetKnightMoves(piece, pieces),
             _ => throw new ArgumentOutOfRangeException()
         };
         return moves;

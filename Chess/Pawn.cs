@@ -5,7 +5,7 @@ namespace Chess;
 
 internal static class Pawn
 {
-    public static Move[] GetPawnMoves(Piece piece, Piece[] board, Move? lastMove)
+    public static ICollection<Move> GetPawnMoves(Piece piece, Piece[] board, Move? lastMove)
     {
         var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
@@ -59,7 +59,7 @@ internal static class Pawn
             }
         }
 
-        return moves.ToArray();
+        return moves;
     }
 
     private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Move? lastMove)

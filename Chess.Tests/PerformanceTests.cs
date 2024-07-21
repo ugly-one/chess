@@ -18,8 +18,8 @@ public class PerformanceTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    //[InlineData(4)] -- commented out for now because it takes more than a minute to calculate it
-    public void Depth1(int depth)
+    [InlineData(4)] // this test is slooooow
+    public void Check(int depth)
     {
         var board = new Board();
         var count = GetPossibleMovesCount(board, 0, depth, Color.WHITE);

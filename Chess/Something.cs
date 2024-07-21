@@ -10,7 +10,7 @@ internal static class Something
         return board.FirstOrDefault(p => p.Position == position);
     }
     
-    public static Move[] ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
+    public static List<Move> ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
     {
         var result = new List<Move>();
 
@@ -29,7 +29,8 @@ internal static class Something
                 }
             }
         }
-        return result.ToArray();
+
+        return result;
     }
     
     public static IEnumerable<Move> GetMovesInDirection(

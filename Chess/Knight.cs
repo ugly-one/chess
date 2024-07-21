@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Knight
 {
-    public static Move[] GetKnightMoves(Piece piece, Piece[] board)
+    public static List<Move> GetKnightMoves(Piece piece, Piece[] board)
     {
         var allPositions = new List<Vector>()
         {
