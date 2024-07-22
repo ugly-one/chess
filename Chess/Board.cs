@@ -10,6 +10,8 @@ public class Board
     private readonly Piece[] whitePieces;
     private readonly Piece[] blackPieces;
     private readonly Piece[,] pieces2;
+    private readonly Vector whiteKing;
+    private readonly Vector blackKing;
     private readonly Move? _lastMove;
 
     private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
@@ -26,14 +28,21 @@ public class Board
             if (piece.Color == Color.WHITE)
             {
                 whitePiecesList.Add(piece);
+                if (piece.Type == PieceType.King)
+                {
+                    whiteKing = piece.Position;
+                }
             }
             else
             {
                 blackPiecesList.Add(piece);
+                if (piece.Type == PieceType.King)
+                {
+                    blackKing = piece.Position;
+                }
             }
 
         }
-        //pieces = board.ToArray();
         whitePieces = whitePiecesList.ToArray();
         blackPieces = blackPiecesList.ToArray();
         _lastMove = lastMove;
@@ -244,11 +253,11 @@ public class Board
         Piece king;
         if (color == Color.WHITE)
         {
-            king = whitePieces.First(p => p.Type == PieceType.King);
+            king = pieces2[whiteKing.X, whiteKing.Y];
         }
         else
         {
-            king = blackPieces.First(p => p.Type == PieceType.King);
+            king = pieces2[blackKing.X, blackKing.Y];
         }
 
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
