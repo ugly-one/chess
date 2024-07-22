@@ -21,7 +21,7 @@ public class PerformanceTests
     [InlineData(4)] // this test is slooooow
     public void Check(int depth)
     {
-        var board = new Board();
+        var board = BoardFactory.Default();
         var count = GetPossibleMovesCount(board, 0, depth, Color.WHITE);
         var expectedCount = 0;
         for (int i = 1; i <= depth; i++)
