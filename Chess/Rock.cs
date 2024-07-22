@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Rock
 {
-    public static ICollection<Move> GetRockMoves(Piece piece, Piece[] board)
+    public static ICollection<Move> GetRockMoves(Piece piece, Piece[,] board)
     {
         var moves = new List<Move>();
         moves.AddRange(board.GetMovesInDirection(piece, Vector.Down,  piece.Color));

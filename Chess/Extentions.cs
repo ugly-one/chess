@@ -25,9 +25,9 @@ public static class OtherExtensions
             7 => "h",
             _ => throw new NotSupportedException()
         };
-        return letter+number;
+        return letter + number;
     }
-    
+
     public static Color GetOppositeColor(this Color color)
     {
         return color == Color.BLACK ? Color.WHITE : Color.BLACK;
@@ -47,12 +47,22 @@ internal static class Extentions
         }
         return false;
     }
-    
+
+    public static bool IsOccupiedBy(this Vector position, Color color, Piece[,] board)
+    {
+        var possiblePiece = board[position.X, position.Y];
+        if (possiblePiece is not null)
+        {
+            if (possiblePiece.Color == color) return true;
+        }
+        return false;
+    }
+
     public static bool IsWithinBoard(this Vector position)
     {
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
     }
-    
+
     public static IEnumerable<Move> WithinBoard(this IEnumerable<Move> moves)
     {
         return moves.Where(m => IsWithinBoard(m.PieceNewPosition));

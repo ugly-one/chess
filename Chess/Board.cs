@@ -9,7 +9,7 @@ public class Board
 {
     private readonly Piece[] whitePieces;
     private readonly Piece[] blackPieces;
-    private readonly Piece[] pieces;
+    private readonly Piece[,] pieces2;
     private readonly Move? _lastMove;
 
     private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
@@ -17,9 +17,25 @@ public class Board
     public Board(IEnumerable<Piece> board, Move? lastMove = null)
     {
         // TODO validate given pieces - they could be in invalid positions
-        pieces = board.ToArray();
-        whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
-        blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
+        pieces2 = new Piece[8,8];
+        var whitePiecesList = new List<Piece>(16);
+        var blackPiecesList = new List<Piece>(16);
+        foreach(var piece in board)
+        {
+            pieces2[piece.Position.X, piece.Position.Y] = piece;
+            if (piece.Color == Color.WHITE)
+            {
+                whitePiecesList.Add(piece);
+            }
+            else
+            {
+                blackPiecesList.Add(piece);
+            }
+
+        }
+        //pieces = board.ToArray();
+        whitePieces = whitePiecesList.ToArray();
+        blackPieces = blackPiecesList.ToArray();
         _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
@@ -273,12 +289,12 @@ public class Board
     {
         var moves = piece.Type switch
         {
-            PieceType.King => King.GetKingMoves(piece, pieces),
-            PieceType.Queen => Queen.GetQueenMoves(piece, pieces),
-            PieceType.Pawn => Pawn.GetPawnMoves(piece, pieces, _lastMove),
-            PieceType.Bishop => Bishop.GetBishopMoves(piece, pieces),
-            PieceType.Rock => Rock.GetRockMoves(piece, pieces),
-            PieceType.Knight => Knight.GetKnightMoves(piece, pieces),
+            PieceType.King => King.GetKingMoves(piece, pieces2),
+            PieceType.Queen => Queen.GetQueenMoves(piece, pieces2),
+            PieceType.Pawn => Pawn.GetPawnMoves(piece, pieces2, _lastMove),
+            PieceType.Bishop => Bishop.GetBishopMoves(piece, pieces2),
+            PieceType.Rock => Rock.GetRockMoves(piece, pieces2),
+            PieceType.Knight => Knight.GetKnightMoves(piece, pieces2),
             _ => throw new ArgumentOutOfRangeException()
         };
         return moves;

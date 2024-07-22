@@ -1,22 +1,16 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Chess;
 
 internal static class Something
 {
-    public static Piece? GetPieceInPosition(this Piece[] board, Vector position)
-    {
-        return board.FirstOrDefault(p => p.Position == position);
-    }
-    
-    public static List<Move> ConvertToMoves(Piece piece, ICollection<Vector> allPositions, Piece[] board)
+    public static List<Move> ConvertToMoves(Piece piece, ICollection<Vector> allPositions, Piece[,] board)
     {
         var result = new List<Move>(allPositions.Count);
 
-        foreach(var p in allPositions)
+        foreach (var p in allPositions)
         {
-            var pieceOnTheWay = board.GetPieceInPosition(p);
+            var pieceOnTheWay = board[p.X, p.Y];
             if (pieceOnTheWay is null)
             {
                 result.Add(new Move(piece, p));
@@ -32,19 +26,19 @@ internal static class Something
 
         return result;
     }
-    
+
     public static IEnumerable<Move> GetMovesInDirection(
-        this Piece[] board,
-        Piece piece,
-        Vector step, 
-        Color color)
+            this Piece[,] board,
+            Piece piece,
+            Vector step,
+            Color color)
     {
         var newPos = piece.Position + step;
         var breakAfterAdding = false;
         while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, board))
         {
             // we should pass only opponents pieces to GetPieceInPosition
-            var capturedPiece = board.GetPieceInPosition(newPos);
+            var capturedPiece = board[newPos.X, newPos.Y];
             if (capturedPiece != null)
             {
                 breakAfterAdding = true;
