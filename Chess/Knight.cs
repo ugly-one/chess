@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Chess;
 
@@ -18,7 +17,6 @@ internal static class Knight
             piece.Position + Vector.Up * 2 + Vector.Left,
             piece.Position + Vector.Left * 2 + Vector.Up,
         };
-        allPositions = allPositions.Where(p => p.IsWithinBoard()).ToArray();
         var allMoves = Something.ConvertToMoves(piece, allPositions, board);
         return allMoves;
     }

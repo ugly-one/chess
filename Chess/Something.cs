@@ -10,6 +10,10 @@ internal static class Something
 
         foreach (var p in allPositions)
         {
+            if (!p.IsWithinBoard())
+            {
+                continue;
+            }
             var pieceOnTheWay = board[p.X, p.Y];
             if (pieceOnTheWay is null)
             {

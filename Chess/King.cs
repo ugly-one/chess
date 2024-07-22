@@ -19,7 +19,6 @@ internal static class King
             king.Position + Vector.Down + Vector.Left,
         };
 
-        allPositions = allPositions.Where(p => p.IsWithinBoard()).ToArray();
         var allMoves = Something.ConvertToMoves(king, allPositions, board);
         
         // short castle
