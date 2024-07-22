@@ -7,7 +7,7 @@ internal static class King
 {
     public static List<Move> GetKingMoves(Piece king, Piece[] board)
     {
-        var allPositions = new List<Vector>()
+        var allPositions = new Vector[]
         {
             king.Position + Vector.Up,
             king.Position + Vector.Down,

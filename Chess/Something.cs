@@ -10,9 +10,9 @@ internal static class Something
         return board.FirstOrDefault(p => p.Position == position);
     }
     
-    public static List<Move> ConvertToMoves(Piece piece, List<Vector> allPositions, Piece[] board)
+    public static List<Move> ConvertToMoves(Piece piece, ICollection<Vector> allPositions, Piece[] board)
     {
-        var result = new List<Move>();
+        var result = new List<Move>(allPositions.Count);
 
         foreach(var p in allPositions)
         {

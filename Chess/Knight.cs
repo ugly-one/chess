@@ -6,7 +6,7 @@ internal static class Knight
 {
     public static List<Move> GetKnightMoves(Piece piece, Piece[] board)
     {
-        var allPositions = new List<Vector>()
+        var allPositions = new Vector[]
         {
             piece.Position + Vector.Up * 2 + Vector.Right,
             piece.Position + Vector.Right * 2 + Vector.Up,
