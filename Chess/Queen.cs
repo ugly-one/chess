@@ -4,7 +4,7 @@ namespace Chess;
 
 public static class Queen
 {
-    public static ICollection<Move> GetQueenMoves(Piece piece, Piece[] board)
+    public static ICollection<Move> GetQueenMoves(Piece piece, Piece[,] board)
     {
         var moves = new List<Move>();
         moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Right,   piece.Color));

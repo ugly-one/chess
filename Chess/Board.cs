@@ -9,7 +9,7 @@ public class Board
 {
     private readonly Piece[] whitePieces;
     private readonly Piece[] blackPieces;
-    private readonly Piece[] pieces;
+    private readonly Piece[,] pieces2;
     private readonly Move? _lastMove;
 
     private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
@@ -17,56 +17,26 @@ public class Board
     public Board(IEnumerable<Piece> board, Move? lastMove = null)
     {
         // TODO validate given pieces - they could be in invalid positions
-        pieces = board.ToArray();
-        whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
-        blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
-        _lastMove = lastMove;
-        possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
-    }
-
-    public Board()
-    {
-        pieces = new Piece[32]
+        pieces2 = new Piece[8,8];
+        var whitePiecesList = new List<Piece>(16);
+        var blackPiecesList = new List<Piece>(16);
+        foreach(var piece in board)
         {
-            new Piece(PieceType.Rock, Color.WHITE, new Vector(0, 7)),
-            new Piece(PieceType.Knight, Color.WHITE, new Vector(1, 7)),
-            new Piece(PieceType.Bishop, Color.WHITE, new Vector(2, 7)),
-            new Piece(PieceType.Queen, Color.WHITE, new Vector(3, 7)),
-            new Piece(PieceType.King, Color.WHITE, new Vector(4, 7)),
-            new Piece(PieceType.Bishop, Color.WHITE, new Vector(5, 7)),
-            new Piece(PieceType.Knight, Color.WHITE, new Vector(6, 7)),
-            new Piece(PieceType.Rock, Color.WHITE, new Vector(7, 7)),
+            pieces2[piece.Position.X, piece.Position.Y] = piece;
+            if (piece.Color == Color.WHITE)
+            {
+                whitePiecesList.Add(piece);
+            }
+            else
+            {
+                blackPiecesList.Add(piece);
+            }
 
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(0, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(1, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(2, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(4, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(5, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(6, 6)),
-            new Piece(PieceType.Pawn, Color.WHITE, new Vector(7, 6)),
-
-            new Piece(PieceType.Rock, Color.BLACK, new Vector(0, 0)),
-            new Piece(PieceType.Knight, Color.BLACK, new Vector(1, 0)),
-            new Piece(PieceType.Bishop, Color.BLACK, new Vector(2, 0)),
-            new Piece(PieceType.Queen, Color.BLACK, new Vector(3, 0)),
-            new Piece(PieceType.King, Color.BLACK, new Vector(4, 0)),
-            new Piece(PieceType.Bishop, Color.BLACK, new Vector(5, 0)),
-            new Piece(PieceType.Knight, Color.BLACK, new Vector(6, 0)),
-            new Piece(PieceType.Rock, Color.BLACK, new Vector(7, 0)),
-
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(0, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(1, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(3, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(4, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(5, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(6, 1)),
-            new Piece(PieceType.Pawn, Color.BLACK, new Vector(7, 1)),
-        };
-        whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
-        blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
-        _lastMove = null;
+        }
+        //pieces = board.ToArray();
+        whitePieces = whitePiecesList.ToArray();
+        blackPieces = blackPiecesList.ToArray();
+        _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
@@ -319,12 +289,12 @@ public class Board
     {
         var moves = piece.Type switch
         {
-            PieceType.King => King.GetKingMoves(piece, pieces),
-            PieceType.Queen => Queen.GetQueenMoves(piece, pieces),
-            PieceType.Pawn => Pawn.GetPawnMoves(piece, pieces, _lastMove),
-            PieceType.Bishop => Bishop.GetBishopMoves(piece, pieces),
-            PieceType.Rock => Rock.GetRockMoves(piece, pieces),
-            PieceType.Knight => Knight.GetKnightMoves(piece, pieces),
+            PieceType.King => King.GetKingMoves(piece, pieces2),
+            PieceType.Queen => Queen.GetQueenMoves(piece, pieces2),
+            PieceType.Pawn => Pawn.GetPawnMoves(piece, pieces2, _lastMove),
+            PieceType.Bishop => Bishop.GetBishopMoves(piece, pieces2),
+            PieceType.Rock => Rock.GetRockMoves(piece, pieces2),
+            PieceType.Knight => Knight.GetKnightMoves(piece, pieces2),
             _ => throw new ArgumentOutOfRangeException()
         };
         return moves;

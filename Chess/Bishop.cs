@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Bishop
 {
-    public static ICollection<Move> GetBishopMoves(Piece piece, Piece[] board)
+    public static ICollection<Move> GetBishopMoves(Piece piece, Piece[,] board)
     {
         var moves = new List<Move>();
         moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Right,   piece.Color));

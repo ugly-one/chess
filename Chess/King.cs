@@ -5,9 +5,9 @@ namespace Chess;
 
 internal static class King
 {
-    public static List<Move> GetKingMoves(Piece king, Piece[] board)
+    public static List<Move> GetKingMoves(Piece king, Piece[,] board)
     {
-        var allPositions = new List<Vector>()
+        var allPositions = new Vector[]
         {
             king.Position + Vector.Up,
             king.Position + Vector.Down,
@@ -19,6 +19,7 @@ internal static class King
             king.Position + Vector.Down + Vector.Left,
         };
 
+        allPositions = allPositions.Where(p => p.IsWithinBoard()).ToArray();
         var allMoves = Something.ConvertToMoves(king, allPositions, board);
         
         // short castle
@@ -38,14 +39,22 @@ internal static class King
         return allMoves;
     }
 
-    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[] _board)
+    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[,] _board)
     {
         if (king.Moved)
             return null;
         
-        var rock = _board
-            .Where(p => p.Type == PieceType.Rock)
-            .FirstOrDefault(p => p.Position == king.Position + kingMoveDirection * (rockSteps + 1));
+        var possibleRockPosition = king.Position + kingMoveDirection * (rockSteps + 1);
+        if (!possibleRockPosition.IsWithinBoard())
+        {
+            // TODO I'm wasting time here. I shouldn't even consider such position. 
+            // finding both rocks for king's position should be as simple as doing 2 lookups in the board
+            // the position of rocks never change. And if it changed (and we can't find the rock where it should be) - no castling
+            // It may change for Chess960, but for now we could have 2 hardcoded positions to check
+            return null;
+        }
+        var rock = _board[possibleRockPosition.X, possibleRockPosition.Y];
+
         if (rock == null || rock.Moved) 
             return null;
         
@@ -54,7 +63,7 @@ internal static class King
         for (int i = 1; i <= 2; i++)
         {
             var fieldToCheck = king.Position + kingMoveDirection * i;
-            if (_board.GetPieceInPosition(fieldToCheck) != null)
+            if (_board[fieldToCheck.X, fieldToCheck.Y] != null)
             {
                 allFieldsInBetweenClean = false;
                 break;

@@ -28,7 +28,7 @@ public class Game
 
     public Game()
     {
-        Board = new Board();
+        Board = BoardFactory.Default();
         State = GameState.InProgress;
         CurrentPlayer = Color.WHITE;
         MovesSinceLastPawnMoveOrPieceTake = 0;
