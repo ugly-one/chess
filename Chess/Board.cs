@@ -7,11 +7,12 @@ namespace Chess;
 
 public class Board
 {
-    // private readonly Piece[] _pieces;
     private readonly Piece[] whitePieces;
     private readonly Piece[] blackPieces;
     private readonly Piece[] pieces;
     private readonly Move? _lastMove;
+
+    private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
 
     public Board(IEnumerable<Piece> board, Move? lastMove = null)
     {
@@ -20,6 +21,7 @@ public class Board
         whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
         blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
         _lastMove = lastMove;
+        possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
     public Board()
@@ -65,6 +67,7 @@ public class Board
         whitePieces = pieces.Where(p => p.Color == Color.WHITE).ToArray();
         blackPieces = pieces.Where(p => p.Color == Color.BLACK).ToArray();
         _lastMove = null;
+        possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
     public bool HasInsufficientMatingMaterial()
@@ -132,27 +135,37 @@ public class Board
     /// <returns></returns>
     public Move[] GetPossibleMoves(Piece piece)
     {
-        var possibleMoves = GetMoves(piece).WithinBoard();
-
-        var possibleMovesAfterFiltering = new List<Move>();
-        foreach (var possibleMove in possibleMoves)
+        if (possibleMovesPerPiece.TryGetValue(piece, out var possibleMoves))
         {
-            // let's try to make the move and see if the king is under attack, if yes, move is not allowed
-            // it doesn't matter what we promote to
-            var boardAfterMove = Move(possibleMove, PieceType.Queen);
-            if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
-            if (possibleMove.PieceToMove.Type == PieceType.King)
+            return possibleMoves;
+        }
+        else
+        {
+            possibleMoves = GetMoves(piece).WithinBoard().ToArray();
+            var possibleMovesAfterFiltering = new List<Move>();
+            foreach (var possibleMove in possibleMoves)
             {
-                // TODO find out if we're castling.
-                // checking if king moved more than 1 square is enough but won't work in CHess960 :D
-                var isCastleMove = false;
-                if (isCastleMove)
+                // let's try to make the move and see if the king is under attack, if yes, move is not allowed
+                // it doesn't matter what we promote to
+                var boardAfterMove = Move(possibleMove, PieceType.Queen);
+                if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
+                if (possibleMove.PieceToMove.Type == PieceType.King)
                 {
-                    var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
-                    var oneStepVector = moveVector.Abs().Clamp(new Vector(0,0),new Vector(1,0));
-                    if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
+                    // TODO find out if we're castling.
+                    // checking if king moved more than 1 square is enough but won't work in CHess960 :D
+                    var isCastleMove = false;
+                    if (isCastleMove)
                     {
-                        // castling not allowed
+                        var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
+                        var oneStepVector = moveVector.Abs().Clamp(new Vector(0, 0), new Vector(1, 0));
+                        if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
+                        {
+                            // castling not allowed
+                        }
+                        else
+                        {
+                            possibleMovesAfterFiltering.Add(possibleMove);
+                        }
                     }
                     else
                     {
@@ -164,13 +177,11 @@ public class Board
                     possibleMovesAfterFiltering.Add(possibleMove);
                 }
             }
-            else
-            {
-                possibleMovesAfterFiltering.Add(possibleMove);
-            }
-        }
 
-        return possibleMovesAfterFiltering.ToArray();
+            possibleMovesPerPiece.Add(piece, possibleMovesAfterFiltering.ToArray());
+
+            return possibleMovesAfterFiltering.ToArray();
+        }
     }
 
     public Piece[] GetPieces()
@@ -231,7 +242,7 @@ public class Board
             else
                 movedPiece = movedPiece with { Type = promotedPiece.Value };
         }
-        
+
         IEnumerable<Piece> currentColorPieces = move.PieceToMove.Color == Color.WHITE ?
             whitePieces : blackPieces;
 
@@ -265,11 +276,11 @@ public class Board
         {
             king = whitePieces.First(p => p.Type == PieceType.King);
         }
-        else 
+        else
         {
             king = blackPieces.First(p => p.Type == PieceType.King);
         }
-        
+
         return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
     }
 
