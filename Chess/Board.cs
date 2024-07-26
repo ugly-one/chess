@@ -5,6 +5,11 @@ using System.Text;
 
 namespace Chess;
 
+internal static class PieceTypeExtension
+{
+    public static PieceType[] PieceTypes = (PieceType[])Enum.GetValues(typeof(PieceType));
+}
+
 public class Board
 {
     private readonly Piece[] whitePieces;
@@ -281,7 +286,7 @@ public class Board
     private bool IsFieldUnderAttack(Vector field, Color color)
     {
         var oppositeColor = color.GetOppositeColor();
-        foreach (PieceType pieceType in Enum.GetValues(typeof(PieceType)))
+        foreach (PieceType pieceType in PieceTypeExtension.PieceTypes)
         {
             var pretendPiece = new Piece(pieceType, oppositeColor, field);
             var moves = GetMoves(pretendPiece);
