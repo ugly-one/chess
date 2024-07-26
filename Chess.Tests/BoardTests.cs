@@ -83,4 +83,25 @@ public class BoardTests
         Assert.True(success);
         Assert.Contains(newBoard.GetPieces(), p => p.Type == PieceType.Queen);
     }
+
+    [Fact]
+    public void PinnedPieceIsPinned()
+    {
+        var textBoard = new[]
+        {
+            "  K     ",
+            "  N     ",
+            "        ",
+            "  r     ",
+            "      k ",
+            "        ",
+            "        ",
+            "        ",
+        };
+        var board = BoardFactory.FromText(textBoard);
+        
+        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
 }

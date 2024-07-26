@@ -29,7 +29,19 @@ public partial class MainView : VBoxContainer
 		AddChild(game);
 		var isBlackAI = GetNode<CheckBox>("%BlackCheckBox").ButtonPressed;
 		var isWhiteAI = GetNode<CheckBox>("%WhiteCheckBox").ButtonPressed;
-		var gameState = new Game();
+		var textBoard = new[]
+		{
+			"  K     ",
+			"  N     ",
+			"        ",
+			"  r     ",
+			"      k ",
+			"        ",
+			"        ",
+			"        ",
+		};
+ 
+		var gameState = new Game(BoardFactory.FromText(textBoard));
 		PlayerHost blackAI = null;
 		if (isBlackAI)
 		{

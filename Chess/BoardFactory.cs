@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Chess;
 
 public class BoardFactory
@@ -42,6 +45,40 @@ public class BoardFactory
             new Piece(PieceType.Pawn, Color.BLACK, new Vector(6, 1)),
             new Piece(PieceType.Pawn, Color.BLACK, new Vector(7, 1)),
         };
+        return new Board(pieces);
+    }
+
+    public static Board FromText(string[] textBoard)
+    {
+        var pieces = new List<Piece>();
+        var rowCount = 0;
+        foreach(var row in textBoard)
+        {
+            var columnCount = 0;
+            foreach(var character in row)
+            {
+                if (character == ' ') 
+                {
+                    columnCount++;
+                    continue;
+                }
+                var position = new Vector(columnCount, rowCount);
+                var color = Char.IsLower(character) ? Color.BLACK : Color.WHITE;
+                var piece = Char.ToLower(character) switch
+                {
+                    'k' => new Piece(PieceType.King, color, position),
+                    'q' => new Piece(PieceType.Queen, color, position),
+                    'n' => new Piece(PieceType.Knight, color, position),
+                    'r' => new Piece(PieceType.Rock, color, position),
+                    'p' => new Piece(PieceType.Pawn, color, position),
+                    'b' => new Piece(PieceType.Bishop, color, position),
+                    _ => throw new NotImplementedException()
+                };
+                pieces.Add(piece);
+                columnCount++;
+            }
+            rowCount++;
+        }
         return new Board(pieces);
     }
 }

@@ -26,6 +26,14 @@ public class Game
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
 
+    public Game(Board board)
+    {
+        Board = board;
+        State = GameState.InProgress;
+        CurrentPlayer = Color.WHITE;
+        MovesSinceLastPawnMoveOrPieceTake = 0;
+    }
+
     public Game()
     {
         Board = BoardFactory.Default();
