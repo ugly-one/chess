@@ -22,14 +22,14 @@ internal static class King
         var allMoves = Something.ConvertToMoves(king, allPositions, board);
         
         // short castle
-        var shortCastleMove = TryGetCastleMove(king, Vector.Right, 2, board);
+        var shortCastleMove = TryGetCastleMove(king, Vector.Left, 2, board);
         if (shortCastleMove != null)
         {
             allMoves.Add(shortCastleMove);
         }
 
         // long castle
-        var longCastleMove = TryGetCastleMove(king, Vector.Left, 3, board);
+        var longCastleMove = TryGetCastleMove(king, Vector.Right, 3, board);
         if (longCastleMove != null)
         {
             allMoves.Add(longCastleMove);

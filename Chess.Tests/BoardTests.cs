@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -169,5 +170,36 @@ public class BoardTests
         var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
         Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
+
+    [Fact]
+    public void CastlingIsPossible()
+    {
+        var textBoard = new[]
+        {
+        //   01234567
+            "   K   R",// 0
+            "        ",// 1
+            "        ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "        ",// 6
+            "r  k    ",// 7
+        };
+        var board = BoardFactory.FromText(textBoard);
+
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        Assert.True(whiteMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0)));
+        var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
+        Assert.True(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(2, 7)));
+    }
+
+    private void Print(ICollection<Move> moves)
+    {
+        foreach (var move in moves)
+        {
+            Console.WriteLine(move);
+        }
     }
 }
