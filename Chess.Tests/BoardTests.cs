@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -6,34 +6,68 @@ namespace Chess.Tests;
 
 public class BoardTests
 {
+    //var textBoard = new[]
+    //{
+    ////   01234567
+    //    "        ",// 0
+    //    "        ",// 1
+    //    "        ",// 2
+    //    "        ",// 3
+    //    "        ",// 4
+    //    "        ",// 5
+    //    "        ",// 6
+    //    "        ",// 7
+    //};
+
     [Fact]
     public void KingsCannotAttackEachOther()
     {
-        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(0, 0));
-        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(2, 2));
-        var board = new Board(new List<Piece>(){ whiteKing, blackKing });
+        var textBoard = new[]
+        {
+        //   01234567
+            "K       ",// 0
+            "        ",// 1
+            "  k     ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "        ",// 6
+            "        ",// 7
+        };
 
-        var whiteMoves = board.GetPossibleMoves(whiteKing);
-        
-        Assert.DoesNotContain(whiteMoves, m => m.PieceNewPosition == new Vector(1,1));
+
+        var board = BoardFactory.FromText(textBoard);
+
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        Assert.DoesNotContain(whiteMoves, m => m.PieceNewPosition == new Vector(1, 1));
     }
-    
+
     /// <summary>
     /// A not moved pawn cannot step on a piece in front of it, nor just over it but it can capture another piece
     /// </summary>
     [Fact]
     public void BasicPawnMoves()
     {
-        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 3));
-        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(7, 7));
-        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 4), Moved: false);
-        var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 3));
-        var board = new Board(new List<Piece>(){ whiteKing, blackKing, whitePawn, blackPawn });
+        var textBoard = new[]
+        {
+        //   01234567
+            "   k    ",// 0
+            "        ",// 1
+            "        ",// 2
+            "  pK    ",// 3
+            "   P    ",// 4
+            "        ",// 5
+            "        ",// 6
+            "        ",// 7
+        };
 
+        var board = BoardFactory.FromText(textBoard);
+        var whitePawn = board.GetPiece(Color.WHITE, PieceType.Pawn);
         var moves = board.GetPossibleMoves(whitePawn);
-        
+
         Assert.Single(moves);
-        Assert.Equal(moves.First().PieceNewPosition, new Vector(2,3));
+        Assert.Equal(moves.First().PieceNewPosition, new Vector(2, 3));
 
         var (success, newBoard) = board.TryMove(whitePawn, moves.First().PieceNewPosition);
 
@@ -43,45 +77,77 @@ public class BoardTests
     [Fact]
     public void EnPassant()
     {
-        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 3));
-        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(7, 7));
-        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(3, 3), Moved: true);
-        var blackPawn = new Piece(PieceType.Pawn, Color.BLACK, new Vector(2, 1));
-        var game = new Game(Color.BLACK, whiteKing, blackKing, whitePawn, blackPawn);
-        game.TryMove(blackPawn, new Vector(2, 3), null);
-        
-        var moves = game.Board.GetPossibleMoves(whitePawn);
-        
-        Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2,2));
+        var textBoard = new[]
+        {
+        //   01234567
+            "   k    ",// 0
+            "  p     ",// 1
+            "        ",// 2
+            "   P    ",// 3
+            "        ",// 4
+            "        ",// 5
+            "        ",// 6
+            "   K    ",// 7
+        };
+
+        var board = BoardFactory.FromText(textBoard);
+        var blackPawn = board.GetPiece(Color.BLACK, PieceType.Pawn);
+        var (success, newBoard) = board.TryMove(blackPawn, new Vector(2, 3));
+        Assert.True(success);
+        var whitePawn = newBoard.GetPiece(Color.WHITE, PieceType.Pawn);
+
+        var moves = newBoard.GetPossibleMoves(whitePawn);
+
+        Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2, 2));
     }
 
     [Fact]
     public void PromotingBishopIsNotPossible()
     {
-        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(1, 2));
-        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(5, 6));
-        var whiteBishop = new Piece(PieceType.Bishop, Color.WHITE, new Vector(1, 1));
-        var game = new Game(Color.WHITE, whiteKing, blackKing, whiteBishop);
+        var textBoard = new[]
+        {
+        //   01234567
+            "        ",// 0
+            " B      ",// 1
+            " K      ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "     k  ",// 6
+            "        ",// 7
+        };
 
-        game.TryMove(whiteBishop, new Vector(7,7), PieceType.Queen);
+        // this test has to use Game object since promoting logic is a bit in Game class - to be fixed
+        var game = new Game(BoardFactory.FromText(textBoard));
+        var bishop = game.Board.GetPiece(PieceType.Bishop);
+
+        game.TryMove(bishop, new Vector(7, 7), PieceType.Queen);
 
         // TODO we have a nasty way of getting a piece at given position
         // game.Board.GetPiece(x,y) would be better. Or game.GetPiece(x,y)
-        Assert.Equal(PieceType.Bishop, game.Board.GetPieces().FirstOrDefault(p => p.Position == new Vector(7, 7)).Type);
+        Assert.Equal(PieceType.Bishop, game.Board.GetPieces().First(p => p.Position == new Vector(7, 7)).Type);
     }
 
     [Fact]
     public void PromotingToQueen()
     {
-        var whiteKing = new Piece(PieceType.King, Color.WHITE, new Vector(3, 7));
-        var blackKing = new Piece(PieceType.King, Color.BLACK, new Vector(3, 0));
-        var whitePawn = new Piece(PieceType.Pawn, Color.WHITE, new Vector(6, 1), Moved: true);
-        var board = new Board(new [] {whiteKing, blackKing, whitePawn});
+        var textBoard = new[]
+        {
+            "   k    ",
+            "        ",
+            "        ",
+            "        ",
+            "        ",
+            "       p",
+            "   K    ",
+        };
+        var board = BoardFactory.FromText(textBoard);
+        var pawn = board.GetPiece(PieceType.Pawn);
 
-        var (success, newBoard) = board.TryMove(whitePawn, new Vector(6,0), PieceType.Queen);
+        var (success, newBoard) = board.TryMove(pawn, new Vector(7, 7), PieceType.Queen);
 
         Assert.True(success);
-        Assert.Contains(newBoard.GetPieces(), p => p.Type == PieceType.Queen);
+        newBoard.GetPiece(PieceType.Queen);
     }
 
     [Fact]
@@ -99,7 +165,7 @@ public class BoardTests
             "        ",
         };
         var board = BoardFactory.FromText(textBoard);
-        
+
         var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
         Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));

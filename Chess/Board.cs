@@ -168,6 +168,17 @@ public class Board
         return whitePieces.Concat(blackPieces).ToArray();
     }
 
+    public Piece GetPiece(PieceType pieceType)
+    {
+        return GetPieces().First(p => p.Type == pieceType);
+    }
+
+    /// <summary> return the first piece (checked in random order) that matches color and type
+    public Piece GetPiece(Color color, PieceType pieceType)
+    {
+        return GetPieces().First(p => p.Type == pieceType && p.Color == color);
+    }
+
     /// <summary>
     /// Maybe it would be better if we return List<Board>?
     /// </summary>
