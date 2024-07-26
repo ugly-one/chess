@@ -269,10 +269,11 @@ public class Board
     /// <returns></returns>
     private bool IsFieldUnderAttack(Vector field, Color color)
     {
+        var oppositeColor = color.GetOppositeColor();
         foreach (PieceType pieceType in Enum.GetValues(typeof(PieceType)))
         {
-            var pretendPiece = new Piece(pieceType, color.GetOppositeColor(), field);
-            var moves = GetMoves(pretendPiece).ToList();
+            var pretendPiece = new Piece(pieceType, oppositeColor, field);
+            var moves = GetMoves(pretendPiece);
             if (moves.Exists(m => m is Capture capture && capture.CapturedPiece.Type == pieceType))
                 return true;
         }
@@ -293,7 +294,7 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    private ICollection<Move> GetMoves(Piece piece)
+    private List<Move> GetMoves(Piece piece)
     {
         var moves = piece.Type switch
         {

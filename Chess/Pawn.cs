@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Pawn
 {
-    public static ICollection<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
+    public static List<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
     {
         var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
