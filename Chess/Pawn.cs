@@ -4,16 +4,14 @@ namespace Chess;
 
 internal static class Pawn
 {
-    public static ICollection<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
+    public static List<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
     {
         var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
         // one step forward if not blocked
         var forward = piece.Position + direction;
-        // I don't think I have to validate if forward position is within board.
-        // there is no way to get a pawn to the last rank and keep it as a pawn.
-        if (!IsBlocked(forward, board))
+        if (forward.IsWithinBoard() && !IsBlocked(forward, board))
         {
             moves.Add(new Move(piece, forward));
 
@@ -21,7 +19,7 @@ internal static class Pawn
             if (!piece.Moved)
             {
                 var forward2Steps = piece.Position + direction + direction;
-                if (!IsBlocked(forward2Steps, board))
+                if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps, board))
                 {
                     moves.Add(new Move(piece, forward2Steps));
                 }
@@ -79,7 +77,7 @@ internal static class Pawn
         var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == new Vector((capturePosition - piece.Position).X, 0);
         if (isPawn && // was it a pawn
             is2StepMove && // was it a 2 step move
-            isThePawnNowNextToUs) // was it move next to us 
+            isThePawnNowNextToUs) // was it move next to us
         {
             var pieceToCapture = lastMove.PieceToMove.Move(lastMove.PieceNewPosition);
             return new Capture(piece, capturePosition, pieceToCapture);
