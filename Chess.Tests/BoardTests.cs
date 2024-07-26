@@ -75,7 +75,7 @@ public class BoardTests
     }
 
     [Fact]
-    public void EnPassant()
+    public void EnPassantIsPossible()
     {
         var textBoard = new[]
         {
@@ -102,7 +102,7 @@ public class BoardTests
     }
 
     [Fact]
-    public void PromotingBishopIsNotPossible()
+    public void PromotingBishopToQueenIsNotPossible()
     {
         var textBoard = new[]
         {
@@ -129,7 +129,7 @@ public class BoardTests
     }
 
     [Fact]
-    public void PromotingToQueen()
+    public void PromotingToQueenIsPossible()
     {
         var textBoard = new[]
         {
