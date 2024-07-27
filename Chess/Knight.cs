@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Knight
 {
-    public static List<Move> GetKnightMoves(Piece piece, Piece[,] board)
+    public static IEnumerable<Move> GetKnightMoves(Piece piece, Piece[,] board)
     {
         var allPositions = new Vector[]
         {
@@ -17,7 +17,6 @@ internal static class Knight
             piece.Position + Vector.Up * 2 + Vector.Left,
             piece.Position + Vector.Left * 2 + Vector.Up,
         };
-        var allMoves = Something.ConvertToMoves(piece, allPositions, board);
-        return allMoves;
+        return Something.ConvertToMoves(piece, allPositions, board);
     }
 }

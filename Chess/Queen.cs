@@ -4,17 +4,26 @@ namespace Chess;
 
 public static class Queen
 {
-    public static List<Move> GetQueenMoves(Piece piece, Piece[,] board)
+    private static Vector[] directions = new Vector[]
     {
-        var moves = new List<Move>();
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Right,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up + Vector.Left,    piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down + Vector.Left,  piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down + Vector.Right, piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Up,       piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Down,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Left,   piece.Color));
-        moves.AddRange(board.GetMovesInDirection(piece, Vector.Right, piece.Color));
-        return moves;
+        Vector.Up + Vector.Right,
+        Vector.Up + Vector.Left,
+        Vector.Down + Vector.Right,
+        Vector.Down + Vector.Left,
+        Vector.Up,
+        Vector.Down,
+        Vector.Left,
+        Vector.Right
+    };
+
+    public static IEnumerable<Move> GetQueenMoves(Piece piece, Piece[,] board)
+    {
+        foreach(var direction in directions)
+        {
+            foreach(var move in board.GetMovesInDirection(piece, direction, piece.Color))
+            {
+                yield return move;
+            }
+        }
     }
 }

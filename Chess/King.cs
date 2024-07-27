@@ -5,7 +5,7 @@ namespace Chess;
 
 internal static class King
 {
-    public static List<Move> GetKingMoves(Piece king, Piece[,] board)
+    public static IEnumerable<Move> GetKingMoves(Piece king, Piece[,] board)
     {
         var allPositions = new Vector[]
         {
@@ -20,22 +20,23 @@ internal static class King
         };
 
         var allMoves = Something.ConvertToMoves(king, allPositions, board);
-        
+        foreach (var move in allMoves)
+        {
+            yield return move;
+        }
         // short castle
         var shortCastleMove = TryGetCastleMove(king, Vector.Left, 2, board);
         if (shortCastleMove != null)
         {
-            allMoves.Add(shortCastleMove);
+            yield return shortCastleMove;
         }
 
         // long castle
         var longCastleMove = TryGetCastleMove(king, Vector.Right, 3, board);
         if (longCastleMove != null)
         {
-            allMoves.Add(longCastleMove);
+            yield return longCastleMove;
         }
-        
-        return allMoves;
     }
 
     private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[,] _board)

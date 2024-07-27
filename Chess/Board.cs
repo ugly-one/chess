@@ -125,9 +125,9 @@ public class Board
         }
         else
         {
-            possibleMoves = GetMoves(piece).WithinBoard().ToArray();
+            var possibleMoves2 = GetMoves(piece).WithinBoard();
             var possibleMovesAfterFiltering = new List<Move>();
-            foreach (var possibleMove in possibleMoves)
+            foreach (var possibleMove in possibleMoves2)
             {
                 // let's try to make the move and see if the king is under attack, if yes, move is not allowed
                 // it doesn't matter what we promote to
@@ -290,7 +290,7 @@ public class Board
         {
             var pretendPiece = new Piece(pieceType, oppositeColor, field);
             var moves = GetMoves(pretendPiece);
-            if (moves.Exists(m => m is Capture capture && capture.CapturedPiece.Type == pieceType))
+            if (moves.Any(m => m is Capture capture && capture.CapturedPiece.Type == pieceType))
                 return true;
         }
 
@@ -310,7 +310,7 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    private List<Move> GetMoves(Piece piece)
+    private IEnumerable<Move> GetMoves(Piece piece)
     {
         var moves = piece.Type switch
         {

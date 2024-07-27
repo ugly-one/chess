@@ -4,31 +4,27 @@ namespace Chess;
 
 internal static class Something
 {
-    public static List<Move> ConvertToMoves(Piece piece, ICollection<Vector> allPositions, Piece[,] board)
+    public static IEnumerable<Move> ConvertToMoves(Piece piece, ICollection<Vector> positions, Piece[,] board)
     {
-        var result = new List<Move>(allPositions.Count);
-
-        foreach (var p in allPositions)
+        foreach (var position in positions)
         {
-            if (!p.IsWithinBoard())
+            if (!position.IsWithinBoard())
             {
                 continue;
             }
-            var pieceOnTheWay = board[p.X, p.Y];
+            var pieceOnTheWay = board[position.X, position.Y];
             if (pieceOnTheWay is null)
             {
-                result.Add(new Move(piece, p));
+                yield return new Move(piece, position);
             }
             else
             {
                 if (pieceOnTheWay.Color != piece.Color)
                 {
-                    result.Add(new Capture(piece, p, pieceOnTheWay));
+                    yield return new Capture(piece, position, pieceOnTheWay);
                 }
             }
         }
-
-        return result;
     }
 
     public static IEnumerable<Move> GetMovesInDirection(
