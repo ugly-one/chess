@@ -182,7 +182,27 @@ public class BoardTests
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
         Assert.True(whiteMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0)));
         var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
-        Assert.True(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(2, 7)));
+        Assert.True(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
+    }
+
+    [Fact]
+    public void CastlingIsNotPossibleViaAttackedField()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "  RK    ",// 0
+            "        ",// 1
+            "        ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "        ",// 6
+            "r  k    ",// 7
+        }.ToBoard();
+
+        var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
+        Assert.False(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
     }
 
     private void Print(ICollection<Move> moves)

@@ -137,11 +137,11 @@ public class Board
                 {
                     // TODO find out if we're castling.
                     // checking if king moved more than 1 square is enough but won't work in CHess960 :D
-                    var isCastleMove = false;
+                    var moveVector = (possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position);
+                    var isCastleMove = moveVector.Abs().X > 1;
                     if (isCastleMove)
                     {
-                        var moveVector = possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position;
-                        var oneStepVector = moveVector.Abs().Clamp(new Vector(0, 0), new Vector(1, 0));
+                        var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
                         if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
                         {
                             // castling not allowed
