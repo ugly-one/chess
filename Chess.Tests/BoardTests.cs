@@ -126,13 +126,15 @@ public class BoardTests
     {
         var board = new[]
         {
-            "   k    ",
-            "        ",
-            "        ",
-            "        ",
-            "        ",
-            "       p",
-            "   K    ",
+        //   01234567
+            "   k    ",// 0
+            "        ",// 1
+            "        ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "   K   p",// 6
+            "        ",// 7
         }.ToBoard();
         var pawn = board.GetPiece(PieceType.Pawn);
 
@@ -147,20 +149,45 @@ public class BoardTests
     {
         var board = new[]
         {
-            "  K     ",
-            "  N     ",
-            "        ",
-            "  r     ",
-            "      k ",
-            "        ",
-            "        ",
-            "        ",
+        //   01234567
+            "  K     ",// 0
+            "  N     ",// 1
+            "        ",// 2
+            "  r     ",// 3
+            "      k ",// 4
+            "        ",// 5
+            "        ",// 6
+            "        ",// 7
         }.ToBoard();
 
         var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
         Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));
     }
+    [Fact]
+    public void PinnedPieceCanMoveIfKeepsPin()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "  K     ",// 0
+            "  R     ",// 1
+            "        ",// 2
+            "  r     ",// 3
+            "      k ",// 4
+            "        ",// 5
+            "        ",// 6
+            "        ",// 7
+        }.ToBoard();
+
+        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        var whiteRockMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Rock);
+        Assert.Equal(2, whiteRockMoves.Count());
+        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2,2)));
+        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2,3)));
+    }
+
 
     [Fact]
     public void CastlingIsPossible()
