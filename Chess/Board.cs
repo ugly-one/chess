@@ -24,10 +24,10 @@ public class Board
     public Board(IEnumerable<Piece> board, Move? lastMove = null)
     {
         // TODO validate given pieces - they could be in invalid positions
-        pieces2 = new Piece[8,8];
+        pieces2 = new Piece[8, 8];
         whitePieces = new List<Piece>(16);
         blackPieces = new List<Piece>(16);
-        foreach(var piece in board)
+        foreach (var piece in board)
         {
             pieces2[piece.Position.X, piece.Position.Y] = piece;
             if (piece.Color == Color.WHITE)
@@ -82,26 +82,6 @@ public class Board
         }
 
         return false;
-    }
-
-    public override string ToString()
-    {
-        var boardMatrix = new Piece?[8, 8];
-        foreach (var piece in whitePieces.Concat(blackPieces))
-        {
-            boardMatrix[piece.Position.X, piece.Position.Y] = piece;
-        }
-
-        var stringRepresentation = new StringBuilder();
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-                stringRepresentation.Append(boardMatrix[x, y]?.ToString() ?? "\u00B7");
-
-            stringRepresentation.Append('\n');
-        }
-
-        return stringRepresentation.ToString();
     }
 
     private static bool HasOnlyKingAndBishopOrKnight(List<Piece> pieces)
@@ -169,17 +149,6 @@ public class Board
     public Piece[] GetPieces()
     {
         return whitePieces.Concat(blackPieces).ToArray();
-    }
-
-    public Piece GetPiece(PieceType pieceType)
-    {
-        return GetPieces().First(p => p.Type == pieceType);
-    }
-
-    /// <summary> return the first piece (checked in random order) that matches color and type
-    public Piece GetPiece(Color color, PieceType pieceType)
-    {
-        return GetPieces().First(p => p.Type == pieceType && p.Color == color);
     }
 
     /// <summary>
@@ -321,5 +290,25 @@ public class Board
             _ => throw new ArgumentOutOfRangeException()
         };
         return moves;
+    }
+
+    public override string ToString()
+    {
+        var boardMatrix = new Piece?[8, 8];
+        foreach (var piece in whitePieces.Concat(blackPieces))
+        {
+            boardMatrix[piece.Position.X, piece.Position.Y] = piece;
+        }
+
+        var stringRepresentation = new StringBuilder();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+                stringRepresentation.Append(boardMatrix[x, y]?.ToString() ?? "\u00B7");
+
+            stringRepresentation.Append('\n');
+        }
+
+        return stringRepresentation.ToString();
     }
 }

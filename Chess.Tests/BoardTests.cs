@@ -4,7 +4,6 @@ using System.Linq;
 using Xunit;
 
 namespace Chess.Tests;
-
 public class BoardTests
 {
     //var textBoard = new[]
