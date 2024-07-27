@@ -4,16 +4,15 @@ namespace Chess;
 
 internal static class Pawn
 {
-    public static List<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
+    public static IEnumerable<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
     {
-        var moves = new List<Move>();
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
         // one step forward if not blocked
         var forward = piece.Position + direction;
         if (forward.IsWithinBoard() && !IsBlocked(forward, board))
         {
-            moves.Add(new Move(piece, forward));
+            yield return new Move(piece, forward);
 
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
@@ -21,7 +20,7 @@ internal static class Pawn
                 var forward2Steps = piece.Position + direction + direction;
                 if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps, board))
                 {
-                    moves.Add(new Move(piece, forward2Steps));
+                    yield return new Move(piece, forward2Steps);
                 }
             }
         }
@@ -34,18 +33,17 @@ internal static class Pawn
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
             {
-                moves.Add(new Capture(piece, takeLeft, possiblyCapturedPiece));
+                yield return new Capture(piece, takeLeft, possiblyCapturedPiece);
             }
             else
             {
                 var move = Pawn.TryGetEnPassant(piece, takeLeft, lastMove);
                 if (move != null)
                 {
-                    moves.Add(move);
+                    yield return move;
                 }
             }
         }
-
 
         // one down/right if there is an opponent's piece
         var takeRight = piece.Position + Vector.Right + direction;
@@ -54,18 +52,17 @@ internal static class Pawn
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
             {
-                moves.Add(new Capture(piece, takeRight, possiblyCapturedPiece));
+                yield return new Capture(piece, takeRight, possiblyCapturedPiece);
             }
             else
             {
                 var move = Pawn.TryGetEnPassant(piece, takeRight, lastMove);
                 if (move != null)
                 {
-                    moves.Add(move);
+                    yield return move;
                 }
             }
         }
-        return moves;
     }
 
     private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Move? lastMove)
