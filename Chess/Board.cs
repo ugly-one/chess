@@ -12,8 +12,8 @@ internal static class PieceTypeExtension
 
 public class Board
 {
-    private readonly Piece[] whitePieces;
-    private readonly Piece[] blackPieces;
+    private readonly List<Piece> whitePieces;
+    private readonly List<Piece> blackPieces;
     private readonly Piece[,] pieces2;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
@@ -25,14 +25,14 @@ public class Board
     {
         // TODO validate given pieces - they could be in invalid positions
         pieces2 = new Piece[8,8];
-        var whitePiecesList = new List<Piece>(16);
-        var blackPiecesList = new List<Piece>(16);
+        whitePieces = new List<Piece>(16);
+        blackPieces = new List<Piece>(16);
         foreach(var piece in board)
         {
             pieces2[piece.Position.X, piece.Position.Y] = piece;
             if (piece.Color == Color.WHITE)
             {
-                whitePiecesList.Add(piece);
+                whitePieces.Add(piece);
                 if (piece.Type == PieceType.King)
                 {
                     whiteKing = piece.Position;
@@ -40,7 +40,7 @@ public class Board
             }
             else
             {
-                blackPiecesList.Add(piece);
+                blackPieces.Add(piece);
                 if (piece.Type == PieceType.King)
                 {
                     blackKing = piece.Position;
@@ -48,21 +48,19 @@ public class Board
             }
 
         }
-        whitePieces = whitePiecesList.ToArray();
-        blackPieces = blackPiecesList.ToArray();
         _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
     public bool HasInsufficientMatingMaterial()
     {
-        if (whitePieces.Length == 1 && blackPieces.Length == 1)
+        if (whitePieces.Count == 1 && blackPieces.Count == 1)
         {
             // only 2 kings left
             return true;
         }
 
-        if (whitePieces.Length == 1)
+        if (whitePieces.Count == 1)
         {
             if (HasOnlyKingAndBishopOrKnight(blackPieces))
             {
@@ -70,7 +68,7 @@ public class Board
             }
         }
 
-        if (blackPieces.Length == 1)
+        if (blackPieces.Count == 1)
         {
             if (HasOnlyKingAndBishopOrKnight(whitePieces))
             {
@@ -106,9 +104,9 @@ public class Board
         return stringRepresentation.ToString();
     }
 
-    private static bool HasOnlyKingAndBishopOrKnight(Piece[] pieces)
+    private static bool HasOnlyKingAndBishopOrKnight(List<Piece> pieces)
     {
-        return pieces.Length == 2 &&
+        return pieces.Count == 2 &&
                pieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
     }
 
@@ -125,9 +123,9 @@ public class Board
         }
         else
         {
-            possibleMoves = GetMoves(piece).WithinBoard().ToArray();
+            var possibleMoves2 = GetMoves(piece).WithinBoard();
             var possibleMovesAfterFiltering = new List<Move>();
-            foreach (var possibleMove in possibleMoves)
+            foreach (var possibleMove in possibleMoves2)
             {
                 // let's try to make the move and see if the king is under attack, if yes, move is not allowed
                 // it doesn't matter what we promote to
@@ -290,14 +288,14 @@ public class Board
         {
             var pretendPiece = new Piece(pieceType, oppositeColor, field);
             var moves = GetMoves(pretendPiece);
-            if (moves.Exists(m => m is Capture capture && capture.CapturedPiece.Type == pieceType))
+            if (moves.Any(m => m is Capture capture && capture.CapturedPiece.Type == pieceType))
                 return true;
         }
 
         return false;
     }
 
-    private Piece[] GetPieces(Color color)
+    private List<Piece> GetPieces(Color color)
     {
         if (color == Color.WHITE) return whitePieces;
         else return blackPieces;
@@ -310,7 +308,7 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    private List<Move> GetMoves(Piece piece)
+    private IEnumerable<Move> GetMoves(Piece piece)
     {
         var moves = piece.Type switch
         {
