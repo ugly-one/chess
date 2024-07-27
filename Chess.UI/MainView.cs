@@ -41,7 +41,7 @@ public partial class MainView : VBoxContainer
 			"        ",
 		};
  
-		var gameState = new Game(BoardFactory.FromText(textBoard));
+		var gameState = new Game(BoardFactory.Default());
 		PlayerHost blackAI = null;
 		if (isBlackAI)
 		{
