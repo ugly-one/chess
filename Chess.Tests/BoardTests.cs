@@ -23,7 +23,7 @@ public class BoardTests
     [Fact]
     public void KingsCannotAttackEachOther()
     {
-        var textBoard = new[]
+        var board = new[]
         {
         //   01234567
             "K       ",// 0
@@ -34,10 +34,7 @@ public class BoardTests
             "        ",// 5
             "        ",// 6
             "        ",// 7
-        };
-
-
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
@@ -50,7 +47,7 @@ public class BoardTests
     [Fact]
     public void BasicPawnMoves()
     {
-        var textBoard = new[]
+        var board = new[]
         {
         //   01234567
             "   k    ",// 0
@@ -61,9 +58,7 @@ public class BoardTests
             "        ",// 5
             "        ",// 6
             "        ",// 7
-        };
-
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
         var whitePawn = board.GetPiece(Color.WHITE, PieceType.Pawn);
         var moves = board.GetPossibleMoves(whitePawn);
 
@@ -78,7 +73,7 @@ public class BoardTests
     [Fact]
     public void EnPassantIsPossible()
     {
-        var textBoard = new[]
+        var board = new[]
         {
         //   01234567
             "   k    ",// 0
@@ -89,9 +84,7 @@ public class BoardTests
             "        ",// 5
             "        ",// 6
             "   K    ",// 7
-        };
-
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
         var blackPawn = board.GetPiece(Color.BLACK, PieceType.Pawn);
         var (success, newBoard) = board.TryMove(blackPawn, new Vector(2, 3));
         Assert.True(success);
@@ -105,7 +98,7 @@ public class BoardTests
     [Fact]
     public void PromotingBishopToQueenIsNotPossible()
     {
-        var textBoard = new[]
+        var board = new[]
         {
         //   01234567
             "        ",// 0
@@ -116,10 +109,10 @@ public class BoardTests
             "        ",// 5
             "     k  ",// 6
             "        ",// 7
-        };
+        }.ToBoard();
 
         // this test has to use Game object since promoting logic is a bit in Game class - to be fixed
-        var game = new Game(BoardFactory.FromText(textBoard));
+        var game = new Game(board);
         var bishop = game.Board.GetPiece(PieceType.Bishop);
 
         game.TryMove(bishop, new Vector(7, 7), PieceType.Queen);
@@ -132,7 +125,7 @@ public class BoardTests
     [Fact]
     public void PromotingToQueenIsPossible()
     {
-        var textBoard = new[]
+        var board = new[]
         {
             "   k    ",
             "        ",
@@ -141,8 +134,7 @@ public class BoardTests
             "        ",
             "       p",
             "   K    ",
-        };
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
         var pawn = board.GetPiece(PieceType.Pawn);
 
         var (success, newBoard) = board.TryMove(pawn, new Vector(7, 7), PieceType.Queen);
@@ -154,7 +146,7 @@ public class BoardTests
     [Fact]
     public void PinnedPieceIsPinned()
     {
-        var textBoard = new[]
+        var board = new[]
         {
             "  K     ",
             "  N     ",
@@ -164,8 +156,7 @@ public class BoardTests
             "        ",
             "        ",
             "        ",
-        };
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
 
         var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
@@ -175,7 +166,7 @@ public class BoardTests
     [Fact]
     public void CastlingIsPossible()
     {
-        var textBoard = new[]
+        var board = new[]
         {
         //   01234567
             "   K   R",// 0
@@ -186,8 +177,7 @@ public class BoardTests
             "        ",// 5
             "        ",// 6
             "r  k    ",// 7
-        };
-        var board = BoardFactory.FromText(textBoard);
+        }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
         Assert.True(whiteMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0)));
