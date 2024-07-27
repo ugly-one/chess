@@ -127,13 +127,13 @@ public class BoardTests
         var board = new[]
         {
         //   01234567
-            "   k    ",// 0
+            "   K    ",// 0
             "        ",// 1
             "        ",// 2
             "        ",// 3
             "        ",// 4
             "        ",// 5
-            "   K   p",// 6
+            "   k   p",// 6
             "        ",// 7
         }.ToBoard();
         var pawn = board.GetPiece(PieceType.Pawn);
@@ -141,7 +141,6 @@ public class BoardTests
         var (success, newBoard) = board.TryMove(pawn, new Vector(7, 7), PieceType.Queen);
 
         Assert.True(success);
-        newBoard.GetPiece(PieceType.Queen);
     }
 
     [Fact]
@@ -164,8 +163,32 @@ public class BoardTests
 
         Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));
     }
+
     [Fact]
-    public void PinnedPieceCanMoveIfKeepsPin()
+    public void PinnedPieceIsPinned_EnPassant()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "        ",// 0
+            "   p  K ",// 1
+            "        ",// 2
+            "    P   ",// 3
+            "        ",// 4
+            "  b     ",// 5
+            "        ",// 6
+            "       k",// 7
+        }.ToBoard();
+        var blackPawn = board.GetPiece(Color.BLACK, PieceType.Pawn);
+        var (success, newBoard) = board.TryMove(blackPawn, new Vector(3, 3));
+        var whitePawn = newBoard.GetPiece(Color.WHITE, PieceType.Pawn);
+
+        var moves = newBoard.GetPossibleMoves(whitePawn);
+
+        Assert.False(moves.Any());
+    }
+    [Fact]
+    public void PinnedPieceCanMoveIfKeepsPin_VerticalLine()
     {
         var board = new[]
         {
@@ -184,10 +207,56 @@ public class BoardTests
 
         var whiteRockMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Rock);
         Assert.Equal(2, whiteRockMoves.Count());
-        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2,2)));
-        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2,3)));
+        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2, 2)));
+        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2, 3)));
     }
 
+    [Fact]
+    public void MovingKingIntoCheckIsNotPossible()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "        ",// 0
+            "        ",// 1
+            "        ",// 2
+            "  r     ",// 3
+            "      k ",// 4
+            "        ",// 5
+            "        ",// 6
+            "   K    ",// 7
+        }.ToBoard();
+
+        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        var whiteKingMoves = moves.Where(m => m.PieceToMove.Type == PieceType.King);
+        Assert.Equal(3, whiteKingMoves.Count());
+        Assert.False(whiteKingMoves.Any(m => m.PieceNewPosition == new Vector(2, 7)));
+    }
+
+    [Fact]
+    public void PinnedPieceCanMoveIfKeepsPin_Diagonal()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "  K     ",// 0
+            "   B    ",// 1
+            "        ",// 2
+            "     b  ",// 3
+            "      k ",// 4
+            "        ",// 5
+            "        ",// 6
+            "        ",// 7
+        }.ToBoard();
+
+        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        var whiteBishopMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Bishop);
+        Assert.Equal(2, whiteBishopMoves.Count());
+        Assert.True(whiteBishopMoves.Any(m => m.PieceNewPosition == new Vector(4, 2)));
+        Assert.True(whiteBishopMoves.Any(m => m.PieceNewPosition == new Vector(5, 3)));
+    }
 
     [Fact]
     public void CastlingIsPossible()
@@ -231,7 +300,12 @@ public class BoardTests
         Assert.False(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
     }
 
-    private void Print(ICollection<Move> moves)
+
+}
+
+public static class Printer
+{
+    public static void Print(this IEnumerable<Move> moves)
     {
         foreach (var move in moves)
         {
