@@ -231,10 +231,10 @@ public class Board
         return new Board(currentColorPieces.Concat(oppositeColorPieces), move);
     }
 
-    public bool IsKingUnderAttack(Color color)
+    public bool IsKingUnderAttack(Color kingColor)
     {
         Piece king;
-        if (color == Color.WHITE)
+        if (kingColor == Color.WHITE)
         {
             king = pieces[whiteKing.X, whiteKing.Y];
         }
@@ -243,7 +243,54 @@ public class Board
             king = pieces[blackKing.X, blackKing.Y];
         }
 
-        return IsFieldUnderAttack(king.Position, king.Color.GetOppositeColor());
+        var attackerColor = kingColor.GetOppositeColor();
+        // check horizontal/vertical lines to see if there is a Queen or a Rock
+        var targets = Rock.GetRay(king.Position, pieces);
+        foreach (var target in targets)
+        {
+            var targetPiece = pieces[target.X, target.Y];
+            if (targetPiece.Color == attackerColor &&
+                (targetPiece.Type == PieceType.Queen ||
+                targetPiece.Type == PieceType.Rock))
+            {
+                return true;
+            }
+        }
+        // check diagonal lines to see if there is a Queen or a Bishop
+        targets = Bishop.GetRay(king.Position, pieces);
+        foreach (var target in targets)
+        {
+            var targetPiece = pieces[target.X, target.Y];
+            if (targetPiece.Color == attackerColor &&
+                (targetPiece.Type == PieceType.Queen ||
+                targetPiece.Type == PieceType.Bishop))
+            {
+                return true;
+            }
+        }
+        // check knights
+        targets = Knight.GetRay(king.Position, pieces);
+        foreach (var target in targets)
+        {
+            var targetPiece = pieces[target.X, target.Y];
+            if (targetPiece.Color == attackerColor &&
+                targetPiece.Type == PieceType.Knight)
+            {
+                return true;
+            }
+        }
+        // check king
+        targets = King.GetRay(king.Position, pieces);
+        foreach (var target in targets)
+        {
+            var targetPiece = pieces[target.X, target.Y];
+            if (targetPiece.Color == attackerColor &&
+                targetPiece.Type == PieceType.King)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>

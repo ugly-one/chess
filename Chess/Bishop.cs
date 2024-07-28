@@ -14,12 +14,22 @@ internal static class Bishop
 
     public static IEnumerable<Move> GetBishopMoves(Piece piece, Piece[,] board)
     {
-        foreach(var direction in directions)
+        foreach (var direction in directions)
         {
-            foreach(var move in board.GetMovesInDirection(piece, direction, piece.Color))
+            foreach (var move in board.GetMovesInDirection(piece, direction, piece.Color))
             {
                 yield return move;
             }
+        }
+    }
+
+    public static IEnumerable<Vector> GetRay(Vector position, Piece[,] board)
+    {
+        foreach (var direction in directions)
+        {
+            var target = position.GetTargetInDirection(direction, board);
+            if (target != null)
+                yield return target;
         }
     }
 }

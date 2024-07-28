@@ -51,4 +51,40 @@ internal static class Something
             }
         }
     }
+
+    public static Vector? GetTargetInDirection(
+        this Vector position,
+        Vector direction,
+        Piece[,] board)
+    {
+        var newPos = position + direction;
+        var breakAfterAdding = false;
+        while (newPos.IsWithinBoard())
+        {
+            var pieceAtNewPosition = board[newPos.X, newPos.Y];
+            if (pieceAtNewPosition != null)
+            {
+                breakAfterAdding = true;
+                return newPos;
+            }
+            newPos += direction;
+            if (breakAfterAdding)
+            {
+                break;
+            }
+        }
+        return null;
+    }
+
+    public static Vector? GetTargetInPosition(
+        this Vector position, 
+        Piece[,] board)
+    {
+        if (!position.IsWithinBoard())
+        {
+            return null;
+        }
+        var pieceAtPosition = board[position.X, position.Y];
+        return pieceAtPosition?.Position;
+    }
 }

@@ -5,6 +5,29 @@ namespace Chess;
 
 internal static class King
 {
+    private static Vector[] positions = new Vector[]
+    {
+           Vector.Up,
+           Vector.Down,
+           Vector.Left,
+           Vector.Right,
+           Vector.Up + Vector.Right,
+           Vector.Up + Vector.Left,
+           Vector.Down + Vector.Right,
+           Vector.Down + Vector.Left,
+    };
+
+    public static IEnumerable<Vector> GetRay(Vector position, Piece[,] board)
+    {
+        foreach (var pos in positions)
+        {
+            var newPos = position + pos;
+            var target = newPos.GetTargetInPosition(board);
+            if (target != null)
+                yield return target;
+        }
+    }
+
     public static IEnumerable<Move> GetKingMoves(Piece king, Piece[,] board)
     {
         var allPositions = new Vector[]
@@ -43,7 +66,7 @@ internal static class King
     {
         if (king.Moved)
             return null;
-        
+
         var possibleRockPosition = king.Position + kingMoveDirection * (rockSteps + 1);
         if (!possibleRockPosition.IsWithinBoard())
         {
@@ -55,9 +78,9 @@ internal static class King
         }
         var rock = _board[possibleRockPosition.X, possibleRockPosition.Y];
 
-        if (rock == null || rock.Moved) 
+        if (rock == null || rock.Moved)
             return null;
-        
+
         var allFieldsInBetweenClean = true;
 
         for (int i = 1; i <= 2; i++)
@@ -71,7 +94,7 @@ internal static class King
         }
 
         if (!allFieldsInBetweenClean) return null;
-        
+
         var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
         return new Castle(
             king,
