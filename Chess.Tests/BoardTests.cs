@@ -302,7 +302,7 @@ public class BoardTests
     }
 
     [Fact]
-    public void KingUnderAttackHasToBeProtected()
+    public void KingAttackedByKnight()
     {
         var board = new[]
         {
@@ -318,7 +318,49 @@ public class BoardTests
         }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
-        
+
+        Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
+
+    [Fact]
+    public void KingAttackedByRock()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "   k    ",// 0
+            "      r ",// 1
+            "        ",// 2
+            "        ",// 3
+            "      K ",// 4
+            "        ",// 5
+            "P       ",// 6
+            "        ",// 7
+        }.ToBoard();
+
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
+
+    [Fact]
+    public void KingAttackedByBishop()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "  bk    ",// 0
+            "        ",// 1
+            "        ",// 2
+            "        ",// 3
+            "      K ",// 4
+            "        ",// 5
+            "P       ",// 6
+            "        ",// 7
+        }.ToBoard();
+
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
     }
 }
