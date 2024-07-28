@@ -17,7 +17,7 @@ internal static class King
             king.Position + Vector.Up + Vector.Left,
             king.Position + Vector.Down + Vector.Right,
             king.Position + Vector.Down + Vector.Left,
-        };
+        }.WithinBoard();
 
         var allMoves = Something.ConvertToMoves(king, allPositions, board);
         foreach (var move in allMoves)

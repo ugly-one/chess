@@ -16,7 +16,7 @@ internal static class Knight
             piece.Position + Vector.Left * 2 + Vector.Down,
             piece.Position + Vector.Up * 2 + Vector.Left,
             piece.Position + Vector.Left * 2 + Vector.Up,
-        };
+        }.WithinBoard();
         return Something.ConvertToMoves(piece, allPositions, board);
     }
 }

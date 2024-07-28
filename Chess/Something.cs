@@ -4,14 +4,10 @@ namespace Chess;
 
 internal static class Something
 {
-    public static IEnumerable<Move> ConvertToMoves(Piece piece, ICollection<Vector> positions, Piece[,] board)
+    public static IEnumerable<Move> ConvertToMoves(Piece piece, IEnumerable<Vector> positions, Piece[,] board)
     {
         foreach (var position in positions)
         {
-            if (!position.IsWithinBoard())
-            {
-                continue;
-            }
             var pieceOnTheWay = board[position.X, position.Y];
             if (pieceOnTheWay is null)
             {

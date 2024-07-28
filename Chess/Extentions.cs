@@ -58,6 +58,11 @@ internal static class Extentions
         return false;
     }
 
+    public static IEnumerable<Vector> WithinBoard(this IEnumerable<Vector> positions)
+    {
+        return positions.Where(IsWithinBoard);
+    }
+
     public static bool IsWithinBoard(this Vector position)
     {
         return position.X >= 0 && position.X < 8 && position.Y >= 0 && position.Y < 8;
