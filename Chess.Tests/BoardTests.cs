@@ -171,11 +171,11 @@ public class BoardTests
         {
         //   01234567
             "        ",// 0
-            "   p  K ",// 1
+            "   p    ",// 1
             "        ",// 2
-            "    P   ",// 3
+            " r  P K ",// 3
             "        ",// 4
-            "  b     ",// 5
+            "        ",// 5
             "        ",// 6
             "       k",// 7
         }.ToBoard();
@@ -185,7 +185,8 @@ public class BoardTests
 
         var moves = newBoard.GetPossibleMoves(whitePawn);
 
-        Assert.False(moves.Any());
+        Assert.Equal(2, moves.Count());
+        Assert.False(moves.Any(m => m.PieceNewPosition == new Vector(3, 2)));
     }
     [Fact]
     public void PinnedPieceCanMoveIfKeepsPin_VerticalLine()
@@ -300,7 +301,26 @@ public class BoardTests
         Assert.False(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
     }
 
+    [Fact]
+    public void KingUnderAttackHasToBeProtected()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "   k    ",// 0
+            "        ",// 1
+            "        ",// 2
+            "        ",// 3
+            "        ",// 4
+            "        ",// 5
+            "P    n  ",// 6
+            "   K    ",// 7
+        }.ToBoard();
 
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        
+        Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
 }
 
 public static class Printer
