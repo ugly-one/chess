@@ -245,7 +245,7 @@ public class Board
 
         var attackerColor = kingColor.GetOppositeColor();
         // check horizontal/vertical lines to see if there is a Queen or a Rock
-        var targets = Rock.GetRay(king.Position, pieces);
+        var targets = Rock.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y];
@@ -257,7 +257,7 @@ public class Board
             }
         }
         // check diagonal lines to see if there is a Queen or a Bishop
-        targets = Bishop.GetRay(king.Position, pieces);
+        targets = Bishop.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y];
@@ -269,7 +269,7 @@ public class Board
             }
         }
         // check knights
-        targets = Knight.GetRay(king.Position, pieces);
+        targets = Knight.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y];
@@ -280,7 +280,7 @@ public class Board
             }
         }
         // check king
-        targets = King.GetRay(king.Position, pieces);
+        targets = King.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y];
@@ -291,7 +291,7 @@ public class Board
             }
         }
         // check pawns
-        targets = Pawn.GetRay(king.Position, attackerColor, pieces);
+        targets = Pawn.GetTargets(king.Position, attackerColor, pieces);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y];

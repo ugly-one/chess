@@ -103,7 +103,7 @@ internal static class Pawn
         return false;
     }
 
-    internal static IEnumerable<Vector> GetRay(Vector position, Color color, Piece[,] board)
+    internal static IEnumerable<Vector> GetTargets(Vector position, Color color, Piece[,] board)
     {
         // this check is reverted because we want to know if the current position is under pawn's attack
         // maybe this method doesn't belong to Pawn file

@@ -31,7 +31,7 @@ internal static class Knight
         return Something.ConvertToMoves(piece, allPositions, board);
     }
 
-    public static IEnumerable<Vector> GetRay(Vector position, Piece[,] board)
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
     {
         foreach(var pos in positions)
         {

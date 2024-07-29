@@ -23,7 +23,7 @@ internal static class Rock
         }
     }
 
-    public static IEnumerable<Vector> GetRay(Vector position, Piece[,] board)
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
     {
         foreach (var direction in directions)
         {
