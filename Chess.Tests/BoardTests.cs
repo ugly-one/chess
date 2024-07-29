@@ -302,6 +302,27 @@ public class BoardTests
     }
 
     [Fact]
+    public void KingAttackedByPawn()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "   k    ",// 0
+            "        ",// 1
+            "    p   ",// 2
+            "   K    ",// 3
+            "        ",// 4
+            "        ",// 5
+            "P       ",// 6
+            "        ",// 7
+        }.ToBoard();
+
+        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+
+        Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
+    }
+
+    [Fact]
     public void KingAttackedByKnight()
     {
         var board = new[]
