@@ -290,6 +290,17 @@ public class Board
                 return true;
             }
         }
+        // check pawns
+        targets = Pawn.GetRay(king.Position, attackerColor, pieces);
+        foreach (var target in targets)
+        {
+            var targetPiece = pieces[target.X, target.Y];
+            if (targetPiece.Color == attackerColor &&
+                targetPiece.Type == PieceType.Pawn)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
