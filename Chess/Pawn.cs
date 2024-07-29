@@ -1,9 +1,23 @@
+using System;
 using System.Collections.Generic;
 
 namespace Chess;
 
 internal static class Pawn
 {
+    private static Vector[] whiteAttackPositions = new Vector[]
+    {
+        Vector.Up + Vector.Left,
+        Vector.Up + Vector.Right
+    };
+
+    private static Vector[] blackAttackPositions = new Vector[]
+    {
+        Vector.Down + Vector.Left,
+        Vector.Down + Vector.Right
+    };
+
+
     public static IEnumerable<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
     {
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
@@ -87,5 +101,19 @@ internal static class Pawn
     {
         if (board[position.X, position.Y] != null) return true;
         return false;
+    }
+
+    internal static IEnumerable<Vector> GetTargets(Vector position, Color color, Piece[,] board)
+    {
+        // this check is reverted because we want to know if the current position is under pawn's attack
+        // maybe this method doesn't belong to Pawn file
+        var attackPositions = color == Color.WHITE ? blackAttackPositions : whiteAttackPositions;
+        foreach (var pos in attackPositions)
+        {
+            var newPos = position + pos;
+            var target = newPos.GetTargetInPosition(board);
+            if (target != null)
+                yield return target;
+        }
     }
 }

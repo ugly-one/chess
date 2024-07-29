@@ -22,4 +22,14 @@ internal static class Rock
             }
         }
     }
+
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
+    {
+        foreach (var direction in directions)
+        {
+            var target = position.GetTargetInDirection(direction, board);
+            if (target != null)
+                yield return target;
+        }
+    }
 }
