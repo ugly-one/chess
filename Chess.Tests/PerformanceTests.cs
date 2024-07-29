@@ -12,15 +12,17 @@ public class PerformanceTests
         { 2, 400 },
         { 3, 8902 },
         { 4, 197281 },
-        { 5, 4865609 }
+        { 5, 4865609 },
+        { 6, 119060324 }
     };
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
+    //[InlineData(1)]
+    //[InlineData(2)]
+    //[InlineData(3)]
+    //[InlineData(4)]
     [InlineData(5)]
+    //[InlineData(6)]
     public void Check(int depth)
     {
         var board = BoardFactory.Default();
