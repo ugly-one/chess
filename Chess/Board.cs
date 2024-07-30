@@ -173,22 +173,21 @@ public class Board
             pieceToRemove = capture.CapturedPiece;
         }
         Piece? rockToMove = null;
-        Vector? rockNewPosition = null;
         if (move is Castle castle)
         {
-            rockToMove = castle.Rook;
-            rockNewPosition = castle.RookPosition;
-            newPieces[rockNewPosition.Value.X, rockNewPosition.Value.Y] = rockToMove.Value.Move(rockNewPosition.Value);
+            var rockNewPosition = castle.RookPosition;
+            newPieces[rockNewPosition.X, rockNewPosition.Y] = castle.Rook.Move(rockNewPosition);
         }
 
         newPieces[movedPiece.Position.X, movedPiece.Position.Y] = movedPiece;
         foreach(var piece in pieces)
         {
             if (piece is null) continue;
-            if (pieceToRemove != null && piece.Value.Position == pieceToRemove.Value.Position) continue;
+            var piece2 = piece.Value;
+            if (pieceToRemove != null && piece2.Position == pieceToRemove.Value.Position) continue;
             if (piece == move.PieceToMove) continue;
             if (rockToMove != null && piece == rockToMove) continue;
-            newPieces[piece.Value.Position.X, piece.Value.Position.Y] = piece.Value;
+            newPieces[piece2.Position.X, piece2.Position.Y] = piece2;
         }
 
         var newWhiteKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.WHITE) ? movedPiece.Position : whiteKing;
