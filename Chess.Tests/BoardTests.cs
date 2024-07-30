@@ -33,7 +33,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
 
         Assert.DoesNotContain(whiteMoves, m => m.PieceNewPosition == new Vector(1, 1));
     }
@@ -157,7 +157,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var moves = board.GetAllPossibleMovesForColor();
 
         Assert.True(moves.All(m => m.PieceToMove.Type == PieceType.King));
     }
@@ -202,7 +202,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var moves = board.GetAllPossibleMovesForColor();
 
         var whiteRockMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Rock);
         Assert.Equal(2, whiteRockMoves.Count());
@@ -226,7 +226,7 @@ public class BoardTests
             "   K    ",// 7
         }.ToBoard();
 
-        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var moves = board.GetAllPossibleMovesForColor();
 
         var whiteKingMoves = moves.Where(m => m.PieceToMove.Type == PieceType.King);
         Assert.Equal(3, whiteKingMoves.Count());
@@ -249,7 +249,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var moves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var moves = board.GetAllPossibleMovesForColor();
 
         var whiteBishopMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Bishop);
         Assert.Equal(2, whiteBishopMoves.Count());
@@ -263,20 +263,19 @@ public class BoardTests
         var board = new[]
         {
         //   01234567
-            "   K   R",// 0
+            "R  K   R",// 0
             "        ",// 1
             "        ",// 2
             "        ",// 3
             "        ",// 4
             "        ",// 5
             "        ",// 6
-            "r  k    ",// 7
+            "   k    ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
         Assert.Contains(whiteMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0));
-        var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
-        Assert.Contains(blackMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
+        Assert.Contains(whiteMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 0));
     }
 
     [Fact]
@@ -285,18 +284,18 @@ public class BoardTests
         var board = new[]
         {
         //   01234567
-            "  RK    ",// 0
+            "R  K    ",// 0
             "        ",// 1
             "        ",// 2
             "        ",// 3
             "        ",// 4
             "        ",// 5
             "        ",// 6
-            "r  k    ",// 7
+            "  rk    ",// 7
         }.ToBoard();
 
-        var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
-        Assert.DoesNotContain(blackMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
+        var moves = board.GetAllPossibleMovesForColor();
+        Assert.DoesNotContain(moves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 0));
     }
 
     [Fact]
@@ -315,7 +314,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
 
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
     }
@@ -336,7 +335,7 @@ public class BoardTests
             "   K    ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
 
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
     }
@@ -357,7 +356,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
 
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
     }
@@ -378,7 +377,7 @@ public class BoardTests
             "        ",// 7
         }.ToBoard();
 
-        var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
+        var whiteMoves = board.GetAllPossibleMovesForColor();
 
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
     }

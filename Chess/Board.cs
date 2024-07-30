@@ -150,14 +150,10 @@ public class Board
         return whitePieces.Concat(blackPieces).ToArray();
     }
 
-    /// <summary>
-    /// Maybe it would be better if we return List<Board>?
-    /// </summary>
-    /// <param name="color"></param>
-    /// <returns></returns>
-    public List<Move> GetAllPossibleMovesForColor(Color color)
+    public List<Move> GetAllPossibleMovesForColor(Color? color = null)
     {
-        var pieces = GetPieces(color);
+        if (color is null) color = currentPlayer;
+        var pieces = GetPieces(color.Value);
         var allPossibleMoves = new List<Move>();
         foreach (var piece in pieces)
         {
