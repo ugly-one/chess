@@ -19,8 +19,8 @@ public class PerformanceTests
     //[InlineData(1)]
     //[InlineData(2)]
     //[InlineData(3)]
-    [InlineData(4)]
-    //[InlineData(5)]
+    //[InlineData(4)]
+    [InlineData(5)]
     //[InlineData(6)]
     public void Check(int depth)
     {
