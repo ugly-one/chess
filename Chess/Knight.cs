@@ -15,7 +15,7 @@ internal static class Knight
         Vector.Up * 2 + Vector.Left,
         Vector.Left * 2 + Vector.Up,
     };
-    public static IEnumerable<Move> GetKnightMoves(Piece piece, Piece[,] board)
+    public static IEnumerable<Move> GetKnightMoves(Piece piece, Piece?[,] board)
     {
         var allPositions = new Vector[]
         {
@@ -31,14 +31,14 @@ internal static class Knight
         return Something.ConvertToMoves(piece, allPositions, board);
     }
 
-    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece?[,] board)
     {
         foreach(var pos in positions)
         {
             var newPos = position + pos;
             var target = newPos.GetTargetInPosition(board);
             if (target != null)
-                yield return target;
+                yield return target.Value;
         }
     }
 }

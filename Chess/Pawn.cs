@@ -18,7 +18,7 @@ internal static class Pawn
     };
 
 
-    public static IEnumerable<Move> GetPawnMoves(Piece piece, Piece[,] board, Move? lastMove)
+    public static IEnumerable<Move> GetPawnMoves(Piece piece, Piece?[,] board, Move? lastMove)
     {
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
@@ -45,9 +45,9 @@ internal static class Pawn
         if (takeLeft.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
-            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Capture(piece, takeLeft, possiblyCapturedPiece);
+                yield return new Capture(piece, takeLeft, possiblyCapturedPiece.Value);
             }
             else
             {
@@ -64,9 +64,9 @@ internal static class Pawn
         if (takeRight.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
-            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Color != piece.Color)
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Capture(piece, takeRight, possiblyCapturedPiece);
+                yield return new Capture(piece, takeRight, possiblyCapturedPiece.Value);
             }
             else
             {
@@ -97,13 +97,13 @@ internal static class Pawn
         return null;
     }
 
-    private static bool IsBlocked(Vector position, Piece[,] board)
+    private static bool IsBlocked(Vector position, Piece?[,] board)
     {
         if (board[position.X, position.Y] != null) return true;
         return false;
     }
 
-    internal static IEnumerable<Vector> GetTargets(Vector position, Color color, Piece[,] board)
+    internal static IEnumerable<Vector> GetTargets(Vector position, Color color, Piece?[,] board)
     {
         // this check is reverted because we want to know if the current position is under pawn's attack
         // maybe this method doesn't belong to Pawn file
@@ -113,7 +113,7 @@ internal static class Pawn
             var newPos = position + pos;
             var target = newPos.GetTargetInPosition(board);
             if (target != null)
-                yield return target;
+                yield return target.Value;
         }
     }
 }

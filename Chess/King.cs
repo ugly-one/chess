@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Chess;
 
@@ -17,18 +16,18 @@ internal static class King
            Vector.Down + Vector.Left,
     };
 
-    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece?[,] board)
     {
         foreach (var pos in positions)
         {
             var newPos = position + pos;
             var target = newPos.GetTargetInPosition(board);
             if (target != null)
-                yield return target;
+                yield return target.Value;
         }
     }
 
-    public static IEnumerable<Move> GetKingMoves(Piece king, Piece[,] board)
+    public static IEnumerable<Move> GetKingMoves(Piece king, Piece?[,] board)
     {
         var allPositions = new Vector[]
         {
@@ -62,7 +61,7 @@ internal static class King
         }
     }
 
-    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece[,] _board)
+    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece?[,] _board)
     {
         if (king.Moved)
             return null;
@@ -78,7 +77,7 @@ internal static class King
         }
         var rock = _board[possibleRockPosition.X, possibleRockPosition.Y];
 
-        if (rock == null || rock.Moved)
+        if (rock == null || rock.Value.Moved)
             return null;
 
         var allFieldsInBetweenClean = true;
@@ -99,7 +98,7 @@ internal static class King
         return new Castle(
             king,
             king.Position + kingMoveDirection * 2,
-            rock,
-            rock.Position + rockMoveDirection * rockSteps);
+            rock.Value,
+            rock.Value.Position + rockMoveDirection * rockSteps);
     }
 }

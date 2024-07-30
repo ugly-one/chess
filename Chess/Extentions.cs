@@ -48,12 +48,12 @@ internal static class Extentions
         return false;
     }
 
-    public static bool IsOccupiedBy(this Vector position, Color color, Piece[,] board)
+    public static bool IsOccupiedBy(this Vector position, Color color, Piece?[,] board)
     {
         var possiblePiece = board[position.X, position.Y];
         if (possiblePiece is not null)
         {
-            if (possiblePiece.Color == color) return true;
+            if (possiblePiece.Value.Color == color) return true;
         }
         return false;
     }

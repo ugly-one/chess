@@ -2,7 +2,7 @@ using System;
 
 namespace Chess;
 
-public record Vector(int X, int Y)
+public record struct Vector(int X, int Y)
 {
     public static Vector operator +(Vector a, Vector b)
         => new Vector(a.X + b.X, a.Y + b.Y);

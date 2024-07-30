@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Something
 {
-    public static IEnumerable<Move> ConvertToMoves(Piece piece, IEnumerable<Vector> positions, Piece[,] board)
+    public static IEnumerable<Move> ConvertToMoves(Piece piece, IEnumerable<Vector> positions, Piece?[,] board)
     {
         foreach (var position in positions)
         {
@@ -15,16 +15,16 @@ internal static class Something
             }
             else
             {
-                if (pieceOnTheWay.Color != piece.Color)
+                if (pieceOnTheWay.Value.Color != piece.Color)
                 {
-                    yield return new Capture(piece, position, pieceOnTheWay);
+                    yield return new Capture(piece, position, pieceOnTheWay.Value);
                 }
             }
         }
     }
 
     public static IEnumerable<Move> GetMovesInDirection(
-            this Piece[,] board,
+            this Piece?[,] board,
             Piece piece,
             Vector step,
             Color color)
@@ -38,7 +38,7 @@ internal static class Something
             if (capturedPiece != null)
             {
                 breakAfterAdding = true;
-                yield return new Capture(piece, newPos, capturedPiece);
+                yield return new Capture(piece, newPos, capturedPiece.Value);
             }
             else
             {
@@ -55,7 +55,7 @@ internal static class Something
     public static Vector? GetTargetInDirection(
         this Vector position,
         Vector direction,
-        Piece[,] board)
+        Piece?[,] board)
     {
         var newPos = position + direction;
         var breakAfterAdding = false;
@@ -78,7 +78,7 @@ internal static class Something
 
     public static Vector? GetTargetInPosition(
         this Vector position, 
-        Piece[,] board)
+        Piece?[,] board)
     {
         if (!position.IsWithinBoard())
         {

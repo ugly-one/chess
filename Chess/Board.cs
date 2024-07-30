@@ -7,7 +7,7 @@ namespace Chess;
 
 public class Board
 {
-    private readonly Piece[,] pieces;
+    private readonly Piece?[,] pieces;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? _lastMove;
@@ -16,7 +16,7 @@ public class Board
 
     public Color CurrentPlayer => currentPlayer;
 
-    public Board(Piece[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
+    public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
     {
         this.currentPlayer = currentColor;
         this._lastMove = lastMove;
@@ -30,7 +30,7 @@ public class Board
     {
         this.currentPlayer = currentPlayer;
         // TODO validate given pieces - they could be in invalid positions
-        pieces = new Piece[8, 8];
+        pieces = new Piece?[8, 8];
         foreach (var piece in board)
         {
             pieces[piece.Position.X, piece.Position.Y] = piece;
@@ -50,7 +50,6 @@ public class Board
             }
 
         }
-        if (whiteKing is null || blackKing is null) throw new InvalidOperationException();
         _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
@@ -115,7 +114,7 @@ public class Board
     {
         foreach (var piece in pieces)
         {
-            if (piece != null) yield return piece;
+            if (piece != null) yield return piece.Value;
         }
     }
 
@@ -167,7 +166,7 @@ public class Board
                 movedPiece = movedPiece with { Type = promotedPiece.Value };
         }
 
-        var newPieces = new Piece[8,8];
+        var newPieces = new Piece?[8,8];
         Piece? pieceToRemove = null;
         if (move is Capture capture)
         {
@@ -179,17 +178,17 @@ public class Board
         {
             rockToMove = castle.Rook;
             rockNewPosition = castle.RookPosition;
-            newPieces[rockNewPosition.X, rockNewPosition.Y] = rockToMove.Move(rockNewPosition);
+            newPieces[rockNewPosition.Value.X, rockNewPosition.Value.Y] = rockToMove.Value.Move(rockNewPosition.Value);
         }
 
         newPieces[movedPiece.Position.X, movedPiece.Position.Y] = movedPiece;
         foreach(var piece in pieces)
         {
             if (piece is null) continue;
-            if (pieceToRemove != null && piece.Position == pieceToRemove.Position) continue;
+            if (pieceToRemove != null && piece.Value.Position == pieceToRemove.Value.Position) continue;
             if (piece == move.PieceToMove) continue;
             if (rockToMove != null && piece == rockToMove) continue;
-            newPieces[piece.Position.X, piece.Position.Y] = piece;
+            newPieces[piece.Value.Position.X, piece.Value.Position.Y] = piece.Value;
         }
 
         var newWhiteKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.WHITE) ? movedPiece.Position : whiteKing;
@@ -207,11 +206,11 @@ public class Board
         Piece king;
         if (kingColor == Color.WHITE)
         {
-            king = pieces[whiteKing.X, whiteKing.Y];
+            king = pieces[whiteKing.X, whiteKing.Y].Value;
         }
         else
         {
-            king = pieces[blackKing.X, blackKing.Y];
+            king = pieces[blackKing.X, blackKing.Y].Value;
         }
 
         var attackerColor = kingColor.GetOpposite();
@@ -219,7 +218,7 @@ public class Board
         var targets = Rock.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y];
+            var targetPiece = pieces[target.X, target.Y].Value;
             if (targetPiece.Color == attackerColor &&
                 (targetPiece.Type == PieceType.Queen ||
                 targetPiece.Type == PieceType.Rock))
@@ -231,7 +230,7 @@ public class Board
         targets = Bishop.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y];
+            var targetPiece = pieces[target.X, target.Y].Value;
             if (targetPiece.Color == attackerColor &&
                 (targetPiece.Type == PieceType.Queen ||
                 targetPiece.Type == PieceType.Bishop))
@@ -243,7 +242,7 @@ public class Board
         targets = Knight.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y];
+            var targetPiece = pieces[target.X, target.Y].Value;
             if (targetPiece.Color == attackerColor &&
                 targetPiece.Type == PieceType.Knight)
             {
@@ -254,7 +253,7 @@ public class Board
         targets = King.GetTargets(king.Position, pieces);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y];
+            var targetPiece = pieces[target.X, target.Y].Value;
             if (targetPiece.Color == attackerColor &&
                 targetPiece.Type == PieceType.King)
             {
@@ -265,7 +264,7 @@ public class Board
         targets = Pawn.GetTargets(king.Position, attackerColor, pieces);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y];
+            var targetPiece = pieces[target.X, target.Y].Value;
             if (targetPiece.Color == attackerColor &&
                 targetPiece.Type == PieceType.Pawn)
             {
@@ -297,9 +296,9 @@ public class Board
     {
         foreach(var piece in pieces)
         {
-            if (piece != null && piece.Color == color)
+            if (piece != null && piece.Value.Color == color)
             {
-                yield return piece;
+                yield return piece.Value;
             }
         }
     }

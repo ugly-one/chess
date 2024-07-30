@@ -12,7 +12,7 @@ internal static class Rock
         Vector.Right
     };
 
-    public static IEnumerable<Move> GetRockMoves(Piece piece, Piece[,] board)
+    public static IEnumerable<Move> GetRockMoves(Piece piece, Piece?[,] board)
     {
         foreach (var direction in directions)
         {
@@ -23,13 +23,13 @@ internal static class Rock
         }
     }
 
-    public static IEnumerable<Vector> GetTargets(Vector position, Piece[,] board)
+    public static IEnumerable<Vector> GetTargets(Vector position, Piece?[,] board)
     {
         foreach (var direction in directions)
         {
             var target = position.GetTargetInDirection(direction, board);
             if (target != null)
-                yield return target;
+                yield return target.Value;
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace Chess;
 
-public record Piece(PieceType Type, Color Color, Vector Position, bool Moved = false)
+public record struct Piece(PieceType Type, Color Color, Vector Position, bool Moved = false)
 {
 	public Piece Move(Vector position)
 	{

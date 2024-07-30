@@ -16,7 +16,7 @@ public static class Queen
         Vector.Right
     };
 
-    public static IEnumerable<Move> GetQueenMoves(Piece piece, Piece[,] board)
+    public static IEnumerable<Move> GetQueenMoves(Piece piece, Piece?[,] board)
     {
         foreach(var direction in directions)
         {
