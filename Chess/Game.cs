@@ -37,7 +37,7 @@ public class Game
         State = GameState.InProgress;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
-    
+
     public bool TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
     {
         var (success, newBoard) = Board.TryMove(pieceToMove, newPosition, promotedPiece);
@@ -50,7 +50,7 @@ public class Game
         var previousBoard = Board;
         Board = newBoard;
         var opponentsColor = pieceToMove.Color.GetOpposite();
-        
+
         var somethingWasCaptured = Board.GetPieces().Count() != previousBoard.GetPieces().Count();
         if (pieceToMove.Type == PieceType.Pawn || somethingWasCaptured)
         {
@@ -61,34 +61,69 @@ public class Game
             MovesSinceLastPawnMoveOrPieceTake += 1;
         }
 
-        if (Board.HasInsufficientMatingMaterial())
+        if (HasInsufficientMatingMaterial(Board))
         {
             State = GameState.Draw;
             return true;
         }
 
-        var possibleMovesForOpponent = Board.GetAllPossibleMovesForColor(opponentsColor);
-        
+        var possibleMovesForOpponent = Board.GetAllPossibleMoves();
+
         if (Board.IsKingUnderAttack(opponentsColor) && possibleMovesForOpponent.Count == 0)
         {
             State = pieceToMove.Color == Color.WHITE ? GameState.WhiteWin : GameState.BlackWin;
             return true;
         }
-        
+
         if (MovesSinceLastPawnMoveOrPieceTake == 100)
         {
             State = GameState.Draw;
             return true;
         }
-        
+
         if (possibleMovesForOpponent.Any())
         {
             return true;
         }
-        
+
         // no possible moves, king not under attack
         State = GameState.Draw;
         return true;
+    }
+
+    public bool HasInsufficientMatingMaterial(Board board)
+    {
+        var whitePieces = new List<Piece>();
+        var blackPieces = new List<Piece>();
+
+        foreach (var piece in board.GetPieces())
+        {
+            if (piece.Color == Color.WHITE)
+                whitePieces.Add(piece);
+            else
+                blackPieces.Add(piece);
+        }
+
+        if (whitePieces.Count == 1 && blackPieces.Count == 1)
+            // only 2 kings left
+            return true;
+
+        if (whitePieces.Count == 1 && HasOnlyKingAndBishopOrKnight(blackPieces))
+            return true;
+
+        if (blackPieces.Count == 1 && HasOnlyKingAndBishopOrKnight(whitePieces))
+            return true;
+
+        if (HasOnlyKingAndBishopOrKnight(whitePieces) && HasOnlyKingAndBishopOrKnight(blackPieces))
+            return true;
+
+        return false;
+    }
+
+    private static bool HasOnlyKingAndBishopOrKnight(List<Piece> pieces)
+    {
+        return pieces.Count == 2 &&
+               pieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
     }
 
     public Piece GetPiece(Vector position)

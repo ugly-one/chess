@@ -7,8 +7,6 @@ namespace Chess;
 
 public class Board
 {
-    private readonly List<Piece> whitePieces;
-    private readonly List<Piece> blackPieces;
     private readonly Piece[,] pieces;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
@@ -18,19 +16,26 @@ public class Board
 
     public Color CurrentPlayer => currentPlayer;
 
+    public Board(Piece[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
+    {
+        this.currentPlayer = currentColor;
+        this._lastMove = lastMove;
+        this.pieces = pieces;
+        this.whiteKing = whiteKing;
+        this.blackKing = blackKing;
+        this.possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
+    }
+
     public Board(IEnumerable<Piece> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
     {
         this.currentPlayer = currentPlayer;
         // TODO validate given pieces - they could be in invalid positions
         pieces = new Piece[8, 8];
-        whitePieces = new List<Piece>(16);
-        blackPieces = new List<Piece>(16);
         foreach (var piece in board)
         {
             pieces[piece.Position.X, piece.Position.Y] = piece;
             if (piece.Color == Color.WHITE)
             {
-                whitePieces.Add(piece);
                 if (piece.Type == PieceType.King)
                 {
                     whiteKing = piece.Position;
@@ -38,7 +43,6 @@ public class Board
             }
             else
             {
-                blackPieces.Add(piece);
                 if (piece.Type == PieceType.King)
                 {
                     blackKing = piece.Position;
@@ -49,44 +53,6 @@ public class Board
         if (whiteKing is null || blackKing is null) throw new InvalidOperationException();
         _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
-    }
-
-    public bool HasInsufficientMatingMaterial()
-    {
-        if (whitePieces.Count == 1 && blackPieces.Count == 1)
-        {
-            // only 2 kings left
-            return true;
-        }
-
-        if (whitePieces.Count == 1)
-        {
-            if (HasOnlyKingAndBishopOrKnight(blackPieces))
-            {
-                return true;
-            }
-        }
-
-        if (blackPieces.Count == 1)
-        {
-            if (HasOnlyKingAndBishopOrKnight(whitePieces))
-            {
-                return true;
-            }
-        }
-
-        if (HasOnlyKingAndBishopOrKnight(whitePieces) && HasOnlyKingAndBishopOrKnight(blackPieces))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool HasOnlyKingAndBishopOrKnight(List<Piece> pieces)
-    {
-        return pieces.Count == 2 &&
-               pieces.Any(p => p.Type == PieceType.Bishop || p.Type == PieceType.Knight);
     }
 
     /// <summary>
@@ -145,15 +111,17 @@ public class Board
         }
     }
 
-    public Piece[] GetPieces()
+    public IEnumerable<Piece> GetPieces()
     {
-        return whitePieces.Concat(blackPieces).ToArray();
+        foreach (var piece in pieces)
+        {
+            if (piece != null) yield return piece;
+        }
     }
 
-    public List<Move> GetAllPossibleMovesForColor(Color? color = null)
+    public List<Move> GetAllPossibleMoves()
     {
-        if (color is null) color = currentPlayer;
-        var pieces = GetPieces(color.Value);
+        var pieces = GetPieces(currentPlayer);
         var allPossibleMoves = new List<Move>();
         foreach (var piece in pieces)
         {
@@ -190,7 +158,6 @@ public class Board
     // but, I do not see an obvious way how to prevent it.
     private Board Move(Move move, PieceType? promotedPiece)
     {
-        // move the piece
         var movedPiece = move.PieceToMove.Move(move.PieceNewPosition);
         if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceNewPosition.Y == 0 || move.PieceNewPosition.Y == 7))
         {
@@ -200,30 +167,39 @@ public class Board
                 movedPiece = movedPiece with { Type = promotedPiece.Value };
         }
 
-        IEnumerable<Piece> currentColorPieces = move.PieceToMove.Color == Color.WHITE ?
-            whitePieces : blackPieces;
-
-        IEnumerable<Piece> oppositeColorPieces = move.PieceToMove.Color == Color.WHITE ?
-            blackPieces : whitePieces;
-
-        currentColorPieces = currentColorPieces
-            .Where(p => p != move.PieceToMove)
-            .Append(movedPiece);
-
+        var newPieces = new Piece[8,8];
+        Piece? pieceToRemove = null;
         if (move is Capture capture)
         {
-            oppositeColorPieces = oppositeColorPieces
-                .Where(piece => piece != capture.CapturedPiece);
+            pieceToRemove = capture.CapturedPiece;
         }
-        else if (move is Castle castle)
+        Piece? rockToMove = null;
+        Vector? rockNewPosition = null;
+        if (move is Castle castle)
         {
-            var newRock = castle.Rook.Move(castle.RookPosition);
-            currentColorPieces = currentColorPieces
-                .Where(p => p != castle.Rook)
-                .Append(newRock);
+            rockToMove = castle.Rook;
+            rockNewPosition = castle.RookPosition;
+            newPieces[rockNewPosition.X, rockNewPosition.Y] = rockToMove.Move(rockNewPosition);
         }
 
-        return new Board(currentColorPieces.Concat(oppositeColorPieces), currentPlayer.GetOpposite(), move);
+        newPieces[movedPiece.Position.X, movedPiece.Position.Y] = movedPiece;
+        foreach(var piece in pieces)
+        {
+            if (piece is null) continue;
+            if (pieceToRemove != null && piece.Position == pieceToRemove.Position) continue;
+            if (piece == move.PieceToMove) continue;
+            if (rockToMove != null && piece == rockToMove) continue;
+            newPieces[piece.Position.X, piece.Position.Y] = piece;
+        }
+
+        var newWhiteKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.WHITE) ? movedPiece.Position : whiteKing;
+        var newBlackKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.BLACK) ? movedPiece.Position : blackKing;
+
+        return new Board(newPieces,
+            currentPlayer.GetOpposite(), 
+            move,
+            newWhiteKing,
+            newBlackKing);
     }
 
     public bool IsKingUnderAttack(Color kingColor)
@@ -317,10 +293,15 @@ public class Board
         return false;
     }
 
-    private List<Piece> GetPieces(Color color)
+    private IEnumerable<Piece> GetPieces(Color color)
     {
-        if (color == Color.WHITE) return whitePieces;
-        else return blackPieces;
+        foreach(var piece in pieces)
+        {
+            if (piece != null && piece.Color == color)
+            {
+                yield return piece;
+            }
+        }
     }
 
     /// <summary>
@@ -347,17 +328,11 @@ public class Board
 
     public override string ToString()
     {
-        var boardMatrix = new Piece?[8, 8];
-        foreach (var piece in whitePieces.Concat(blackPieces))
-        {
-            boardMatrix[piece.Position.X, piece.Position.Y] = piece;
-        }
-
         var stringRepresentation = new StringBuilder();
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
-                stringRepresentation.Append(boardMatrix[x, y]?.ToString() ?? "\u00B7");
+                stringRepresentation.Append(pieces[x, y]?.ToString() ?? "\u00B7");
 
             stringRepresentation.Append('\n');
         }

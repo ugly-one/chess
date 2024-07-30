@@ -25,7 +25,7 @@ public class PerformanceTests
     public void Check(int depth)
     {
         var board = BoardFactory.Default();
-        var count = GetPossibleMovesCount(board, 0, depth, Color.WHITE);
+        var count = GetPossibleMovesCount(board, 0, depth);
         var expectedCount = 0;
         for (int i = 1; i <= depth; i++)
         {
@@ -34,25 +34,19 @@ public class PerformanceTests
         Assert.Equal(expectedCount, count);
     }
 
-    private int GetPossibleMovesCount(Board board, int currentDepth, int targetDepth, Color color)
+    private int GetPossibleMovesCount(Board board, int currentDepth, int targetDepth)
     {
         if (currentDepth == targetDepth)
         {
             return 0;
         }
-        var moves = board.GetAllPossibleMovesForColor(color);
+        var moves = board.GetAllPossibleMoves();
         var sum = moves.Count;
         foreach(var move in moves)
         {
             var (_, newBoard) = board.TryMove(move);
-            sum += GetPossibleMovesCount(newBoard, currentDepth + 1, targetDepth, Change(color));
+            sum += GetPossibleMovesCount(newBoard, currentDepth + 1, targetDepth);
         }
         return sum;
-    }
-
-    private Color Change(Color color)
-    {
-        if (color == Color.WHITE) return Color.BLACK;
-        else return Color.WHITE;
     }
 }

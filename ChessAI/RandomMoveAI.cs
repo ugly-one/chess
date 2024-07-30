@@ -13,7 +13,7 @@ public class RandomMoveAI  : IPlayer
 
     public MoveWithPromotion GetMove(Board board)
     {
-        var possibleMoves = board.GetAllPossibleMovesForColor(color);
+        var possibleMoves = board.GetAllPossibleMoves();
         var randomIndex = new Random().Next(0, possibleMoves.Count());
         var randomMove = possibleMoves[randomIndex];
         if (randomMove.PieceToMove.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)

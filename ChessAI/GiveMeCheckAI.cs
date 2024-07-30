@@ -13,7 +13,7 @@ public class GiveMeCheckAI  : IPlayer
 
     public MoveWithPromotion GetMove(Board board)
     {
-        var moveRequests = board.GetAllPossibleMovesForColor(color);
+        var moveRequests = board.GetAllPossibleMoves();
         foreach (var moveRequest in moveRequests)
         {
             var (success, newBoard) = board.TryMove(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
