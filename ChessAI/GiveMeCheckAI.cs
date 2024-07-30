@@ -20,7 +20,7 @@ public class GiveMeCheckAI  : IPlayer
             if (!success)
                 throw new Exception("The engine game me a move that is not valid :/");
 
-            if (newBoard.IsKingUnderAttack(color.GetOppositeColor()))
+            if (newBoard.IsKingUnderAttack(color.GetOpposite()))
                 return new MoveWithPromotion(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
         }
         return new MoveWithPromotion(moveRequests[0].PieceToMove, moveRequests[0].PieceNewPosition, PieceType.Queen);

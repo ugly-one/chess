@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -186,7 +184,7 @@ public class BoardTests
         var moves = newBoard.GetPossibleMoves(whitePawn);
 
         Assert.Equal(2, moves.Count());
-        Assert.False(moves.Any(m => m.PieceNewPosition == new Vector(3, 2)));
+        Assert.DoesNotContain(moves, m => m.PieceNewPosition == new Vector(3, 2));
     }
     [Fact]
     public void PinnedPieceCanMoveIfKeepsPin_VerticalLine()
@@ -208,8 +206,8 @@ public class BoardTests
 
         var whiteRockMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Rock);
         Assert.Equal(2, whiteRockMoves.Count());
-        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2, 2)));
-        Assert.True(whiteRockMoves.Any(m => m.PieceNewPosition == new Vector(2, 3)));
+        Assert.Contains(whiteRockMoves, m => m.PieceNewPosition == new Vector(2, 2));
+        Assert.DoesNotContain(whiteRockMoves, m => m.PieceNewPosition == new Vector(3, 3));
     }
 
     [Fact]
@@ -232,7 +230,7 @@ public class BoardTests
 
         var whiteKingMoves = moves.Where(m => m.PieceToMove.Type == PieceType.King);
         Assert.Equal(3, whiteKingMoves.Count());
-        Assert.False(whiteKingMoves.Any(m => m.PieceNewPosition == new Vector(2, 7)));
+        Assert.DoesNotContain(whiteKingMoves, m => m.PieceNewPosition == new Vector(2, 7));
     }
 
     [Fact]
@@ -255,8 +253,8 @@ public class BoardTests
 
         var whiteBishopMoves = moves.Where(m => m.PieceToMove.Type == PieceType.Bishop);
         Assert.Equal(2, whiteBishopMoves.Count());
-        Assert.True(whiteBishopMoves.Any(m => m.PieceNewPosition == new Vector(4, 2)));
-        Assert.True(whiteBishopMoves.Any(m => m.PieceNewPosition == new Vector(5, 3)));
+        Assert.Contains(whiteBishopMoves, m => m.PieceNewPosition == new Vector(4, 2));
+        Assert.Contains(whiteBishopMoves, m => m.PieceNewPosition == new Vector(5, 3));
     }
 
     [Fact]
@@ -276,9 +274,9 @@ public class BoardTests
         }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
-        Assert.True(whiteMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0)));
+        Assert.Contains(whiteMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0));
         var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
-        Assert.True(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
+        Assert.Contains(blackMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
     }
 
     [Fact]
@@ -298,7 +296,7 @@ public class BoardTests
         }.ToBoard();
 
         var blackMoves = board.GetAllPossibleMovesForColor(Color.BLACK);
-        Assert.False(blackMoves.Any(m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7)));
+        Assert.DoesNotContain(blackMoves, m => m.PieceToMove.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
     }
 
     [Fact]
@@ -383,16 +381,5 @@ public class BoardTests
         var whiteMoves = board.GetAllPossibleMovesForColor(Color.WHITE);
 
         Assert.True(whiteMoves.All(m => m.PieceToMove.Type == PieceType.King));
-    }
-}
-
-public static class Printer
-{
-    public static void Print(this IEnumerable<Move> moves)
-    {
-        foreach (var move in moves)
-        {
-            Console.WriteLine(move);
-        }
     }
 }

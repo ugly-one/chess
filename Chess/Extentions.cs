@@ -28,7 +28,7 @@ public static class OtherExtensions
         return letter + number;
     }
 
-    public static Color GetOppositeColor(this Color color)
+    public static Color GetOpposite(this Color color)
     {
         return color == Color.BLACK ? Color.WHITE : Color.BLACK;
     }

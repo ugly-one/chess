@@ -7,22 +7,20 @@ public class Game
 {
     public Board Board { get; private set; }
     public GameState State { get; private set; }
-    public Color CurrentPlayer { get; private set; }
     public int MovesSinceLastPawnMoveOrPieceTake { get; private set; }
-    
+    public Color CurrentPlayer => Board.CurrentPlayer;
+
     public Game(Color startingColor, params Piece[] pieces)
     {
-        Board = new Board(pieces);
+        Board = new Board(pieces, startingColor);
         State = GameState.InProgress;
-        CurrentPlayer = startingColor;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
 
     public Game(ICollection<Piece> pieces)
     {
-        Board = new Board(pieces);
+        Board = new Board(pieces, Color.WHITE);
         State = GameState.InProgress;
-        CurrentPlayer = Color.WHITE;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
 
@@ -30,7 +28,6 @@ public class Game
     {
         Board = board;
         State = GameState.InProgress;
-        CurrentPlayer = Color.WHITE;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
 
@@ -38,17 +35,11 @@ public class Game
     {
         Board = BoardFactory.Default();
         State = GameState.InProgress;
-        CurrentPlayer = Color.WHITE;
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
     
     public bool TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
     {
-        if (pieceToMove.Color != CurrentPlayer)
-        {
-            return false;
-        }
-
         var (success, newBoard) = Board.TryMove(pieceToMove, newPosition, promotedPiece);
 
         if (!success)
@@ -58,8 +49,7 @@ public class Game
 
         var previousBoard = Board;
         Board = newBoard;
-        var opponentsColor = pieceToMove.Color.GetOppositeColor();
-        CurrentPlayer = opponentsColor;
+        var opponentsColor = pieceToMove.Color.GetOpposite();
         
         var somethingWasCaptured = Board.GetPieces().Count() != previousBoard.GetPieces().Count();
         if (pieceToMove.Type == PieceType.Pawn || somethingWasCaptured)

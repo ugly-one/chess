@@ -5,11 +5,6 @@ using System.Text;
 
 namespace Chess;
 
-internal static class PieceTypeExtension
-{
-    public static PieceType[] PieceTypes = (PieceType[])Enum.GetValues(typeof(PieceType));
-}
-
 public class Board
 {
     private readonly List<Piece> whitePieces;
@@ -18,11 +13,14 @@ public class Board
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? _lastMove;
-
+    private readonly Color currentPlayer;
     private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
 
-    public Board(IEnumerable<Piece> board, Move? lastMove = null)
+    public Color CurrentPlayer => currentPlayer;
+
+    public Board(IEnumerable<Piece> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
     {
+        this.currentPlayer = currentPlayer;
         // TODO validate given pieces - they could be in invalid positions
         pieces = new Piece[8, 8];
         whitePieces = new List<Piece>(16);
@@ -48,6 +46,7 @@ public class Board
             }
 
         }
+        if (whiteKing is null || blackKing is null) throw new InvalidOperationException();
         _lastMove = lastMove;
         possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
@@ -120,7 +119,7 @@ public class Board
                     if (isCastleMove)
                     {
                         var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
-                        if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOppositeColor()))
+                        if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOpposite()))
                         {
                             // castling not allowed
                         }
@@ -228,7 +227,7 @@ public class Board
                 .Append(newRock);
         }
 
-        return new Board(currentColorPieces.Concat(oppositeColorPieces), move);
+        return new Board(currentColorPieces.Concat(oppositeColorPieces), currentPlayer.GetOpposite(), move);
     }
 
     public bool IsKingUnderAttack(Color kingColor)
@@ -243,7 +242,7 @@ public class Board
             king = pieces[blackKing.X, blackKing.Y];
         }
 
-        var attackerColor = kingColor.GetOppositeColor();
+        var attackerColor = kingColor.GetOpposite();
         // check horizontal/vertical lines to see if there is a Queen or a Rock
         var targets = Rock.GetTargets(king.Position, pieces);
         foreach (var target in targets)
@@ -310,7 +309,7 @@ public class Board
     /// <returns></returns>
     private bool IsFieldUnderAttack(Vector field, Color color)
     {
-        var oppositeColor = color.GetOppositeColor();
+        var oppositeColor = color.GetOpposite();
         foreach (PieceType pieceType in PieceTypeExtension.PieceTypes)
         {
             var pretendPiece = new Piece(pieceType, oppositeColor, field);
