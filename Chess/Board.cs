@@ -12,7 +12,6 @@ public class Board
     private readonly Vector blackKing;
     private readonly Move? _lastMove;
     private readonly Color currentPlayer;
-    private readonly Dictionary<Piece, Move[]> possibleMovesPerPiece;
 
     public Color CurrentPlayer => currentPlayer;
 
@@ -23,7 +22,6 @@ public class Board
         this.pieces = pieces;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
-        this.possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
     public Board(IEnumerable<Piece> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
@@ -51,7 +49,6 @@ public class Board
 
         }
         _lastMove = lastMove;
-        possibleMovesPerPiece = new Dictionary<Piece, Move[]>();
     }
 
     /// <summary>
@@ -59,39 +56,28 @@ public class Board
     /// </summary>
     /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <returns></returns>
-    public Move[] GetPossibleMoves(Piece piece)
+    public Move[] GetPossibleMoves(Piece piece, bool skipCache = false)
     {
-        if (possibleMovesPerPiece.TryGetValue(piece, out var possibleMoves))
+        var possibleMoves2 = GetMoves(piece).WithinBoard();
+        var possibleMovesAfterFiltering = new List<Move>();
+        foreach (var possibleMove in possibleMoves2)
         {
-            return possibleMoves;
-        }
-        else
-        {
-            var possibleMoves2 = GetMoves(piece).WithinBoard();
-            var possibleMovesAfterFiltering = new List<Move>();
-            foreach (var possibleMove in possibleMoves2)
+            // let's try to make the move and see if the king is under attack, if yes, move is not allowed
+            // it doesn't matter what we promote to
+            var boardAfterMove = Move(possibleMove, PieceType.Queen);
+            if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
+            if (possibleMove.PieceToMove.Type == PieceType.King)
             {
-                // let's try to make the move and see if the king is under attack, if yes, move is not allowed
-                // it doesn't matter what we promote to
-                var boardAfterMove = Move(possibleMove, PieceType.Queen);
-                if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
-                if (possibleMove.PieceToMove.Type == PieceType.King)
+                // TODO find out if we're castling.
+                // checking if king moved more than 1 square is enough but won't work in CHess960 :D
+                var moveVector = (possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position);
+                var isCastleMove = moveVector.Abs().X > 1;
+                if (isCastleMove)
                 {
-                    // TODO find out if we're castling.
-                    // checking if king moved more than 1 square is enough but won't work in CHess960 :D
-                    var moveVector = (possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position);
-                    var isCastleMove = moveVector.Abs().X > 1;
-                    if (isCastleMove)
+                    var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
+                    if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOpposite()))
                     {
-                        var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
-                        if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOpposite()))
-                        {
-                            // castling not allowed
-                        }
-                        else
-                        {
-                            possibleMovesAfterFiltering.Add(possibleMove);
-                        }
+                        // castling not allowed
                     }
                     else
                     {
@@ -103,11 +89,13 @@ public class Board
                     possibleMovesAfterFiltering.Add(possibleMove);
                 }
             }
-
-            possibleMovesPerPiece.Add(piece, possibleMovesAfterFiltering.ToArray());
-
-            return possibleMovesAfterFiltering.ToArray();
+            else
+            {
+                possibleMovesAfterFiltering.Add(possibleMove);
+            }
         }
+
+        return possibleMovesAfterFiltering.ToArray();
     }
 
     public IEnumerable<Piece> GetPieces()
@@ -140,13 +128,7 @@ public class Board
 
     public (bool, Board) TryMove(Piece piece, Vector newPosition, PieceType? promotedPiece = null)
     {
-        var possibleMoves = GetPossibleMoves(piece);
-        var move = possibleMoves.FirstOrDefault(m => m.PieceNewPosition == newPosition);
-        if (move == null)
-        {
-            return (false, this);
-        }
-
+        var move = new Move(piece, newPosition);
         var newBoard = Move(move, promotedPiece);
 
         return (true, newBoard);
@@ -166,27 +148,46 @@ public class Board
                 movedPiece = movedPiece with { Type = promotedPiece.Value };
         }
 
-        var newPieces = new Piece?[8,8];
+        var newPieces = new Piece?[8, 8];
         Piece? pieceToRemove = null;
-        if (move is Capture capture)
+        var capturedPiece = pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y];
+        if (capturedPiece != null)
         {
-            pieceToRemove = capture.CapturedPiece;
+            pieceToRemove = capturedPiece.Value;
         }
         Piece? rockToMove = null;
-        if (move is Castle castle)
+        if (move.PieceToMove.Type == PieceType.King && !move.PieceToMove.Moved && (move.PieceToMove.Position - move.PieceNewPosition).Abs().X == 2)
         {
-            var rockNewPosition = castle.RookPosition;
-            newPieces[rockNewPosition.X, rockNewPosition.Y] = castle.Rook.Move(rockNewPosition);
+            Vector? rockNewPosition;
+            if (move.PieceNewPosition.X == 1) 
+            {
+                rockNewPosition = new Vector(2, move.PieceNewPosition.Y);
+                rockToMove = pieces[0, move.PieceNewPosition.Y];
+            }
+            else
+            {
+                rockNewPosition = new Vector(4, move.PieceNewPosition.Y);
+                rockToMove = pieces[7, move.PieceNewPosition.Y];
+            }
+            newPieces[rockNewPosition.Value.X, rockNewPosition.Value.Y] = rockToMove.Value.Move(rockNewPosition.Value);
+        }
+
+        Piece? en_passantCapturedPawn = null;
+        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceToMove.Position - move.PieceNewPosition).Abs() == new Vector(1,1) && pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y] == null)
+        {
+            // en-passant 
+            en_passantCapturedPawn = pieces[move.PieceNewPosition.X, move.PieceToMove.Position.Y];
         }
 
         newPieces[movedPiece.Position.X, movedPiece.Position.Y] = movedPiece;
-        foreach(var piece in pieces)
+        foreach (var piece in pieces)
         {
             if (piece is null) continue;
             var piece2 = piece.Value;
             if (pieceToRemove != null && piece2.Position == pieceToRemove.Value.Position) continue;
             if (piece == move.PieceToMove) continue;
             if (rockToMove != null && piece == rockToMove) continue;
+            if (en_passantCapturedPawn != null && piece == en_passantCapturedPawn) continue;
             newPieces[piece2.Position.X, piece2.Position.Y] = piece2;
         }
 
@@ -194,7 +195,7 @@ public class Board
         var newBlackKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.BLACK) ? movedPiece.Position : blackKing;
 
         return new Board(newPieces,
-            currentPlayer.GetOpposite(), 
+            currentPlayer.GetOpposite(),
             move,
             newWhiteKing,
             newBlackKing);
@@ -293,7 +294,7 @@ public class Board
 
     private IEnumerable<Piece> GetPieces(Color color)
     {
-        foreach(var piece in pieces)
+        foreach (var piece in pieces)
         {
             if (piece != null && piece.Value.Color == color)
             {
