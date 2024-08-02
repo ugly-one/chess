@@ -4,20 +4,20 @@ namespace Chess;
 
 internal static class Something
 {
-    public static IEnumerable<Move> ConvertToMoves(Piece piece, IEnumerable<Vector> positions, Piece?[,] board)
+    public static IEnumerable<Move> ConvertToMoves(Piece piece, Vector currentPosition, IEnumerable<Vector> positions, Piece?[,] board)
     {
         foreach (var position in positions)
         {
             var pieceOnTheWay = board[position.X, position.Y];
             if (pieceOnTheWay is null)
             {
-                yield return new Move(piece, position);
+                yield return new Move(piece, currentPosition, position);
             }
             else
             {
                 if (pieceOnTheWay.Value.Color != piece.Color)
                 {
-                    yield return new Capture(piece, position, pieceOnTheWay.Value);
+                    yield return new Move(piece, currentPosition, position);
                 }
             }
         }
@@ -26,10 +26,11 @@ internal static class Something
     public static IEnumerable<Move> GetMovesInDirection(
             this Piece?[,] board,
             Piece piece,
+            Vector currentPosition,
             Vector step,
             Color color)
     {
-        var newPos = piece.Position + step;
+        var newPos = currentPosition + step;
         var breakAfterAdding = false;
         while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(color, board))
         {
@@ -38,11 +39,11 @@ internal static class Something
             if (capturedPiece != null)
             {
                 breakAfterAdding = true;
-                yield return new Capture(piece, newPos, capturedPiece.Value);
+                yield return new Move(piece, currentPosition, newPos);
             }
             else
             {
-                yield return new Move(piece, newPos);
+                yield return new Move(piece, currentPosition, newPos);
             }
             newPos += step;
             if (breakAfterAdding)
@@ -85,6 +86,6 @@ internal static class Something
             return null;
         }
         var pieceAtPosition = board[position.X, position.Y];
-        return pieceAtPosition?.Position;
+        return pieceAtPosition == null ? null : position;
     }
 }

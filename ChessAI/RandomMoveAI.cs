@@ -13,16 +13,16 @@ public class RandomMoveAI  : IPlayer
 
     public MoveWithPromotion GetMove(Board board)
     {
-        var possibleMoves = board.GetAllPossibleMoves();
+        var possibleMoves = board.GetAllPossibleMoves().ToArray();
         var randomIndex = new Random().Next(0, possibleMoves.Count());
         var randomMove = possibleMoves[randomIndex];
-        if (randomMove.PieceToMove.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)
+        if (randomMove.Piece.Type == PieceType.Pawn && randomMove.PieceNewPosition.Y is 0 or 7)
         {
-            return new MoveWithPromotion(randomMove.PieceToMove, randomMove.PieceNewPosition, PieceType.Queen);
+            return new MoveWithPromotion(randomMove.Piece, randomMove.PieceOldPosition, randomMove.PieceNewPosition, PieceType.Queen);
         }
         else
         {
-            return new MoveWithPromotion(randomMove.PieceToMove, randomMove.PieceNewPosition, PromotedPiece: null);
+            return new MoveWithPromotion(randomMove.Piece, randomMove.PieceOldPosition, randomMove.PieceNewPosition, PromotedPiece: null);
         }
     }
 }

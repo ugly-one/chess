@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Chess;
@@ -18,40 +17,40 @@ internal static class Pawn
     };
 
 
-    public static IEnumerable<Move> GetPawnMoves(Piece piece, Piece?[,] board, Move? lastMove)
+    public static IEnumerable<Move> GetPawnMoves(Piece piece, Vector position, Piece?[,] board, Move? lastMove)
     {
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
         // one step forward if not blocked
-        var forward = piece.Position + direction;
+        var forward = position + direction;
         if (forward.IsWithinBoard() && !IsBlocked(forward, board))
         {
-            yield return new Move(piece, forward);
+            yield return new Move(piece, position, forward);
 
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
             {
-                var forward2Steps = piece.Position + direction + direction;
+                var forward2Steps = position + direction + direction;
                 if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps, board))
                 {
-                    yield return new Move(piece, forward2Steps);
+                    yield return new Move(piece, position, forward2Steps);
                 }
             }
         }
 
         // one down/left if there is an opponent's piece
-        var takeLeft = piece.Position + Vector.Left + direction;
+        var takeLeft = position + Vector.Left + direction;
 
         if (takeLeft.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Capture(piece, takeLeft, possiblyCapturedPiece.Value);
+                yield return new Move(piece, position, takeLeft);
             }
             else
             {
-                var move = Pawn.TryGetEnPassant(piece, takeLeft, lastMove);
+                var move = Pawn.TryGetEnPassant(piece, position, takeLeft, lastMove);
                 if (move != null)
                 {
                     yield return move;
@@ -60,17 +59,17 @@ internal static class Pawn
         }
 
         // one down/right if there is an opponent's piece
-        var takeRight = piece.Position + Vector.Right + direction;
+        var takeRight = position + Vector.Right + direction;
         if (takeRight.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Capture(piece, takeRight, possiblyCapturedPiece.Value);
+                yield return new Move(piece, position, takeRight);
             }
             else
             {
-                var move = Pawn.TryGetEnPassant(piece, takeRight, lastMove);
+                var move = Pawn.TryGetEnPassant(piece, position, takeRight, lastMove);
                 if (move != null)
                 {
                     yield return move;
@@ -79,19 +78,18 @@ internal static class Pawn
         }
     }
 
-    private static Move? TryGetEnPassant(Piece piece, Vector capturePosition, Move? lastMove)
+    private static Move? TryGetEnPassant(Piece piece, Vector currentPosition, Vector capturePosition, Move? lastMove)
     {
         if (lastMove == null) return null;
 
-        var isPawn = lastMove.PieceToMove.Type == PieceType.Pawn;
-        var is2StepMove = (lastMove.PieceToMove.Position - lastMove.PieceNewPosition).Abs() == Vector.Down * 2;
-        var isThePawnNowNextToUs = (lastMove.PieceNewPosition - piece.Position) == new Vector((capturePosition - piece.Position).X, 0);
+        var isPawn = lastMove.Piece.Type == PieceType.Pawn;
+        var is2StepMove = (lastMove.PieceOldPosition - lastMove.PieceNewPosition).Abs() == Vector.Down * 2;
+        var isThePawnNowNextToUs = (lastMove.PieceNewPosition - currentPosition) == new Vector((capturePosition - currentPosition).X, 0);
         if (isPawn && // was it a pawn
             is2StepMove && // was it a 2 step move
             isThePawnNowNextToUs) // was it move next to us
         {
-            var pieceToCapture = lastMove.PieceToMove.Move(lastMove.PieceNewPosition);
-            return new Capture(piece, capturePosition, pieceToCapture);
+            return new Move(piece, currentPosition, capturePosition);
         }
 
         return null;

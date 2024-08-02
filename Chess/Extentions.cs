@@ -36,17 +36,17 @@ public static class OtherExtensions
 
 internal static class Extentions
 {
-    public static bool IsOccupiedBy(this Vector position, Color color, IEnumerable<Piece> allPieces)
-    {
-        foreach (var piece in allPieces)
-        {
-            if (position == piece.Position && piece.Color == color)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    //public static bool IsOccupiedBy(this Vector position, Color color, IEnumerable<Piece> allPieces)
+    //{
+    //    foreach (var piece in allPieces)
+    //    {
+    //        if (position == piece.Position && piece.Color == color)
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
 
     public static bool IsOccupiedBy(this Vector position, Color color, Piece?[,] board)
     {

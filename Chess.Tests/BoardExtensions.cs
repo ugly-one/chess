@@ -4,15 +4,26 @@ namespace Chess.Tests;
 
 public static class BoardExtensions
 {
-    public static Piece GetPiece(this Board board, PieceType pieceType)
+    public static (Piece, Vector) GetPiece(this Board board, PieceType pieceType)
     {
-        return board.GetPieces().First(p => p.Type == pieceType);
+        return board.GetPieces().First(p => p.Item1.Type == pieceType);
     }
 
-    /// <summary> return the first piece (checked in random order) that matches color and type
-    public static Piece GetPiece(this Board board, Color color, PieceType pieceType)
+    public static Vector GetPosition(this Board board, PieceType pieceType)
     {
-        return board.GetPieces().First(p => p.Type == pieceType && p.Color == color);
+        return board.GetPieces().First(p => p.Item1.Type == pieceType).Item2;
+    }
+
+
+    /// <summary> return the first piece (checked in random order) that matches color and type
+    public static (Piece, Vector) GetPiece(this Board board, Color color, PieceType pieceType)
+    {
+        return board.GetPieces().First(p => p.Item1.Type == pieceType && p.Item1.Color == color);
+    }
+
+    public static Vector GetPosition(this Board board, Color color, PieceType pieceType)
+    {
+        return board.GetPieces().First(p => p.Item1.Type == pieceType && p.Item1.Color == color).Item2;
     }
 }
 

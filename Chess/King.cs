@@ -27,46 +27,46 @@ internal static class King
         }
     }
 
-    public static IEnumerable<Move> GetKingMoves(Piece king, Piece?[,] board)
+    public static IEnumerable<Move> GetKingMoves(Piece king, Vector position, Piece?[,] board)
     {
         var allPositions = new Vector[]
         {
-            king.Position + Vector.Up,
-            king.Position + Vector.Down,
-            king.Position + Vector.Left,
-            king.Position + Vector.Right,
-            king.Position + Vector.Up + Vector.Right,
-            king.Position + Vector.Up + Vector.Left,
-            king.Position + Vector.Down + Vector.Right,
-            king.Position + Vector.Down + Vector.Left,
+            position + Vector.Up,
+            position + Vector.Down,
+            position + Vector.Left,
+            position + Vector.Right,
+            position + Vector.Up + Vector.Right,
+            position + Vector.Up + Vector.Left,
+            position + Vector.Down + Vector.Right,
+            position + Vector.Down + Vector.Left,
         }.WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, allPositions, board);
+        var allMoves = Something.ConvertToMoves(king, position, allPositions, board);
         foreach (var move in allMoves)
         {
             yield return move;
         }
         // short castle
-        var shortCastleMove = TryGetCastleMove(king, Vector.Left, 2, board);
+        var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2, board);
         if (shortCastleMove != null)
         {
             yield return shortCastleMove;
         }
 
         // long castle
-        var longCastleMove = TryGetCastleMove(king, Vector.Right, 3, board);
+        var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3, board);
         if (longCastleMove != null)
         {
             yield return longCastleMove;
         }
     }
 
-    private static Move? TryGetCastleMove(Piece king, Vector kingMoveDirection, int rockSteps, Piece?[,] _board)
+    private static Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps, Piece?[,] _board)
     {
         if (king.Moved)
             return null;
 
-        var possibleRockPosition = king.Position + kingMoveDirection * (rockSteps + 1);
+        var possibleRockPosition = position + kingMoveDirection * (rockSteps + 1);
         if (!possibleRockPosition.IsWithinBoard())
         {
             // TODO I'm wasting time here. I shouldn't even consider such position. 
@@ -75,6 +75,8 @@ internal static class King
             // It may change for Chess960, but for now we could have 2 hardcoded positions to check
             return null;
         }
+
+        // TODO check that the piece we got here is actually a rock
         var rock = _board[possibleRockPosition.X, possibleRockPosition.Y];
 
         if (rock == null || rock.Value.Moved)
@@ -84,7 +86,7 @@ internal static class King
 
         for (int i = 1; i <= 2; i++)
         {
-            var fieldToCheck = king.Position + kingMoveDirection * i;
+            var fieldToCheck = position + kingMoveDirection * i;
             if (_board[fieldToCheck.X, fieldToCheck.Y] != null)
             {
                 allFieldsInBetweenClean = false;
@@ -94,11 +96,6 @@ internal static class King
 
         if (!allFieldsInBetweenClean) return null;
 
-        var rockMoveDirection = kingMoveDirection.Orthogonal().Orthogonal();
-        return new Castle(
-            king,
-            king.Position + kingMoveDirection * 2,
-            rock.Value,
-            rock.Value.Position + rockMoveDirection * rockSteps);
+        return new Move(king, position, position + kingMoveDirection * 2);
     }
 }

@@ -15,20 +15,20 @@ internal static class Knight
         Vector.Up * 2 + Vector.Left,
         Vector.Left * 2 + Vector.Up,
     };
-    public static IEnumerable<Move> GetKnightMoves(Piece piece, Piece?[,] board)
+    public static IEnumerable<Move> GetKnightMoves(Piece piece, Vector position, Piece?[,] board)
     {
         var allPositions = new Vector[]
         {
-            piece.Position + Vector.Up * 2 + Vector.Right,
-            piece.Position + Vector.Right * 2 + Vector.Up,
-            piece.Position + Vector.Right * 2 + Vector.Down,
-            piece.Position + Vector.Down * 2 + Vector.Right,
-            piece.Position + Vector.Down * 2 + Vector.Left,
-            piece.Position + Vector.Left * 2 + Vector.Down,
-            piece.Position + Vector.Up * 2 + Vector.Left,
-            piece.Position + Vector.Left * 2 + Vector.Up,
+            position + Vector.Up * 2 + Vector.Right,
+            position + Vector.Right * 2 + Vector.Up,
+            position + Vector.Right * 2 + Vector.Down,
+            position + Vector.Down * 2 + Vector.Right,
+            position + Vector.Down * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Down,
+            position + Vector.Up * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Up,
         }.WithinBoard();
-        return Something.ConvertToMoves(piece, allPositions, board);
+        return Something.ConvertToMoves(piece, position, allPositions, board);
     }
 
     public static IEnumerable<Vector> GetTargets(Vector position, Piece?[,] board)

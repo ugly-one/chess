@@ -10,19 +10,19 @@ public class Game
     public int MovesSinceLastPawnMoveOrPieceTake { get; private set; }
     public Color CurrentPlayer => Board.CurrentPlayer;
 
-    public Game(Color startingColor, params Piece[] pieces)
-    {
-        Board = new Board(pieces, startingColor);
-        State = GameState.InProgress;
-        MovesSinceLastPawnMoveOrPieceTake = 0;
-    }
+    //public Game(Color startingColor, params Piece[] pieces)
+    //{
+    //    Board = new Board(pieces, startingColor);
+    //    State = GameState.InProgress;
+    //    MovesSinceLastPawnMoveOrPieceTake = 0;
+    //}
 
-    public Game(ICollection<Piece> pieces)
-    {
-        Board = new Board(pieces, Color.WHITE);
-        State = GameState.InProgress;
-        MovesSinceLastPawnMoveOrPieceTake = 0;
-    }
+    //public Game(ICollection<Piece> pieces)
+    //{
+    //    Board = new Board(pieces, Color.WHITE);
+    //    State = GameState.InProgress;
+    //    MovesSinceLastPawnMoveOrPieceTake = 0;
+    //}
 
     public Game(Board board)
     {
@@ -38,9 +38,11 @@ public class Game
         MovesSinceLastPawnMoveOrPieceTake = 0;
     }
 
-    public bool TryMove(Piece pieceToMove, Vector newPosition, PieceType? promotedPiece)
+    public bool TryMove(Vector position, Vector newPosition, PieceType? promotedPiece)
     {
-        var (success, newBoard) = Board.TryMove(pieceToMove, newPosition, promotedPiece);
+        var currentPlanyer = Board.CurrentPlayer;
+        var pieceToMove = GetPiece(position);
+        var (success, newBoard) = Board.TryMove(position, newPosition, promotedPiece);
 
         if (!success)
         {
@@ -49,7 +51,7 @@ public class Game
 
         var previousBoard = Board;
         Board = newBoard;
-        var opponentsColor = pieceToMove.Color.GetOpposite();
+        var opponentsColor = currentPlanyer.GetOpposite();
 
         var somethingWasCaptured = Board.GetPieces().Count() != previousBoard.GetPieces().Count();
         if (pieceToMove.Type == PieceType.Pawn || somethingWasCaptured)
@@ -96,7 +98,7 @@ public class Game
         var whitePieces = new List<Piece>();
         var blackPieces = new List<Piece>();
 
-        foreach (var piece in board.GetPieces())
+        foreach (var (piece, position) in board.GetPieces())
         {
             if (piece.Color == Color.WHITE)
                 whitePieces.Add(piece);
@@ -128,7 +130,7 @@ public class Game
 
     public Piece GetPiece(Vector position)
     {
-        var piece = Board.GetPieces().First(p => p.Position == position);
+        var piece = Board.GetPieces().First(x => x.Item2 == position).Item1;
         return piece;
     }
 }

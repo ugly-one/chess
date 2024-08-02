@@ -16,11 +16,11 @@ public static class Queen
         Vector.Right
     };
 
-    public static IEnumerable<Move> GetQueenMoves(Piece piece, Piece?[,] board)
+    public static IEnumerable<Move> GetQueenMoves(Piece piece, Vector position, Piece?[,] board)
     {
         foreach(var direction in directions)
         {
-            foreach(var move in board.GetMovesInDirection(piece, direction, piece.Color))
+            foreach(var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
             {
                 yield return move;
             }

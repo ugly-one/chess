@@ -13,16 +13,16 @@ public class GiveMeCheckAI  : IPlayer
 
     public MoveWithPromotion GetMove(Board board)
     {
-        var moveRequests = board.GetAllPossibleMoves();
+        var moveRequests = board.GetAllPossibleMoves().ToArray();
         foreach (var moveRequest in moveRequests)
         {
-            var (success, newBoard) = board.TryMove(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
+            var (success, newBoard) = board.TryMove(moveRequest.PieceOldPosition, moveRequest.PieceNewPosition, PieceType.Queen);
             if (!success)
                 throw new Exception("The engine game me a move that is not valid :/");
 
             if (newBoard.IsKingUnderAttack(color.GetOpposite()))
-                return new MoveWithPromotion(moveRequest.PieceToMove, moveRequest.PieceNewPosition, PieceType.Queen);
+                return new MoveWithPromotion(moveRequest.Piece, moveRequest.PieceOldPosition, moveRequest.PieceNewPosition, PieceType.Queen);
         }
-        return new MoveWithPromotion(moveRequests[0].PieceToMove, moveRequests[0].PieceNewPosition, PieceType.Queen);
+        return new MoveWithPromotion(moveRequests[0].Piece, moveRequests[0].PieceOldPosition, moveRequests[0].PieceNewPosition, PieceType.Queen);
     }
 }

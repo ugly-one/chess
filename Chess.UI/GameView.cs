@@ -42,7 +42,7 @@ public partial class GameView : HBoxContainer
 		this.blackAI = black;
 		this.whiteAI = white;
 		// make sure we have UI aligned with game state
-		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position.ToVector2(), p.Color, p.GetTexture()));
+		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Item2.ToVector2(), p.Item1.Color, p.Item1.GetTexture()));
 		foreach (var piece in piecesUi)
 		{
 			board.AddChild(piece);
@@ -70,18 +70,18 @@ public partial class GameView : HBoxContainer
 		if (game.CurrentPlayer == Color.WHITE && (whiteAI?.FoundMove ?? false))
 		{
 			var move = whiteAI.GetMove();
-			TryMove(move.Piece, move.Position.ToVector2(), move.PromotedPiece);
+			TryMove(move.PieceOldPosition, move.Position.ToVector2(), move.PromotedPiece);
 		}
 		else if(game.CurrentPlayer == Color.BLACK && (blackAI?.FoundMove ?? false))
 		{
 			var move = blackAI.GetMove();
-			TryMove(move.Piece, move.Position.ToVector2(), move.PromotedPiece);
+			TryMove(move.PieceOldPosition, move.Position.ToVector2(), move.PromotedPiece);
 		}
 	}
 
-	private bool TryMove(Piece piece, Vector2 position, PieceType? promotedPiece)
+	private bool TryMove(Vector position1, Vector2 position, PieceType? promotedPiece)
 	{
-		var success = game.TryMove(piece, position.ToVector(), promotedPiece);
+		var success = game.TryMove(position1, position.ToVector(), promotedPiece);
 		if (!success) 
 			return false;
 
@@ -139,7 +139,7 @@ public partial class GameView : HBoxContainer
 	private void OnPieceLifted(PieceUI pieceUi)
 	{
 		var piece = game.GetPiece(pieceUi.ChessPosition.ToVector());
-		var possibleMoves = game.Board.GetPossibleMoves(piece);
+		var possibleMoves = game.Board.GetPossibleMoves(pieceUi.ChessPosition.ToVector());
 		
 		foreach (var possibleMove in possibleMoves)
 		{
@@ -154,7 +154,7 @@ public partial class GameView : HBoxContainer
 		var typeAsEnum = Enum.Parse<PieceType>(type);
 		var piece = game.GetPiece(pieceUi.ChessPosition.ToVector());
 		promotionBox.Hide();
-		var success = game.TryMove(piece, newPosition.ToVector(), promotedPiece: typeAsEnum);
+		var success = game.TryMove(pieceUi.ChessPosition.ToVector(), newPosition.ToVector(), promotedPiece: typeAsEnum);
 		if (!success)
 		{
 			pieceUi.CancelMove();
@@ -194,7 +194,7 @@ public partial class GameView : HBoxContainer
 			}
 			return;
 		}
-		var moved = TryMove(pieceToMove, newPosition, promotedPiece: null);
+		var moved = TryMove(droppedPiece.ChessPosition.ToVector(), newPosition, promotedPiece: null);
 		if (!moved)
 		{
 			droppedPiece.CancelMove();
@@ -214,7 +214,7 @@ public partial class GameView : HBoxContainer
 			piece.QueueFree();
 		}
 
-		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position.ToVector2(), p.Color, p.GetTexture()));
+		var piecesUi = game.Board.GetPieces().Select(p => PieceFactory.CreatePiece(p.Item2.ToVector2(), p.Item1.Color, p.Item1.GetTexture()));
 		foreach (var piece in piecesUi)
 		{
 			board.AddChild(piece);

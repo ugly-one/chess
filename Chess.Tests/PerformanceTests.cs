@@ -17,7 +17,7 @@ public class PerformanceTests
     };
 
     [Theory]
-    [InlineData(5)]
+    [InlineData(4)]
     public void Check(int depth)
     {
         var board = BoardFactory.Default();

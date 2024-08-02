@@ -2,11 +2,11 @@ using System;
 
 namespace Chess;
 
-public record struct Piece(PieceType Type, Color Color, Vector Position, bool Moved = false)
+public record struct Piece(PieceType Type, Color Color, bool Moved = false)
 {
-	public Piece Move(Vector position)
+	public Piece Move()
 	{
-		var clonedPiece = new Piece(this.Type, this.Color, position, true);
+		var clonedPiece = new Piece(this.Type, this.Color , true);
 		return clonedPiece;
 	}
 

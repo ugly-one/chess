@@ -84,7 +84,7 @@ public partial class AnalysePanel : VBoxContainer
 		}
 
 		var analysis_piecesUi =
-			gameBoard.GetPieces().Select(p => PieceFactory.CreatePiece(p.Position.ToVector2(), p.Color, p.GetTexture()));
+			gameBoard.GetPieces().Select(p => PieceFactory.CreatePiece(p.Item2.ToVector2(), p.Item1.Color, p.Item1.GetTexture()));
 		foreach (var pieceUi in analysis_piecesUi)
 		{
 			_analysisBoard.AddChild(pieceUi);
