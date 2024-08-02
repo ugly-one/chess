@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Chess.Tests;
@@ -16,12 +17,7 @@ public class PerformanceTests
     };
 
     [Theory]
-    //[InlineData(1)]
-    //[InlineData(2)]
-    //[InlineData(3)]
-    [InlineData(4)]
-    //[InlineData(5)]
-    //[InlineData(6)]
+    [InlineData(5)]
     public void Check(int depth)
     {
         var board = BoardFactory.Default();
@@ -41,9 +37,10 @@ public class PerformanceTests
             return 0;
         }
         var moves = board.GetAllPossibleMoves();
-        var sum = moves.Count;
+        var sum = 0;
         foreach(var move in moves)
         {
+            sum += 1;
             var (_, newBoard) = board.TryMove(move);
             sum += GetPossibleMovesCount(newBoard, currentDepth + 1, targetDepth);
         }

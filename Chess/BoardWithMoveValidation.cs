@@ -13,7 +13,7 @@ public class BoardWithMoveValidation
         this.board = board;
         this.movesCache = new HashSet<Move>();
     }
-    public List<Move> GetAllPossibleMoves()
+    public IEnumerable<Move> GetAllPossibleMoves()
     {
         var moves = board.GetAllPossibleMoves();
         movesCache = new HashSet<Move>(moves);

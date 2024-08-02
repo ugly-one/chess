@@ -56,11 +56,10 @@ public class Board
     /// </summary>
     /// <param name="piece">piece for which possible moves will be calculated</param>
     /// <returns></returns>
-    public Move[] GetPossibleMoves(Piece piece, bool skipCache = false)
+    public IEnumerable<Move> GetPossibleMoves(Piece piece, bool skipCache = false)
     {
-        var possibleMoves2 = GetMoves(piece).WithinBoard();
-        var possibleMovesAfterFiltering = new List<Move>();
-        foreach (var possibleMove in possibleMoves2)
+        var possibleMoves = GetMoves(piece).WithinBoard();
+        foreach (var possibleMove in possibleMoves)
         {
             // let's try to make the move and see if the king is under attack, if yes, move is not allowed
             // it doesn't matter what we promote to
@@ -68,12 +67,11 @@ public class Board
             if (boardAfterMove.IsKingUnderAttack(piece.Color)) continue;
             if (possibleMove.PieceToMove.Type == PieceType.King)
             {
-                // TODO find out if we're castling.
-                // checking if king moved more than 1 square is enough but won't work in CHess960 :D
                 var moveVector = (possibleMove.PieceNewPosition - possibleMove.PieceToMove.Position);
                 var isCastleMove = moveVector.Abs().X > 1;
                 if (isCastleMove)
                 {
+                    // this check should be done as part of castle-move generation
                     var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
                     if (IsFieldUnderAttack(possibleMove.PieceToMove.Position + oneStepVector, possibleMove.PieceToMove.Color.GetOpposite()))
                     {
@@ -81,21 +79,19 @@ public class Board
                     }
                     else
                     {
-                        possibleMovesAfterFiltering.Add(possibleMove);
+                        yield return possibleMove;
                     }
                 }
                 else
                 {
-                    possibleMovesAfterFiltering.Add(possibleMove);
+                    yield return possibleMove;
                 }
             }
             else
             {
-                possibleMovesAfterFiltering.Add(possibleMove);
+                yield return possibleMove;
             }
         }
-
-        return possibleMovesAfterFiltering.ToArray();
     }
 
     public IEnumerable<Piece> GetPieces()
@@ -106,19 +102,19 @@ public class Board
         }
     }
 
-    public List<Move> GetAllPossibleMoves()
+    public IEnumerable<Move> GetAllPossibleMoves()
     {
         var pieces = GetPieces(currentPlayer);
-        var allPossibleMoves = new List<Move>();
         foreach (var piece in pieces)
         {
             // try to find possible moves
             var possibleMoves = GetPossibleMoves(piece);
-            allPossibleMoves.AddRange(
-                possibleMoves.Select(m => new Move(m.PieceToMove, m.PieceNewPosition)));
+            foreach(var move in possibleMoves)
+            {
+                yield return move;
+            }
         }
 
-        return allPossibleMoves;
     }
 
     public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
@@ -134,9 +130,6 @@ public class Board
         return (true, newBoard);
     }
 
-    // This is a bit funny that someone can tell the engine to promote non-pawn pieces
-    // and also I can do it for any moves - including moves in the center of the board
-    // but, I do not see an obvious way how to prevent it.
     private Board Move(Move move, PieceType? promotedPiece)
     {
         var movedPiece = move.PieceToMove.Move(move.PieceNewPosition);
@@ -159,7 +152,7 @@ public class Board
         if (move.PieceToMove.Type == PieceType.King && !move.PieceToMove.Moved && (move.PieceToMove.Position - move.PieceNewPosition).Abs().X == 2)
         {
             Vector? rockNewPosition;
-            if (move.PieceNewPosition.X == 1) 
+            if (move.PieceNewPosition.X == 1)
             {
                 rockNewPosition = new Vector(2, move.PieceNewPosition.Y);
                 rockToMove = pieces[0, move.PieceNewPosition.Y];
@@ -173,7 +166,7 @@ public class Board
         }
 
         Piece? en_passantCapturedPawn = null;
-        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceToMove.Position - move.PieceNewPosition).Abs() == new Vector(1,1) && pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y] == null)
+        if (move.PieceToMove.Type == PieceType.Pawn && (move.PieceToMove.Position - move.PieceNewPosition).Abs() == new Vector(1, 1) && pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y] == null)
         {
             // en-passant 
             en_passantCapturedPawn = pieces[move.PieceNewPosition.X, move.PieceToMove.Position.Y];
