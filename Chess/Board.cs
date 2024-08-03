@@ -209,20 +209,15 @@ public class Board
         {
             return true;
         }
-        
+
         // check knights
-        var targets = GetTargets(knightDirections, position);
-        foreach (var target in targets)
+        if (IsAttacked(knightDirections, position, PieceType.Knight, color))
         {
-            var targetPiece = board[target.X, target.Y].Value;
-            if (targetPiece.Color == color &&
-                targetPiece.Type == PieceType.Knight)
-            {
-                return true;
-            }
+            return true;
         }
+        
         // check king
-        targets = GetTargets(kingDirections, position);
+        var targets = GetTargets(kingDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = board[target.X, target.Y].Value;
@@ -454,6 +449,27 @@ public class Board
         return new Move(king, position, position + kingMoveDirection * 2);
     }
 
+
+    private bool IsAttacked(IEnumerable<Vector> positions, Vector position, PieceType pieceType, Color color)
+    {
+        foreach (var pos in positions)
+        {
+            var newPos = position + pos;
+            if (newPos.IsWithinBoard())
+            {
+                var maybePiece = board[newPos.X, newPos.Y];
+                if (maybePiece is Piece piece)
+                {
+                    if (piece.Type == pieceType && piece.Color == color)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public IEnumerable<Vector> GetTargets(IEnumerable<Vector> positions, Vector position)
     {
         foreach (var pos in positions)
@@ -464,17 +480,7 @@ public class Board
                 yield return target.Value;
         }
     }
-
-    public IEnumerable<Vector> GetTargets2(IEnumerable<Vector> directions, Vector position)
-    {
-        foreach (var direction in directions)
-        {
-            var target = position.GetTargetInDirection(direction, board);
-            if (target != null)
-                yield return target.Value;
-        }
-    }
-
+    
     private bool IsAttackedDiagonally(Vector position, Color color)
     {
         foreach (var direction in bishopDirections)
