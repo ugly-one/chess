@@ -319,7 +319,7 @@ public class Board
         Vector.Left * 2 + Vector.Up,
     };
 
-    private IEnumerable<Move> GetMovesInDirections(Piece piece, Vector position, IEnumerable<Vector> directions)
+    private IEnumerable<Move> GetMovesInDirections(Piece piece, Vector position, Vector[] directions)
     {
         foreach (var direction in directions)
         {
