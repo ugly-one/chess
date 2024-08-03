@@ -226,16 +226,11 @@ public class Board
         // this check is reverted because we want to know if the current position is under pawn's attack
         // maybe this method doesn't belong to Pawn file
         var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
-        var targets = GetTargets(attackPositions, position);
-        foreach (var target in targets)
+        if (IsAttacked(attackPositions, position, PieceType.Pawn, color))
         {
-            var targetPiece = board[target.X, target.Y].Value;
-            if (targetPiece.Color == color &&
-                targetPiece.Type == PieceType.Pawn)
-            {
-                return true;
-            }
+            return true;
         }
+        
         return false;
     }
 
