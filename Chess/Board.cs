@@ -288,10 +288,10 @@ public class Board
         var moves = piece.Type switch
         {
             PieceType.King => GetKingMoves(piece, position),
-            PieceType.Queen => Queen.GetQueenMoves(piece, position, pieces),
+            PieceType.Queen => GetQueenMoves(piece, position),
             PieceType.Pawn => GetPawnMoves(piece, position),
             PieceType.Bishop => GetBishopMoves(piece, position),
-            PieceType.Rock => GetRockMoves(piece, position, pieces),
+            PieceType.Rock => GetRockMoves(piece, position),
             PieceType.Knight => GetKnightMoves(piece, position),
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -320,6 +320,18 @@ public class Board
 
     private static Vector[] rockDirections = new Vector[]
     {
+        Vector.Up,
+        Vector.Down,
+        Vector.Left,
+        Vector.Right
+    };
+
+    private static Vector[] queenDirections = new Vector[]
+    {
+        Vector.Up + Vector.Right,
+        Vector.Up + Vector.Left,
+        Vector.Down + Vector.Right,
+        Vector.Down + Vector.Left,
         Vector.Up,
         Vector.Down,
         Vector.Left,
@@ -361,11 +373,22 @@ public class Board
         }
     }
 
-    public IEnumerable<Move> GetRockMoves(Piece piece, Vector position, Piece?[,] board)
+    public IEnumerable<Move> GetRockMoves(Piece piece, Vector position)
     {
         foreach (var direction in rockDirections)
         {
-            foreach (var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
+            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
+            {
+                yield return move;
+            }
+        }
+    }
+
+    public IEnumerable<Move> GetQueenMoves(Piece piece, Vector position)
+    {
+        foreach (var direction in queenDirections)
+        {
+            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
             {
                 yield return move;
             }
