@@ -9,7 +9,7 @@ public class Board
     private readonly Piece?[,] pieces;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
-    private readonly Move? _lastMove;
+    private readonly Move? lastMove;
     private readonly Color currentPlayer;
 
     public Piece?[,] Pieces => pieces;
@@ -18,7 +18,7 @@ public class Board
     public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
     {
         this.currentPlayer = currentColor;
-        this._lastMove = lastMove;
+        this.lastMove = lastMove;
         this.pieces = pieces;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
@@ -47,7 +47,7 @@ public class Board
             }
 
         }
-        _lastMove = lastMove;
+        this.lastMove = lastMove;
     }
 
     /// <summary>
@@ -245,7 +245,10 @@ public class Board
             }
         }
         // check pawns
-        targets = Pawn.GetTargets(position, color, pieces);
+        // this check is reverted because we want to know if the current position is under pawn's attack
+        // maybe this method doesn't belong to Pawn file
+        var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
+        targets = GetTargets(attackPositions, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -286,7 +289,7 @@ public class Board
         {
             PieceType.King => GetKingMoves(piece, position),
             PieceType.Queen => Queen.GetQueenMoves(piece, position, pieces),
-            PieceType.Pawn => Pawn.GetPawnMoves(piece, position, pieces, _lastMove),
+            PieceType.Pawn => GetPawnMoves(piece, position),
             PieceType.Bishop => GetBishopMoves(piece, position),
             PieceType.Rock => GetRockMoves(piece, position, pieces),
             PieceType.Knight => GetKnightMoves(piece, position),
@@ -294,6 +297,18 @@ public class Board
         };
         return moves;
     }
+
+    private static Vector[] whitePawnAttackDirections = new Vector[]
+    {
+        Vector.Up + Vector.Left,
+        Vector.Up + Vector.Right
+    };
+
+    private static Vector[] blackPawnAttackDirections = new Vector[]
+    {
+        Vector.Down + Vector.Left,
+        Vector.Down + Vector.Right
+    };
 
     private static Vector[] bishopDirections = new Vector[]
     {
@@ -474,6 +489,90 @@ public class Board
             if (target != null)
                 yield return target.Value;
         }
+    }
+
+    public IEnumerable<Move> GetPawnMoves(Piece piece, Vector position)
+    {
+        var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
+
+        // one step forward if not blocked
+        var forward = position + direction;
+        if (forward.IsWithinBoard() && !IsBlocked(forward))
+        {
+            yield return new Move(piece, position, forward);
+
+            // two steps forward if not moved yet and not blocked
+            if (!piece.Moved)
+            {
+                var forward2Steps = position + direction + direction;
+                if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps))
+                {
+                    yield return new Move(piece, position, forward2Steps);
+                }
+            }
+        }
+
+        // one down/left if there is an opponent's piece
+        var takeLeft = position + Vector.Left + direction;
+
+        if (takeLeft.IsWithinBoard())
+        {
+            var possiblyCapturedPiece = pieces[takeLeft.X, takeLeft.Y];
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
+            {
+                yield return new Move(piece, position, takeLeft);
+            }
+            else
+            {
+                var move = TryGetEnPassant(piece, position, takeLeft);
+                if (move != null)
+                {
+                    yield return move;
+                }
+            }
+        }
+
+        // one down/right if there is an opponent's piece
+        var takeRight = position + Vector.Right + direction;
+        if (takeRight.IsWithinBoard())
+        {
+            var possiblyCapturedPiece = pieces[takeRight.X, takeRight.Y];
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
+            {
+                yield return new Move(piece, position, takeRight);
+            }
+            else
+            {
+                var move = TryGetEnPassant(piece, position, takeRight);
+                if (move != null)
+                {
+                    yield return move;
+                }
+            }
+        }
+    }
+
+    private Move? TryGetEnPassant(Piece piece, Vector currentPosition, Vector capturePosition)
+    {
+        if (lastMove == null) return null;
+
+        var isPawn = lastMove.Piece.Type == PieceType.Pawn;
+        var is2StepMove = (lastMove.PieceOldPosition - lastMove.PieceNewPosition).Abs() == Vector.Down * 2;
+        var isThePawnNowNextToUs = (lastMove.PieceNewPosition - currentPosition) == new Vector((capturePosition - currentPosition).X, 0);
+        if (isPawn && // was it a pawn
+            is2StepMove && // was it a 2 step move
+            isThePawnNowNextToUs) // was it move next to us
+        {
+            return new Move(piece, currentPosition, capturePosition);
+        }
+
+        return null;
+    }
+
+    private bool IsBlocked(Vector position)
+    {
+        if (pieces[position.X, position.Y] != null) return true;
+        return false;
     }
 
     public override string ToString()
