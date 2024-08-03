@@ -440,7 +440,7 @@ public class Board
     }
 
 
-    private bool IsAttacked(IEnumerable<Vector> positions, Vector position, PieceType pieceType, Color color)
+    private bool IsAttacked(Vector[] positions, Vector position, PieceType pieceType, Color color)
     {
         foreach (var pos in positions)
         {
@@ -458,17 +458,6 @@ public class Board
             }
         }
         return false;
-    }
-
-    public IEnumerable<Vector> GetTargets(IEnumerable<Vector> positions, Vector position)
-    {
-        foreach (var pos in positions)
-        {
-            var newPos = position + pos;
-            var target = newPos.GetTargetInPosition(board);
-            if (target != null)
-                yield return target.Value;
-        }
     }
     
     private bool IsAttackedDiagonally(Vector position, Color color)
