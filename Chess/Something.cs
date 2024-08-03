@@ -76,9 +76,26 @@ internal static class Something
         }
         return null;
     }
+    public static Piece? GetTargetPieceInDirection(
+            this Vector position,
+            Vector direction,
+            Piece?[,] board)
+    {
+        var newPos = position + direction;
+        while (newPos.IsWithinBoard())
+        {
+            var pieceAtNewPosition = board[newPos.X, newPos.Y];
+            if (pieceAtNewPosition != null)
+            {
+                return pieceAtNewPosition;
+            }
+            newPos += direction;
+        }
+        return null;
+    }
 
     public static Vector? GetTargetInPosition(
-        this Vector position, 
+        this Vector position,
         Piece?[,] board)
     {
         if (!position.IsWithinBoard())

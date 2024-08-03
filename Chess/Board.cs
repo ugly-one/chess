@@ -199,19 +199,13 @@ public class Board
     public bool IsFieldUnderAttack(Vector position, Color color)
     {
         // check horizontal/vertical lines to see if there is a Queen or a Rock
-        var targets = GetTargets2(rockDirections, position);
-        foreach (var target in targets)
+        if (IsAttackedHorizontalyOrVerticaly(position, color))
         {
-            var targetPiece = board[target.X, target.Y].Value;
-            if (targetPiece.Color == color &&
-                (targetPiece.Type == PieceType.Queen ||
-                targetPiece.Type == PieceType.Rock))
-            {
-                return true;
-            }
+            return true;
         }
+        
         // check diagonal lines to see if there is a Queen or a Bishop
-        targets = GetTargets2(bishopDirections, position);
+        var targets = GetTargets2(bishopDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = board[target.X, target.Y].Value;
@@ -485,6 +479,22 @@ public class Board
             if (target != null)
                 yield return target.Value;
         }
+    }
+
+    public bool IsAttackedHorizontalyOrVerticaly(Vector position, Color color)
+    {
+        foreach (var direction in rockDirections)
+        {
+            var maybePiece = position.GetTargetPieceInDirection(direction, board);
+            if (maybePiece is Piece piece)
+            {
+                if (piece.Color == color && (piece.Type == PieceType.Queen || piece.Type == PieceType.Rock))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public IEnumerable<Move> GetPawnMoves(Piece piece, Vector position)
