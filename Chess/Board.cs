@@ -217,21 +217,16 @@ public class Board
         }
         
         // check king
-        var targets = GetTargets(kingDirections, position);
-        foreach (var target in targets)
+        if (IsAttacked(kingDirections, position, PieceType.King, color))
         {
-            var targetPiece = board[target.X, target.Y].Value;
-            if (targetPiece.Color == color &&
-                targetPiece.Type == PieceType.King)
-            {
-                return true;
-            }
+            return true;
         }
+        
         // check pawns
         // this check is reverted because we want to know if the current position is under pawn's attack
         // maybe this method doesn't belong to Pawn file
         var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
-        targets = GetTargets(attackPositions, position);
+        var targets = GetTargets(attackPositions, position);
         foreach (var target in targets)
         {
             var targetPiece = board[target.X, target.Y].Value;
