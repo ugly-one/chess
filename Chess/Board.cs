@@ -240,7 +240,7 @@ public class Board
     /// </summary>
     /// <param name="piece"></param>
     /// <returns></returns>
-    private IEnumerable<Move> GetMoves(Piece piece, Vector position)
+    private List<Move> GetMoves(Piece piece, Vector position)
     {
         var moves = piece.Type switch
         {
@@ -319,47 +319,65 @@ public class Board
         Vector.Left * 2 + Vector.Up,
     };
 
-    private IEnumerable<Move> GetMovesInDirections(Piece piece, Vector position, Vector[] directions)
+    public List<Move> GetMovesInDirections(
+        Piece piece,
+        Vector currentPosition,
+        Vector[] steps)
     {
-        foreach (var direction in directions)
+        var result = new List<Move>();
+        foreach (var step in steps)
         {
-            foreach (var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
+            var newPos = currentPosition + step;
+            var breakAfterAdding = false;
+            while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(piece.Color, board))
             {
-                yield return move;
+                // we should pass only opponents pieces to GetPieceInPosition
+                var capturedPiece = board[newPos.X, newPos.Y];
+                if (capturedPiece != null)
+                {
+                    breakAfterAdding = true;
+                    result.Add(new Move(piece, currentPosition, newPos));
+                }
+                else
+                {
+                    result.Add(new Move(piece, currentPosition, newPos));
+                }
+                newPos += step;
+                if (breakAfterAdding)
+                {
+                    break;
+                }
             }
         }
+        return result;
     }
 
-    public IEnumerable<Move> GetBishopMoves(Piece piece, Vector position)
+    public List<Move> GetBishopMoves(Piece piece, Vector position)
     {
         return GetMovesInDirections(piece, position, bishopDirections);
     }
 
-    public IEnumerable<Move> GetRockMoves(Piece piece, Vector position)
+    public List<Move> GetRockMoves(Piece piece, Vector position)
     {
         return GetMovesInDirections(piece, position, rockDirections);
     }
 
-    public IEnumerable<Move> GetQueenMoves(Piece piece, Vector position)
+    public List<Move> GetQueenMoves(Piece piece, Vector position)
     {
         return GetMovesInDirections(piece, position, queenDirections);
     }
 
-    public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
+    public List<Move> GetKnightMoves(Piece piece, Vector position)
     {
         var allPositions = knightDirections.Select(d => d + position).WithinBoard();
-        return Something.ConvertToMoves(piece, position, allPositions, board);
+        return Something.ConvertToMoves(piece, position, allPositions, board).ToList();
     }
 
-    public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
+    public List<Move> GetKingMoves(Piece king, Vector position)
     {
         var allPositions = kingDirections.Select(d => d + position).WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, position, allPositions, board);
-        foreach (var move in allMoves)
-        {
-            yield return move;
-        }
+        var allMoves = Something.ConvertToMoves(king, position, allPositions, board).ToList();
         // short castle
         var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2);
         if (shortCastleMove != null)
@@ -373,7 +391,7 @@ public class Board
             }
             else
             {
-                yield return shortCastleMove;
+                allMoves.Add(shortCastleMove);
             }
         }
 
@@ -381,8 +399,9 @@ public class Board
         var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3);
         if (longCastleMove != null)
         {
-            yield return longCastleMove;
+            allMoves.Add(longCastleMove);
         }
+        return allMoves;
     }
 
     private Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps)
@@ -476,15 +495,16 @@ public class Board
         return false;
     }
 
-    public IEnumerable<Move> GetPawnMoves(Piece piece, Vector position)
+    public List<Move> GetPawnMoves(Piece piece, Vector position)
     {
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
+        var result = new List<Move>();
         // one step forward if not blocked
         var forward = position + direction;
         if (forward.IsWithinBoard() && !IsBlocked(forward))
         {
-            yield return new Move(piece, position, forward);
+            result.Add(new Move(piece, position, forward));
 
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
@@ -492,7 +512,7 @@ public class Board
                 var forward2Steps = position + direction + direction;
                 if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps))
                 {
-                    yield return new Move(piece, position, forward2Steps);
+                    result.Add(new Move(piece, position, forward2Steps));
                 }
             }
         }
@@ -505,14 +525,14 @@ public class Board
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Move(piece, position, takeLeft);
+                result.Add(new Move(piece, position, takeLeft));
             }
             else
             {
                 var move = TryGetEnPassant(piece, position, takeLeft);
                 if (move != null)
                 {
-                    yield return move;
+                    result.Add(move);
                 }
             }
         }
@@ -524,17 +544,18 @@ public class Board
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                yield return new Move(piece, position, takeRight);
+                result.Add(new Move(piece, position, takeRight));
             }
             else
             {
                 var move = TryGetEnPassant(piece, position, takeRight);
                 if (move != null)
                 {
-                    yield return move;
+                    result.Add(move);
                 }
             }
         }
+        return result;
     }
 
     private Move? TryGetEnPassant(Piece piece, Vector currentPosition, Vector capturePosition)
