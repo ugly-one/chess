@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Chess;
@@ -389,33 +390,13 @@ public class Board
 
     public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
     {
-        var allPositions = new Vector[]
-        {
-            position + Vector.Up * 2 + Vector.Right,
-            position + Vector.Right * 2 + Vector.Up,
-            position + Vector.Right * 2 + Vector.Down,
-            position + Vector.Down * 2 + Vector.Right,
-            position + Vector.Down * 2 + Vector.Left,
-            position + Vector.Left * 2 + Vector.Down,
-            position + Vector.Up * 2 + Vector.Left,
-            position + Vector.Left * 2 + Vector.Up,
-        }.WithinBoard();
+        var allPositions = knightDirections.Select(d => d + position).WithinBoard();
         return Something.ConvertToMoves(piece, position, allPositions, board);
     }
 
     public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
     {
-        var allPositions = new Vector[]
-        {
-            position + Vector.Up,
-            position + Vector.Down,
-            position + Vector.Left,
-            position + Vector.Right,
-            position + Vector.Up + Vector.Right,
-            position + Vector.Up + Vector.Left,
-            position + Vector.Down + Vector.Right,
-            position + Vector.Down + Vector.Left,
-        }.WithinBoard();
+        var allPositions = kingDirections.Select(d => d + position).WithinBoard();
 
         var allMoves = Something.ConvertToMoves(king, position, allPositions, board);
         foreach (var move in allMoves)

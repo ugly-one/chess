@@ -13,10 +13,10 @@ public record struct Vector(int X, int Y)
     public static Vector operator -(Vector a, Vector b)
         => new Vector(a.X - b.X, a.Y - b.Y);
 
-    public static Vector Up => new Vector(0, -1);
-    public static Vector Down => new Vector(0, 1);
-    public static Vector Left => new Vector(-1, 0);
-    public static Vector Right => new Vector(1, 0);
+    public static Vector Up = new Vector(0, -1);
+    public static Vector Down = new Vector(0, 1);
+    public static Vector Left = new Vector(-1, 0);
+    public static Vector Right = new Vector(1, 0);
 
     public Vector Abs() 
         => new Vector(Math.Abs(X), Math.Abs(Y));
