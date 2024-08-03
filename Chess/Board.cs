@@ -64,7 +64,7 @@ public class Board
             // let's try to make the move and see if the king is under attack, if yes, move is not allowed
             // it doesn't matter what we promote to
             var boardAfterMove = Move(possibleMove, PieceType.Queen);
-            if (boardAfterMove.IsKingUnderAttack(piece.Color)) 
+            if (boardAfterMove.IsKingUnderAttack(piece.Color))
                 continue;
             yield return possibleMove;
         }
@@ -223,7 +223,7 @@ public class Board
             }
         }
         // check knights
-        targets = Knight.GetTargets(position, pieces);
+        targets = GetTargets(knightPositions, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -234,7 +234,7 @@ public class Board
             }
         }
         // check king
-        targets = GetKingTargets(position, pieces);
+        targets = GetTargets(kingPositions, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -284,12 +284,12 @@ public class Board
     {
         var moves = piece.Type switch
         {
-            PieceType.King => GetKingMoves(piece, position, pieces),
+            PieceType.King => GetKingMoves(piece, position),
             PieceType.Queen => Queen.GetQueenMoves(piece, position, pieces),
             PieceType.Pawn => Pawn.GetPawnMoves(piece, position, pieces, _lastMove),
             PieceType.Bishop => Bishop.GetBishopMoves(piece, position, pieces),
             PieceType.Rock => Rock.GetRockMoves(piece, position, pieces),
-            PieceType.Knight => Knight.GetKnightMoves(piece, position, pieces),
+            PieceType.Knight => GetKnightMoves(piece, position),
             _ => throw new ArgumentOutOfRangeException()
         };
         return moves;
@@ -307,18 +307,18 @@ public class Board
            Vector.Down + Vector.Left,
     };
 
-    public static IEnumerable<Vector> GetKingTargets(Vector position, Piece?[,] board)
+    public IEnumerable<Vector> GetTargets(IEnumerable<Vector> positions, Vector position)
     {
-        foreach (var pos in kingPositions)
+        foreach (var pos in positions)
         {
             var newPos = position + pos;
-            var target = newPos.GetTargetInPosition(board);
+            var target = newPos.GetTargetInPosition(pieces);
             if (target != null)
                 yield return target.Value;
         }
     }
 
-    public IEnumerable<Move> GetKingMoves(Piece king, Vector position, Piece?[,] board)
+    public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
     {
         var allPositions = new Vector[]
         {
@@ -332,13 +332,13 @@ public class Board
             position + Vector.Down + Vector.Left,
         }.WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, position, allPositions, board);
+        var allMoves = Something.ConvertToMoves(king, position, allPositions, pieces);
         foreach (var move in allMoves)
         {
             yield return move;
         }
         // short castle
-        var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2, board);
+        var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2);
         if (shortCastleMove != null)
         {
             // this check should be done as part of castle-move generation
@@ -355,14 +355,14 @@ public class Board
         }
 
         // long castle
-        var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3, board);
+        var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3);
         if (longCastleMove != null)
         {
             yield return longCastleMove;
         }
     }
 
-    private static Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps, Piece?[,] _board)
+    private Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps)
     {
         if (king.Moved)
             return null;
@@ -378,7 +378,7 @@ public class Board
         }
 
         // TODO check that the piece we got here is actually a rock
-        var rock = _board[possibleRockPosition.X, possibleRockPosition.Y];
+        var rock = pieces[possibleRockPosition.X, possibleRockPosition.Y];
 
         if (rock == null || rock.Value.Moved)
             return null;
@@ -388,7 +388,7 @@ public class Board
         for (int i = 1; i <= 2; i++)
         {
             var fieldToCheck = position + kingMoveDirection * i;
-            if (_board[fieldToCheck.X, fieldToCheck.Y] != null)
+            if (pieces[fieldToCheck.X, fieldToCheck.Y] != null)
             {
                 allFieldsInBetweenClean = false;
                 break;
@@ -398,6 +398,34 @@ public class Board
         if (!allFieldsInBetweenClean) return null;
 
         return new Move(king, position, position + kingMoveDirection * 2);
+    }
+
+    private static Vector[] knightPositions = new Vector[]
+        {
+        Vector.Up * 2 + Vector.Right,
+        Vector.Right * 2 + Vector.Up,
+        Vector.Right * 2 + Vector.Down,
+        Vector.Down * 2 + Vector.Right,
+        Vector.Down * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Down,
+        Vector.Up * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Up,
+        };
+
+    public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
+    {
+        var allPositions = new Vector[]
+        {
+            position + Vector.Up * 2 + Vector.Right,
+            position + Vector.Right * 2 + Vector.Up,
+            position + Vector.Right * 2 + Vector.Down,
+            position + Vector.Down * 2 + Vector.Right,
+            position + Vector.Down * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Down,
+            position + Vector.Up * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Up,
+        }.WithinBoard();
+        return Something.ConvertToMoves(piece, position, allPositions, pieces);
     }
 
     public override string ToString()
