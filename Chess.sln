@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Tests", "Chess.Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessAI", "ChessAI\ChessAI.csproj", "{8182C10C-57F9-435D-8380-1842A5640413}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Console", "Chess.Console\Chess.Console.csproj", "{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 	Debug|Any CPU = Debug|Any CPU
@@ -25,8 +27,8 @@ Global
 		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
 		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{EBE3A1D5-9AFF-4B66-863C-47D37D24A6E9}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
 		{2B5439D6-82B3-4FBD-A344-8DD91FCB3B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B5439D6-82B3-4FBD-A344-8DD91FCB3B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B5439D6-82B3-4FBD-A344-8DD91FCB3B6C}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -39,5 +41,11 @@ Global
 		{8182C10C-57F9-435D-8380-1842A5640413}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
 		{8182C10C-57F9-435D-8380-1842A5640413}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
 		{8182C10C-57F9-435D-8380-1842A5640413}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{BC668DF4-84CB-4D09-A9AE-E3F43C49460D}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
