@@ -6,20 +6,20 @@ namespace Chess;
 
 public class Board
 {
-    private readonly Piece?[,] pieces;
+    private readonly Piece?[,] board;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? lastMove;
     private readonly Color currentPlayer;
 
-    public Piece?[,] Pieces => pieces;
+    public Piece?[,] Pieces => board;
     public Color CurrentPlayer => currentPlayer;
 
     public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
     {
         this.currentPlayer = currentColor;
         this.lastMove = lastMove;
-        this.pieces = pieces;
+        this.board = pieces;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
     }
@@ -27,10 +27,10 @@ public class Board
     public Board(IEnumerable<(Piece, Vector)> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
     {
         this.currentPlayer = currentPlayer;
-        pieces = new Piece?[8, 8];
+        this.board = new Piece?[8, 8];
         foreach (var (piece, position) in board)
         {
-            pieces[position.X, position.Y] = piece;
+            this.board[position.X, position.Y] = piece;
             if (piece.Color == Color.WHITE)
             {
                 if (piece.Type == PieceType.King)
@@ -57,7 +57,7 @@ public class Board
     /// <returns></returns>
     public IEnumerable<Move> GetPossibleMoves(Vector position, bool skipCache = false)
     {
-        var piece = pieces[position.X, position.Y].Value;
+        var piece = board[position.X, position.Y].Value;
         var possibleMoves = GetMoves(piece, position).WithinBoard();
         foreach (var possibleMove in possibleMoves)
         {
@@ -76,7 +76,7 @@ public class Board
         {
             for (int y = 0; y < 8; y++)
             {
-                var piece = pieces[x, y];
+                var piece = board[x, y];
                 if (piece != null)
                 {
                     yield return (piece.Value, new Vector(x, y));
@@ -108,7 +108,7 @@ public class Board
 
     public (bool, Board) TryMove(Vector currentPosition, Vector newPosition, PieceType? promotedPiece = null)
     {
-        var piece = pieces[currentPosition.X, currentPosition.Y].Value;
+        var piece = board[currentPosition.X, currentPosition.Y].Value;
         var move = new Move(piece, currentPosition, newPosition);
         var newBoard = Move(move, promotedPiece);
 
@@ -131,7 +131,7 @@ public class Board
         }
 
         Piece? pieceToRemove = null;
-        var capturedPiece = pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y];
+        var capturedPiece = board[move.PieceNewPosition.X, move.PieceNewPosition.Y];
         if (capturedPiece != null)
         {
             pieceToRemove = capturedPiece.Value;
@@ -143,21 +143,21 @@ public class Board
             if (move.PieceNewPosition.X == 1)
             {
                 rockNewPosition = new Vector(2, move.PieceNewPosition.Y);
-                rockToMove = pieces[0, move.PieceNewPosition.Y];
+                rockToMove = board[0, move.PieceNewPosition.Y];
             }
             else
             {
                 rockNewPosition = new Vector(4, move.PieceNewPosition.Y);
-                rockToMove = pieces[7, move.PieceNewPosition.Y];
+                rockToMove = board[7, move.PieceNewPosition.Y];
             }
             newPieces[rockNewPosition.Value.X, rockNewPosition.Value.Y] = rockToMove.Value.Move();
         }
 
         Piece? en_passantCapturedPawn = null;
-        if (move.Piece.Type == PieceType.Pawn && (move.PieceOldPosition - move.PieceNewPosition).Abs() == new Vector(1, 1) && pieces[move.PieceNewPosition.X, move.PieceNewPosition.Y] == null)
+        if (move.Piece.Type == PieceType.Pawn && (move.PieceOldPosition - move.PieceNewPosition).Abs() == new Vector(1, 1) && board[move.PieceNewPosition.X, move.PieceNewPosition.Y] == null)
         {
             // en-passant 
-            en_passantCapturedPawn = pieces[move.PieceNewPosition.X, move.PieceOldPosition.Y];
+            en_passantCapturedPawn = board[move.PieceNewPosition.X, move.PieceOldPosition.Y];
         }
 
         newPieces[move.PieceNewPosition.X, move.PieceNewPosition.Y] = movedPiece;
@@ -166,7 +166,7 @@ public class Board
         {
             for (int x = 0; x < 8; x++)
             {
-                var piece = pieces[x, y];
+                var piece = board[x, y];
                 if (piece is null) continue;
                 var piece2 = piece.Value;
                 if (pieceToRemove != null && (x == move.PieceNewPosition.X && y == move.PieceNewPosition.Y)) continue;
@@ -202,7 +202,7 @@ public class Board
         var targets = GetTargets2(rockDirections, position);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y].Value;
+            var targetPiece = board[target.X, target.Y].Value;
             if (targetPiece.Color == color &&
                 (targetPiece.Type == PieceType.Queen ||
                 targetPiece.Type == PieceType.Rock))
@@ -214,7 +214,7 @@ public class Board
         targets = GetTargets2(bishopDirections, position);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y].Value;
+            var targetPiece = board[target.X, target.Y].Value;
             if (targetPiece.Color == color &&
                 (targetPiece.Type == PieceType.Queen ||
                 targetPiece.Type == PieceType.Bishop))
@@ -226,7 +226,7 @@ public class Board
         targets = GetTargets(knightDirections, position);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y].Value;
+            var targetPiece = board[target.X, target.Y].Value;
             if (targetPiece.Color == color &&
                 targetPiece.Type == PieceType.Knight)
             {
@@ -237,7 +237,7 @@ public class Board
         targets = GetTargets(kingDirections, position);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y].Value;
+            var targetPiece = board[target.X, target.Y].Value;
             if (targetPiece.Color == color &&
                 targetPiece.Type == PieceType.King)
             {
@@ -251,7 +251,7 @@ public class Board
         targets = GetTargets(attackPositions, position);
         foreach (var target in targets)
         {
-            var targetPiece = pieces[target.X, target.Y].Value;
+            var targetPiece = board[target.X, target.Y].Value;
             if (targetPiece.Color == color &&
                 targetPiece.Type == PieceType.Pawn)
             {
@@ -267,7 +267,7 @@ public class Board
         {
             for (int y = 0; y < 8; y++)
             {
-                var piece = pieces[x, y];
+                var piece = board[x, y];
                 if (piece != null && piece.Value.Color == color)
                 {
                     yield return new Vector(x, y);
@@ -366,7 +366,7 @@ public class Board
     {
         foreach (var direction in directions)
         {
-            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
+            foreach (var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
             {
                 yield return move;
             }
@@ -401,7 +401,7 @@ public class Board
             position + Vector.Up * 2 + Vector.Left,
             position + Vector.Left * 2 + Vector.Up,
         }.WithinBoard();
-        return Something.ConvertToMoves(piece, position, allPositions, pieces);
+        return Something.ConvertToMoves(piece, position, allPositions, board);
     }
 
     public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
@@ -418,7 +418,7 @@ public class Board
             position + Vector.Down + Vector.Left,
         }.WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, position, allPositions, pieces);
+        var allMoves = Something.ConvertToMoves(king, position, allPositions, board);
         foreach (var move in allMoves)
         {
             yield return move;
@@ -464,7 +464,7 @@ public class Board
         }
 
         // TODO check that the piece we got here is actually a rock
-        var rock = pieces[possibleRockPosition.X, possibleRockPosition.Y];
+        var rock = board[possibleRockPosition.X, possibleRockPosition.Y];
 
         if (rock == null || rock.Value.Moved)
             return null;
@@ -474,7 +474,7 @@ public class Board
         for (int i = 1; i <= 2; i++)
         {
             var fieldToCheck = position + kingMoveDirection * i;
-            if (pieces[fieldToCheck.X, fieldToCheck.Y] != null)
+            if (board[fieldToCheck.X, fieldToCheck.Y] != null)
             {
                 allFieldsInBetweenClean = false;
                 break;
@@ -491,7 +491,7 @@ public class Board
         foreach (var pos in positions)
         {
             var newPos = position + pos;
-            var target = newPos.GetTargetInPosition(pieces);
+            var target = newPos.GetTargetInPosition(board);
             if (target != null)
                 yield return target.Value;
         }
@@ -501,7 +501,7 @@ public class Board
     {
         foreach (var direction in directions)
         {
-            var target = position.GetTargetInDirection(direction, pieces);
+            var target = position.GetTargetInDirection(direction, board);
             if (target != null)
                 yield return target.Value;
         }
@@ -533,7 +533,7 @@ public class Board
 
         if (takeLeft.IsWithinBoard())
         {
-            var possiblyCapturedPiece = pieces[takeLeft.X, takeLeft.Y];
+            var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
                 yield return new Move(piece, position, takeLeft);
@@ -552,7 +552,7 @@ public class Board
         var takeRight = position + Vector.Right + direction;
         if (takeRight.IsWithinBoard())
         {
-            var possiblyCapturedPiece = pieces[takeRight.X, takeRight.Y];
+            var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
                 yield return new Move(piece, position, takeRight);
@@ -587,7 +587,7 @@ public class Board
 
     private bool IsBlocked(Vector position)
     {
-        if (pieces[position.X, position.Y] != null) return true;
+        if (board[position.X, position.Y] != null) return true;
         return false;
     }
 
@@ -597,7 +597,7 @@ public class Board
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
-                stringRepresentation.Append(pieces[x, y]?.ToString() ?? "\u00B7");
+                stringRepresentation.Append(board[x, y]?.ToString() ?? "\u00B7");
 
             stringRepresentation.Append('\n');
         }
