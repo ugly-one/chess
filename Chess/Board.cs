@@ -58,7 +58,7 @@ public class Board
     public IEnumerable<Move> GetPossibleMoves(Vector position, bool skipCache = false)
     {
         var piece = board[position.X, position.Y].Value;
-        var possibleMoves = GetMoves(piece, position).WithinBoard();
+        var possibleMoves = GetMoves(piece, position);
         foreach (var possibleMove in possibleMoves)
         {
             // let's try to make the move and see if the king is under attack, if yes, move is not allowed
