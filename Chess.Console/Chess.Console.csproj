@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Chess\Chess.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    </ItemGroup>
+
 </Project>

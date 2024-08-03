@@ -5,3 +5,4 @@ bin/
 obj/
 *.DotSettings.user
 .editorconfig
+Chess.Console/BenchmarkDotNet.Artifacts
