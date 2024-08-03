@@ -211,7 +211,7 @@ public class Board
             }
         }
         // check diagonal lines to see if there is a Queen or a Bishop
-        targets = Bishop.GetTargets(position, pieces);
+        targets = GetTargets2(bishopDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -287,7 +287,7 @@ public class Board
             PieceType.King => GetKingMoves(piece, position),
             PieceType.Queen => Queen.GetQueenMoves(piece, position, pieces),
             PieceType.Pawn => Pawn.GetPawnMoves(piece, position, pieces, _lastMove),
-            PieceType.Bishop => Bishop.GetBishopMoves(piece, position, pieces),
+            PieceType.Bishop => GetBishopMoves(piece, position),
             PieceType.Rock => Rock.GetRockMoves(piece, position, pieces),
             PieceType.Knight => GetKnightMoves(piece, position),
             _ => throw new ArgumentOutOfRangeException()
@@ -295,6 +295,24 @@ public class Board
         return moves;
     }
 
+    private static Vector[] bishopDirections = new Vector[]
+        {
+        Vector.Up + Vector.Right,
+        Vector.Up + Vector.Left,
+        Vector.Down + Vector.Right,
+        Vector.Down + Vector.Left,
+        };
+
+    public IEnumerable<Move> GetBishopMoves(Piece piece, Vector position)
+    {
+        foreach (var direction in bishopDirections)
+        {
+            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
+            {
+                yield return move;
+            }
+        }
+    }
     private static Vector[] kingPositions = new Vector[]
     {
            Vector.Up,
@@ -318,6 +336,15 @@ public class Board
         }
     }
 
+    public IEnumerable<Vector> GetTargets2(IEnumerable<Vector> directions, Vector position)
+    {
+        foreach (var direction in directions)
+        {
+            var target = position.GetTargetInDirection(direction, pieces);
+            if (target != null)
+                yield return target.Value;
+        }
+    }
     public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
     {
         var allPositions = new Vector[]
