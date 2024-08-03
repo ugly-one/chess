@@ -203,21 +203,15 @@ public class Board
         {
             return true;
         }
-        
+
         // check diagonal lines to see if there is a Queen or a Bishop
-        var targets = GetTargets2(bishopDirections, position);
-        foreach (var target in targets)
+        if (IsAttackedDiagonally(position, color))
         {
-            var targetPiece = board[target.X, target.Y].Value;
-            if (targetPiece.Color == color &&
-                (targetPiece.Type == PieceType.Queen ||
-                targetPiece.Type == PieceType.Bishop))
-            {
-                return true;
-            }
+            return true;
         }
+        
         // check knights
-        targets = GetTargets(knightDirections, position);
+        var targets = GetTargets(knightDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = board[target.X, target.Y].Value;
@@ -481,7 +475,23 @@ public class Board
         }
     }
 
-    public bool IsAttackedHorizontalyOrVerticaly(Vector position, Color color)
+    private bool IsAttackedDiagonally(Vector position, Color color)
+    {
+        foreach (var direction in bishopDirections)
+        {
+            var maybePiece = position.GetTargetPieceInDirection(direction, board);
+            if (maybePiece is Piece piece)
+            {
+                if (piece.Color == color && (piece.Type == PieceType.Queen || piece.Type == PieceType.Bishop))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool IsAttackedHorizontalyOrVerticaly(Vector position, Color color)
     {
         foreach (var direction in rockDirections)
         {
