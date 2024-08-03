@@ -127,15 +127,7 @@ public class Board
 
     public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
     {
-        return TryMove(move.Piece, move.PieceOldPosition, move.PieceNewPosition, promotedPiece);
-    }
-
-    public (bool, Board) TryMove(Piece piece, Vector currentPosition, Vector newPosition, PieceType? promotedPiece = null)
-    {
-        var move = new Move(piece, currentPosition, newPosition);
-        var newBoard = Move(move, promotedPiece);
-
-        return (true, newBoard);
+        return TryMove(move.PieceOldPosition, move.PieceNewPosition, promotedPiece);
     }
 
     public (bool, Board) TryMove(Vector currentPosition, Vector newPosition, PieceType? promotedPiece = null)
