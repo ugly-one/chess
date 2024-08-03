@@ -114,7 +114,7 @@ public class BoardTests
 
         game.TryMove(bishop, new Vector(7, 7), PieceType.Queen);
 
-        Assert.Equal(PieceType.Bishop, game.Board.Pieces[7, 7].Value.Type);
+        Assert.Equal(PieceType.Bishop, game.Board.GetPiece(PieceType.Bishop).Item1.Type);
     }
 
     [Fact]

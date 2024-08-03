@@ -12,7 +12,6 @@ public class Board
     private readonly Move? lastMove;
     private readonly Color currentPlayer;
 
-    public Piece?[,] Pieces => board;
     public Color CurrentPlayer => currentPlayer;
 
     public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
