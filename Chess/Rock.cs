@@ -4,7 +4,7 @@ namespace Chess;
 
 internal static class Rock
 {
-    private static Vector[] directions = new Vector[]
+    private static Vector[] rockDirections = new Vector[]
     {
         Vector.Up,
         Vector.Down,
@@ -14,7 +14,7 @@ internal static class Rock
 
     public static IEnumerable<Move> GetRockMoves(Piece piece, Vector position, Piece?[,] board)
     {
-        foreach (var direction in directions)
+        foreach (var direction in rockDirections)
         {
             foreach (var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
             {
@@ -25,7 +25,7 @@ internal static class Rock
 
     public static IEnumerable<Vector> GetTargets(Vector position, Piece?[,] board)
     {
-        foreach (var direction in directions)
+        foreach (var direction in rockDirections)
         {
             var target = position.GetTargetInDirection(direction, board);
             if (target != null)

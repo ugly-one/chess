@@ -199,7 +199,7 @@ public class Board
     public bool IsFieldUnderAttack(Vector position, Color color)
     {
         // check horizontal/vertical lines to see if there is a Queen or a Rock
-        var targets = Rock.GetTargets(position, pieces);
+        var targets = GetTargets2(rockDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -223,7 +223,7 @@ public class Board
             }
         }
         // check knights
-        targets = GetTargets(knightPositions, position);
+        targets = GetTargets(knightDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -234,7 +234,7 @@ public class Board
             }
         }
         // check king
-        targets = GetTargets(kingPositions, position);
+        targets = GetTargets(kingDirections, position);
         foreach (var target in targets)
         {
             var targetPiece = pieces[target.X, target.Y].Value;
@@ -288,7 +288,7 @@ public class Board
             PieceType.Queen => Queen.GetQueenMoves(piece, position, pieces),
             PieceType.Pawn => Pawn.GetPawnMoves(piece, position, pieces, _lastMove),
             PieceType.Bishop => GetBishopMoves(piece, position),
-            PieceType.Rock => Rock.GetRockMoves(piece, position, pieces),
+            PieceType.Rock => GetRockMoves(piece, position, pieces),
             PieceType.Knight => GetKnightMoves(piece, position),
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -296,12 +296,44 @@ public class Board
     }
 
     private static Vector[] bishopDirections = new Vector[]
-        {
+    {
         Vector.Up + Vector.Right,
         Vector.Up + Vector.Left,
         Vector.Down + Vector.Right,
         Vector.Down + Vector.Left,
-        };
+    };
+
+    private static Vector[] rockDirections = new Vector[]
+    {
+        Vector.Up,
+        Vector.Down,
+        Vector.Left,
+        Vector.Right
+    };
+
+    private static Vector[] kingDirections = new Vector[]
+    {
+        Vector.Up,
+        Vector.Down,
+        Vector.Left,
+        Vector.Right,
+        Vector.Up + Vector.Right,
+        Vector.Up + Vector.Left,
+        Vector.Down + Vector.Right,
+        Vector.Down + Vector.Left,
+    };
+
+    private static Vector[] knightDirections = new Vector[]
+    {
+        Vector.Up * 2 + Vector.Right,
+        Vector.Right * 2 + Vector.Up,
+        Vector.Right * 2 + Vector.Down,
+        Vector.Down * 2 + Vector.Right,
+        Vector.Down * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Down,
+        Vector.Up * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Up,
+    };
 
     public IEnumerable<Move> GetBishopMoves(Piece piece, Vector position)
     {
@@ -313,38 +345,34 @@ public class Board
             }
         }
     }
-    private static Vector[] kingPositions = new Vector[]
-    {
-           Vector.Up,
-           Vector.Down,
-           Vector.Left,
-           Vector.Right,
-           Vector.Up + Vector.Right,
-           Vector.Up + Vector.Left,
-           Vector.Down + Vector.Right,
-           Vector.Down + Vector.Left,
-    };
 
-    public IEnumerable<Vector> GetTargets(IEnumerable<Vector> positions, Vector position)
+    public IEnumerable<Move> GetRockMoves(Piece piece, Vector position, Piece?[,] board)
     {
-        foreach (var pos in positions)
+        foreach (var direction in rockDirections)
         {
-            var newPos = position + pos;
-            var target = newPos.GetTargetInPosition(pieces);
-            if (target != null)
-                yield return target.Value;
+            foreach (var move in board.GetMovesInDirection(piece, position, direction, piece.Color))
+            {
+                yield return move;
+            }
         }
     }
 
-    public IEnumerable<Vector> GetTargets2(IEnumerable<Vector> directions, Vector position)
+    public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
     {
-        foreach (var direction in directions)
+        var allPositions = new Vector[]
         {
-            var target = position.GetTargetInDirection(direction, pieces);
-            if (target != null)
-                yield return target.Value;
-        }
+            position + Vector.Up * 2 + Vector.Right,
+            position + Vector.Right * 2 + Vector.Up,
+            position + Vector.Right * 2 + Vector.Down,
+            position + Vector.Down * 2 + Vector.Right,
+            position + Vector.Down * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Down,
+            position + Vector.Up * 2 + Vector.Left,
+            position + Vector.Left * 2 + Vector.Up,
+        }.WithinBoard();
+        return Something.ConvertToMoves(piece, position, allPositions, pieces);
     }
+
     public IEnumerable<Move> GetKingMoves(Piece king, Vector position)
     {
         var allPositions = new Vector[]
@@ -427,32 +455,25 @@ public class Board
         return new Move(king, position, position + kingMoveDirection * 2);
     }
 
-    private static Vector[] knightPositions = new Vector[]
-        {
-        Vector.Up * 2 + Vector.Right,
-        Vector.Right * 2 + Vector.Up,
-        Vector.Right * 2 + Vector.Down,
-        Vector.Down * 2 + Vector.Right,
-        Vector.Down * 2 + Vector.Left,
-        Vector.Left * 2 + Vector.Down,
-        Vector.Up * 2 + Vector.Left,
-        Vector.Left * 2 + Vector.Up,
-        };
-
-    public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
+    public IEnumerable<Vector> GetTargets(IEnumerable<Vector> positions, Vector position)
     {
-        var allPositions = new Vector[]
+        foreach (var pos in positions)
         {
-            position + Vector.Up * 2 + Vector.Right,
-            position + Vector.Right * 2 + Vector.Up,
-            position + Vector.Right * 2 + Vector.Down,
-            position + Vector.Down * 2 + Vector.Right,
-            position + Vector.Down * 2 + Vector.Left,
-            position + Vector.Left * 2 + Vector.Down,
-            position + Vector.Up * 2 + Vector.Left,
-            position + Vector.Left * 2 + Vector.Up,
-        }.WithinBoard();
-        return Something.ConvertToMoves(piece, position, allPositions, pieces);
+            var newPos = position + pos;
+            var target = newPos.GetTargetInPosition(pieces);
+            if (target != null)
+                yield return target.Value;
+        }
+    }
+
+    public IEnumerable<Vector> GetTargets2(IEnumerable<Vector> directions, Vector position)
+    {
+        foreach (var direction in directions)
+        {
+            var target = position.GetTargetInDirection(direction, pieces);
+            if (target != null)
+                yield return target.Value;
+        }
     }
 
     public override string ToString()
