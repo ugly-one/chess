@@ -6,6 +6,11 @@ using Chess;
 
 public static class OtherExtensions
 {
+    public static IEnumerable<Move> GetPossibleMoves(this Board board, Vector field)
+    {
+        return board.GetAllPossibleMoves().Where(m => m.PieceOldPosition == field);
+    }
+
     public static string ToChessNotation(this Vector position)
     {
         var number = 8 - position.Y;

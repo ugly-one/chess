@@ -24,7 +24,7 @@ public class BoardWithMoveValidation
     {
         if (!movesCache.Contains(move))
         {
-            var possibleMoves = board.GetPossibleMoves(move.PieceOldPosition);
+            var possibleMoves = board.GetAllPossibleMoves().Where(m => m.PieceOldPosition == move.PieceOldPosition);
             foreach (var moveToAdd in possibleMoves)
             {
                 movesCache.Add(moveToAdd);

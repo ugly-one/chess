@@ -74,22 +74,20 @@ public class BoardTests
         {
         //   01234567
             "   k    ",// 0
-            "  p     ",// 1
+            "        ",// 1
             "        ",// 2
-            "   P    ",// 3
-            "        ",// 4
+            "        ",// 3
+            "   p    ",// 4
             "        ",// 5
-            "        ",// 6
+            "  P     ",// 6
             "   K    ",// 7
         }.ToBoard();
-        var blackPawn = board.GetPosition(Color.BLACK, PieceType.Pawn);
-        var (success, newBoard) = board.TryMove(blackPawn, new Vector(2, 3));
+        var (success, newBoard) = board.TryMove(new Vector(2, 6), new Vector(2, 4));
         Assert.True(success);
-        var whitePawn = newBoard.GetPosition(Color.WHITE, PieceType.Pawn);
 
-        var moves = newBoard.GetPossibleMoves(whitePawn);
+        var moves = newBoard.GetAllPossibleMoves();
 
-        Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2, 2));
+        Assert.Contains(moves, m => m.PieceNewPosition == new Vector(2, 5));
     }
 
     [Fact]
@@ -166,22 +164,20 @@ public class BoardTests
         {
         //   01234567
             "        ",// 0
-            "   p    ",// 1
+            "        ",// 1
             "        ",// 2
-            " r  P K ",// 3
-            "        ",// 4
+            "        ",// 3
+            " R  p k ",// 4
             "        ",// 5
-            "        ",// 6
-            "       k",// 7
+            "   P    ",// 6
+            "       K",// 7
         }.ToBoard();
-        var blackPawn = board.GetPosition(Color.BLACK, PieceType.Pawn);
-        var (success, newBoard) = board.TryMove(blackPawn, new Vector(3, 3));
-        var whitePawn = newBoard.GetPosition(Color.WHITE, PieceType.Pawn);
+        var (success, newBoard) = board.TryMove(new Vector(3, 6), new Vector(3, 4));
+        Assert.True(success);
 
-        var moves = newBoard.GetPossibleMoves(whitePawn);
+        var moves = newBoard.GetAllPossibleMoves();
 
-        Assert.Equal(2, moves.Count());
-        Assert.DoesNotContain(moves, m => m.PieceNewPosition == new Vector(3, 2));
+        Assert.DoesNotContain(moves, m => m.PieceNewPosition == new Vector(3, 5));
     }
     [Fact]
     public void PinnedPieceCanMoveIfKeepsPin_VerticalLine()

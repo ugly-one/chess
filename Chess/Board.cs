@@ -50,26 +50,6 @@ public class Board
         this.lastMove = lastMove;
     }
 
-    /// <summary>
-    /// Checks possible moves for the given piece
-    /// </summary>
-    /// <param name="piece">piece for which possible moves will be calculated</param>
-    /// <returns></returns>
-    public IEnumerable<Move> GetPossibleMoves(Vector position, bool skipCache = false)
-    {
-        var piece = board[position.X, position.Y].Value;
-        var possibleMoves = GetMoves(piece, position);
-        foreach (var possibleMove in possibleMoves)
-        {
-            // let's try to make the move and see if the king is under attack, if yes, move is not allowed
-            // it doesn't matter what we promote to
-            var boardAfterMove = Move(possibleMove, PieceType.Queen);
-            if (boardAfterMove.IsKingUnderAttack(piece.Color))
-                continue;
-            yield return possibleMove;
-        }
-    }
-
     public IEnumerable<(Piece, Vector)> GetPieces()
     {
         for (int x = 0; x < 8; x++)
@@ -83,22 +63,26 @@ public class Board
                 }
             }
         }
-
     }
 
-    public IEnumerable<Move> GetAllPossibleMoves()
+    public List<Move> GetAllPossibleMoves()
     {
         var fields = GetFieldsOccupiedBy(currentPlayer);
+        var result = new List<Move>();
         foreach (var field in fields)
         {
-            // try to find possible moves
-            var possibleMoves = GetPossibleMoves(field);
-            foreach (var move in possibleMoves)
+            var piece = board[field.X, field.Y].Value;
+            var possibleMoves = GetMoves(piece, field);
+            foreach (var possibleMove in possibleMoves)
             {
-                yield return move;
+                // let's try to make the move and see if the king is under attack, if yes, move is not allowed
+                // it doesn't matter what we promote to
+                var boardAfterMove = Move(possibleMove, PieceType.Queen);
+                if (!boardAfterMove.IsKingUnderAttack(piece.Color))
+                    result.Add(possibleMove);
             }
         }
-
+        return result;
     }
 
     public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
@@ -215,13 +199,13 @@ public class Board
         {
             return true;
         }
-        
+
         // check king
         if (IsAttacked(kingDirections, position, PieceType.King, color))
         {
             return true;
         }
-        
+
         // check pawns
         // this check is reverted because we want to know if the current position is under pawn's attack
         // maybe this method doesn't belong to Pawn file
@@ -230,7 +214,7 @@ public class Board
         {
             return true;
         }
-        
+
         return false;
     }
 
@@ -459,7 +443,7 @@ public class Board
         }
         return false;
     }
-    
+
     private bool IsAttackedDiagonally(Vector position, Color color)
     {
         foreach (var direction in bishopDirections)
