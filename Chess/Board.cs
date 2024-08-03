@@ -362,37 +362,30 @@ public class Board
         Vector.Left * 2 + Vector.Up,
     };
 
-    public IEnumerable<Move> GetBishopMoves(Piece piece, Vector position)
+    private IEnumerable<Move> GetMovesInDirections(Piece piece, Vector position, IEnumerable<Vector> directions)
     {
-        foreach (var direction in bishopDirections)
+        foreach (var direction in directions)
         {
             foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
             {
                 yield return move;
             }
         }
+    }
+
+    public IEnumerable<Move> GetBishopMoves(Piece piece, Vector position)
+    {
+        return GetMovesInDirections(piece, position, bishopDirections);
     }
 
     public IEnumerable<Move> GetRockMoves(Piece piece, Vector position)
     {
-        foreach (var direction in rockDirections)
-        {
-            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
-            {
-                yield return move;
-            }
-        }
+        return GetMovesInDirections(piece, position, rockDirections);
     }
 
     public IEnumerable<Move> GetQueenMoves(Piece piece, Vector position)
     {
-        foreach (var direction in queenDirections)
-        {
-            foreach (var move in pieces.GetMovesInDirection(piece, position, direction, piece.Color))
-            {
-                yield return move;
-            }
-        }
+        return GetMovesInDirections(piece, position, queenDirections);
     }
 
     public IEnumerable<Move> GetKnightMoves(Piece piece, Vector position)
