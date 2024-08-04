@@ -355,14 +355,14 @@ public class Board
     public void GetKnightMoves(Piece piece, Vector position, List<Move> result)
     {
         var allPositions = knightDirections.Select(d => d + position).WithinBoard();
-        result.AddRange(Something.ConvertToMoves(piece, position, allPositions, board).Where(m => IsValid(m)));
+        result.AddRange(ConvertToMoves(piece, position, allPositions).Where(m => IsValid(m)));
     }
 
     public void GetKingMoves(Piece king, Vector position, List<Move> result)
     {
         var allPositions = kingDirections.Select(d => d + position).WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, position, allPositions, board).Where(m => IsValid(m));
+        var allMoves = ConvertToMoves(king, position, allPositions).Where(m => IsValid(m));
         result.AddRange(allMoves);
         // short castle
         var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2);
@@ -454,7 +454,7 @@ public class Board
     {
         foreach (var direction in bishopDirections)
         {
-            var maybePiece = position.GetTargetPieceInDirection(direction, board);
+            var maybePiece = GetTargetPieceInDirection(position, direction);
             if (maybePiece is Piece piece)
             {
                 if (piece.Color == color && (piece.Type == PieceType.Queen || piece.Type == PieceType.Bishop))
@@ -470,7 +470,7 @@ public class Board
     {
         foreach (var direction in rockDirections)
         {
-            var maybePiece = position.GetTargetPieceInDirection(direction, board);
+            var maybePiece = GetTargetPieceInDirection(position, direction);
             if (maybePiece is Piece piece)
             {
                 if (piece.Color == color && (piece.Type == PieceType.Queen || piece.Type == PieceType.Rock))
@@ -568,6 +568,42 @@ public class Board
     {
         if (board[position.X, position.Y] != null) return true;
         return false;
+    }
+
+    public IEnumerable<Move> ConvertToMoves(Piece piece, Vector currentPosition, IEnumerable<Vector> positions)
+    {
+        foreach (var position in positions)
+        {
+            var pieceOnTheWay = board[position.X, position.Y];
+            if (pieceOnTheWay is null)
+            {
+                yield return new Move(piece, currentPosition, position);
+            }
+            else
+            {
+                if (pieceOnTheWay.Value.Color != piece.Color)
+                {
+                    yield return new Move(piece, currentPosition, position);
+                }
+            }
+        }
+    }
+
+    public Piece? GetTargetPieceInDirection(
+            Vector position,
+            Vector direction)
+    {
+        var newPos = position + direction;
+        while (newPos.IsWithinBoard())
+        {
+            var pieceAtNewPosition = board[newPos.X, newPos.Y];
+            if (pieceAtNewPosition != null)
+            {
+                return pieceAtNewPosition;
+            }
+            newPos += direction;
+        }
+        return null;
     }
 
     public override string ToString()
