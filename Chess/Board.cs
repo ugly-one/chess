@@ -193,20 +193,98 @@ public class Board
         return IsFieldUnderAttack(king, oppositeColor);
     }
 
-    /// Check if given position is under attack of a piece of a given color
-    public bool IsFieldUnderAttack(Vector position, Color color)
+    public bool IsFieldUnderAttack2(Vector field, Color color)
     {
-        // check horizontal/vertical lines to see if there is a Queen or a Rock
-        if (IsAttackedHorizontalyOrVerticaly(position, color))
+        // queen
+        var queen = GetPieces().Where(x => x.Item1.Type == PieceType.Queen && x.Item1.Color == color);
+        foreach(var (_, queenPosition) in queen)
         {
-            return true;
+            var vector = (field - queenPosition).Clamp(new Vector(-1,-1), new Vector(1,1));
+            var notAttackedByQueen = true;
+            if (vector.Abs() == new Vector(1, 1) || vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            {
+                var inBetweenField = field + vector;
+                notAttackedByQueen = false;
+                while (inBetweenField != queenPosition)
+                {
+                    if (board[inBetweenField.X, inBetweenField.Y] != null)
+                    {
+                        notAttackedByQueen = true;
+                        break;
+                    }
+                    inBetweenField += vector;
+                }
+            }
+            if (!notAttackedByQueen) return true;
+        }
+        // rock
+        var rocks = GetPieces().Where(x => x.Item1.Type == PieceType.Rock && x.Item1.Color == color);
+        foreach (var (_, rockPosition) in rocks)
+        {
+            var vector = (rockPosition - field).Clamp(new Vector(-1,-1), new Vector(1,1));
+            var notAttackedByRock = true;
+            if (vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            {
+                var inBetweenField = field + vector;
+                notAttackedByRock = false;
+                while (inBetweenField != rockPosition)
+                {
+                    if (board[inBetweenField.X, inBetweenField.Y] != null)
+                    {
+                        notAttackedByRock = true;
+                        break;
+                    }
+                    inBetweenField += vector;
+                }
+            }
+            if (!notAttackedByRock) return true;
         }
 
-        // check diagonal lines to see if there is a Queen or a Bishop
-        if (IsAttackedDiagonally(position, color))
+        // bishop
+        var bishops = GetPieces().Where(x => x.Item1.Type == PieceType.Bishop && x.Item1.Color == color);
+        foreach (var (_, bishopPosition) in bishops)
+        {
+            var vector = (bishopPosition - field).Clamp(new Vector(-1,-1), new Vector(1,1));
+            var notAttackedByBishop = true;
+            if (vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            {
+                var inBetweenField = field + vector;
+                notAttackedByBishop = false;
+                while (inBetweenField != bishopPosition)
+                {
+                    if (board[inBetweenField.X, inBetweenField.Y] != null)
+                    {
+                        notAttackedByBishop = true;
+                        break;
+                    }
+                    inBetweenField += vector;
+                }
+            }
+            if (!notAttackedByBishop) return true;
+        }
+
+        return false;
+    }
+
+    /// Check if given position is under attack from a piece of a given color
+    public bool IsFieldUnderAttack(Vector position, Color color)
+    {
+        // queen, rocks and bishops are done by the new method
+        if (IsFieldUnderAttack2(position, color))
         {
             return true;
         }
+        //// check horizontal/vertical lines to see if there is a Queen or a Rock
+        //if (IsAttackedHorizontalyOrVerticaly(position, color))
+        //{
+        //    return true;
+        //}
+
+        //// check diagonal lines to see if there is a Queen or a Bishop
+        //if (IsAttackedDiagonally(position, color))
+        //{
+        //    return true;
+        //}
 
         // check knights
         if (position.Y == 0)
@@ -275,7 +353,7 @@ public class Board
         {
             return true;
         }
-        
+
         // check pawns
         var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
         if (IsAttacked(attackPositions, position, PieceType.Pawn, color))
