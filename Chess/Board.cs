@@ -72,17 +72,22 @@ public class Board
         foreach (var field in fields)
         {
             var piece = board[field.X, field.Y].Value;
-            var possibleMoves = GetMoves(piece, field);
-            foreach (var possibleMove in possibleMoves)
+            switch (piece.Type)
             {
-                // let's try to make the move and see if the king is under attack, if yes, move is not allowed
-                // it doesn't matter what we promote to
-                var boardAfterMove = Move(possibleMove, PieceType.Queen);
-                if (!boardAfterMove.IsKingUnderAttack(piece.Color))
-                    result.Add(possibleMove);
-            }
+                case PieceType.King: GetKingMoves(piece, field, result); break;
+                case PieceType.Queen: GetQueenMoves(piece, field, result); break;
+                case PieceType.Pawn: GetPawnMoves(piece, field, result); break;
+                case PieceType.Bishop: GetBishopMoves(piece, field, result); break;
+                case PieceType.Rock: GetRockMoves(piece, field, result); break;
+                case PieceType.Knight: GetKnightMoves(piece, field, result); break;
+            };
         }
         return result;
+    }
+
+    private bool IsValid(Move move)
+    {
+        return !(Move(move, PieceType.Queen).IsKingUnderAttack(currentPlayer));
     }
 
     public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
@@ -233,28 +238,6 @@ public class Board
         }
     }
 
-    /// <summary>
-    /// Get moves for the piece without taking into consideration all the rules
-    /// But then we should put the logic somewhere to detect that we can't jump over other pieces.
-    /// However, it will be tricky because knights CAN jump over pieces and they do not have a range of movement in straight lines
-    /// </summary>
-    /// <param name="piece"></param>
-    /// <returns></returns>
-    private List<Move> GetMoves(Piece piece, Vector position)
-    {
-        var moves = piece.Type switch
-        {
-            PieceType.King => GetKingMoves(piece, position),
-            PieceType.Queen => GetQueenMoves(piece, position),
-            PieceType.Pawn => GetPawnMoves(piece, position),
-            PieceType.Bishop => GetBishopMoves(piece, position),
-            PieceType.Rock => GetRockMoves(piece, position),
-            PieceType.Knight => GetKnightMoves(piece, position),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        return moves;
-    }
-
     private static Vector[] whitePawnAttackDirections = new Vector[]
     {
         Vector.Up + Vector.Left,
@@ -319,28 +302,31 @@ public class Board
         Vector.Left * 2 + Vector.Up,
     };
 
-    public List<Move> GetMovesInDirections(
+    public void GetMovesInDirections(
         Piece piece,
         Vector currentPosition,
-        Vector[] steps)
+        Vector[] steps,
+        List<Move> result)
     {
-        var result = new List<Move>();
         foreach (var step in steps)
         {
             var newPos = currentPosition + step;
             var breakAfterAdding = false;
             while (newPos.IsWithinBoard() && !newPos.IsOccupiedBy(piece.Color, board))
             {
-                // we should pass only opponents pieces to GetPieceInPosition
                 var capturedPiece = board[newPos.X, newPos.Y];
                 if (capturedPiece != null)
                 {
                     breakAfterAdding = true;
-                    result.Add(new Move(piece, currentPosition, newPos));
+                    var move = new Move(piece, currentPosition, newPos);
+                    if (IsValid(move))
+                        result.Add(move);
                 }
                 else
                 {
-                    result.Add(new Move(piece, currentPosition, newPos));
+                    var move = new Move(piece, currentPosition, newPos);
+                    if (IsValid(move))
+                        result.Add(move);
                 }
                 newPos += step;
                 if (breakAfterAdding)
@@ -349,35 +335,35 @@ public class Board
                 }
             }
         }
-        return result;
     }
 
-    public List<Move> GetBishopMoves(Piece piece, Vector position)
+    public void GetBishopMoves(Piece piece, Vector position, List<Move> result)
     {
-        return GetMovesInDirections(piece, position, bishopDirections);
+        GetMovesInDirections(piece, position, bishopDirections, result);
     }
 
-    public List<Move> GetRockMoves(Piece piece, Vector position)
+    public void GetRockMoves(Piece piece, Vector position, List<Move> result)
     {
-        return GetMovesInDirections(piece, position, rockDirections);
+        GetMovesInDirections(piece, position, rockDirections, result);
     }
 
-    public List<Move> GetQueenMoves(Piece piece, Vector position)
+    public void GetQueenMoves(Piece piece, Vector position, List<Move> result)
     {
-        return GetMovesInDirections(piece, position, queenDirections);
+        GetMovesInDirections(piece, position, queenDirections, result);
     }
 
-    public List<Move> GetKnightMoves(Piece piece, Vector position)
+    public void GetKnightMoves(Piece piece, Vector position, List<Move> result)
     {
         var allPositions = knightDirections.Select(d => d + position).WithinBoard();
-        return Something.ConvertToMoves(piece, position, allPositions, board).ToList();
+        result.AddRange(Something.ConvertToMoves(piece, position, allPositions, board).Where(m => IsValid(m)));
     }
 
-    public List<Move> GetKingMoves(Piece king, Vector position)
+    public void GetKingMoves(Piece king, Vector position, List<Move> result)
     {
         var allPositions = kingDirections.Select(d => d + position).WithinBoard();
 
-        var allMoves = Something.ConvertToMoves(king, position, allPositions, board).ToList();
+        var allMoves = Something.ConvertToMoves(king, position, allPositions, board).Where(m => IsValid(m));
+        result.AddRange(allMoves);
         // short castle
         var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2);
         if (shortCastleMove != null)
@@ -391,7 +377,8 @@ public class Board
             }
             else
             {
-                allMoves.Add(shortCastleMove);
+                if (IsValid(shortCastleMove))
+                    result.Add(shortCastleMove);
             }
         }
 
@@ -399,9 +386,9 @@ public class Board
         var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3);
         if (longCastleMove != null)
         {
-            allMoves.Add(longCastleMove);
+            if (IsValid(longCastleMove))
+                result.Add(longCastleMove);
         }
-        return allMoves;
     }
 
     private Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps)
@@ -495,16 +482,16 @@ public class Board
         return false;
     }
 
-    public List<Move> GetPawnMoves(Piece piece, Vector position)
+    public void GetPawnMoves(Piece piece, Vector position, List<Move> result)
     {
         var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
 
-        var result = new List<Move>();
         // one step forward if not blocked
         var forward = position + direction;
         if (forward.IsWithinBoard() && !IsBlocked(forward))
         {
-            result.Add(new Move(piece, position, forward));
+            var move = new Move(piece, position, forward);
+            if (IsValid(move)) result.Add(move);
 
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
@@ -512,7 +499,8 @@ public class Board
                 var forward2Steps = position + direction + direction;
                 if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps))
                 {
-                    result.Add(new Move(piece, position, forward2Steps));
+                    move = new Move(piece, position, forward2Steps);
+                    if (IsValid(move)) result.Add(move);
                 }
             }
         }
@@ -525,14 +513,15 @@ public class Board
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                result.Add(new Move(piece, position, takeLeft));
+                var move = new Move(piece, position, takeLeft);
+                if (IsValid(move)) result.Add(move);
             }
             else
             {
                 var move = TryGetEnPassant(piece, position, takeLeft);
                 if (move != null)
                 {
-                    result.Add(move);
+                    if (IsValid(move)) result.Add(move);
                 }
             }
         }
@@ -544,18 +533,18 @@ public class Board
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
             {
-                result.Add(new Move(piece, position, takeRight));
+                var move = new Move(piece, position, takeRight);
+                if (IsValid(move)) result.Add(move);
             }
             else
             {
                 var move = TryGetEnPassant(piece, position, takeRight);
                 if (move != null)
                 {
-                    result.Add(move);
+                    if (IsValid(move)) result.Add(move);
                 }
             }
         }
-        return result;
     }
 
     private Move? TryGetEnPassant(Piece piece, Vector currentPosition, Vector capturePosition)
