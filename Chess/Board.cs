@@ -209,7 +209,35 @@ public class Board
         }
 
         // check knights
-        if (IsAttacked(knightDirections, position, PieceType.Knight, color))
+        if (position.Y == 0)
+        {
+            if (IsAttacked(knightTopRowAttackDirections, position, PieceType.Knight, color))
+            {
+                return true;
+            }
+        }
+        else if (position.Y == 7)
+        {
+            if (IsAttacked(knightBottomRowAttackDirections, position, PieceType.Knight, color))
+            {
+                return true;
+            }
+        }
+        else if (position.X == 0)
+        {
+            if (IsAttacked(knightLeftColumnAttackDirections, position, PieceType.Knight, color))
+            {
+                return true;
+            }
+        }
+        else if (position.X == 7)
+        {
+            if (IsAttacked(knightRightColumnAttackDirections, position, PieceType.Knight, color))
+            {
+                return true;
+            }
+        }
+        else if (IsAttacked(knightInCenterAttackDirections, position, PieceType.Knight, color))
         {
             return true;
         }
@@ -284,7 +312,7 @@ public class Board
         Vector.Down + Vector.Left,
     };
 
-    private static Vector[] knightDirections = new Vector[]
+    private static Vector[] knightInCenterAttackDirections = new Vector[]
     {
         Vector.Up * 2 + Vector.Right,
         Vector.Right * 2 + Vector.Up,
@@ -292,6 +320,38 @@ public class Board
         Vector.Down * 2 + Vector.Right,
         Vector.Down * 2 + Vector.Left,
         Vector.Left * 2 + Vector.Down,
+        Vector.Up * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Up,
+    };
+
+    private static Vector[] knightRightColumnAttackDirections = new Vector[]
+    {
+        Vector.Down * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Down,
+        Vector.Up * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Up,
+    };
+
+    private static Vector[] knightLeftColumnAttackDirections = new Vector[]
+    {
+        Vector.Up * 2 + Vector.Right,
+        Vector.Right * 2 + Vector.Up,
+        Vector.Right * 2 + Vector.Down,
+        Vector.Down * 2 + Vector.Right,
+    };
+
+    private static Vector[] knightTopRowAttackDirections = new Vector[]
+    {
+        Vector.Right * 2 + Vector.Down,
+        Vector.Down * 2 + Vector.Right,
+        Vector.Down * 2 + Vector.Left,
+        Vector.Left * 2 + Vector.Down,
+    };
+
+    private static Vector[] knightBottomRowAttackDirections = new Vector[]
+    {
+        Vector.Up * 2 + Vector.Right,
+        Vector.Right * 2 + Vector.Up,
         Vector.Up * 2 + Vector.Left,
         Vector.Left * 2 + Vector.Up,
     };
@@ -348,7 +408,7 @@ public class Board
 
     public void GetKnightMoves(Piece piece, Vector currentPosition, List<Move> result)
     {
-        var allPositions = knightDirections.Select(d => d + currentPosition).WithinBoard();
+        var allPositions = knightInCenterAttackDirections.Select(d => d + currentPosition).WithinBoard();
 
         foreach (var position in allPositions)
         {
@@ -518,7 +578,6 @@ public class Board
     {
         var direction = currentPlayer == Color.WHITE ? Vector.Up : Vector.Down;
 
-        // one step forward if not blocked
         var forward = position + direction;
         if (!forward.IsWithinBoard())
             return;
