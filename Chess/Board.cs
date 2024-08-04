@@ -67,20 +67,26 @@ public class Board
 
     public List<Move> GetAllPossibleMoves()
     {
-        var fields = GetFieldsOccupiedBy(currentPlayer);
         var result = new List<Move>();
-        foreach (var field in fields)
+        for (int x = 0; x < 8; x++)
         {
-            var piece = board[field.X, field.Y].Value;
-            switch (piece.Type)
+            for (int y = 0; y < 8; y++)
             {
-                case PieceType.King: GetKingMoves(piece, field, result); break;
-                case PieceType.Queen: GetQueenMoves(piece, field, result); break;
-                case PieceType.Pawn: GetPawnMoves(piece, field, result); break;
-                case PieceType.Bishop: GetBishopMoves(piece, field, result); break;
-                case PieceType.Rock: GetRockMoves(piece, field, result); break;
-                case PieceType.Knight: GetKnightMoves(piece, field, result); break;
-            };
+                var maybePiece = board[x, y];
+                if (maybePiece is Piece piece && maybePiece.Value.Color == currentPlayer)
+                {
+                    var field = new Vector(x, y);
+                    switch (piece.Type)
+                    {
+                        case PieceType.King: GetKingMoves(piece, field, result); break;
+                        case PieceType.Queen: GetQueenMoves(piece, field, result); break;
+                        case PieceType.Pawn: GetPawnMoves(piece, field, result); break;
+                        case PieceType.Bishop: GetBishopMoves(piece, field, result); break;
+                        case PieceType.Rock: GetRockMoves(piece, field, result); break;
+                        case PieceType.Knight: GetKnightMoves(piece, field, result); break;
+                    };
+                }
+            }
         }
         return result;
     }
@@ -221,21 +227,6 @@ public class Board
         }
 
         return false;
-    }
-
-    private IEnumerable<Vector> GetFieldsOccupiedBy(Color color)
-    {
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                var piece = board[x, y];
-                if (piece != null && piece.Value.Color == color)
-                {
-                    yield return new Vector(x, y);
-                }
-            }
-        }
     }
 
     private static Vector[] whitePawnAttackDirections = new Vector[]
