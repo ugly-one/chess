@@ -243,14 +243,40 @@ public class Board
         }
 
         // check king
-        if (IsAttacked(kingDirections, position, PieceType.King, color))
+        if (position.Y == 0)
+        {
+            if (IsAttacked(kingTopDirections, position, PieceType.King, color))
+            {
+                return true;
+            }
+        }
+        else if (position.Y == 7)
+        {
+            if (IsAttacked(kingBottomDirections, position, PieceType.King, color))
+            {
+                return true;
+            }
+        }
+        else if (position.X == 0)
+        {
+            if (IsAttacked(kingLeftDirections, position, PieceType.King, color))
+            {
+                return true;
+            }
+        }
+        else if (position.X == 7)
+        {
+            if (IsAttacked(kingRightDirections, position, PieceType.King, color))
+            {
+                return true;
+            }
+        }
+        else if (IsAttacked(kingCenterDirections, position, PieceType.King, color))
         {
             return true;
         }
-
+        
         // check pawns
-        // this check is reverted because we want to know if the current position is under pawn's attack
-        // maybe this method doesn't belong to Pawn file
         var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
         if (IsAttacked(attackPositions, position, PieceType.Pawn, color))
         {
@@ -300,7 +326,7 @@ public class Board
         Vector.Right
     };
 
-    private static Vector[] kingDirections = new Vector[]
+    private static Vector[] kingCenterDirections = new Vector[]
     {
         Vector.Up,
         Vector.Down,
@@ -311,6 +337,43 @@ public class Board
         Vector.Down + Vector.Right,
         Vector.Down + Vector.Left,
     };
+
+    private static Vector[] kingTopDirections = new Vector[]
+    {
+        Vector.Down,
+        Vector.Left,
+        Vector.Right,
+        Vector.Down + Vector.Right,
+        Vector.Down + Vector.Left,
+    };
+
+    private static Vector[] kingBottomDirections = new Vector[]
+    {
+        Vector.Up,
+        Vector.Left,
+        Vector.Right,
+        Vector.Up + Vector.Right,
+        Vector.Up + Vector.Left,
+    };
+
+    private static Vector[] kingLeftDirections = new Vector[]
+    {
+        Vector.Up,
+        Vector.Down,
+        Vector.Right,
+        Vector.Up + Vector.Right,
+        Vector.Down + Vector.Right,
+    };
+
+    private static Vector[] kingRightDirections = new Vector[]
+    {
+        Vector.Up,
+        Vector.Down,
+        Vector.Left,
+        Vector.Up + Vector.Left,
+        Vector.Down + Vector.Left,
+    };
+
 
     private static Vector[] knightInCenterAttackDirections = new Vector[]
     {
@@ -431,7 +494,7 @@ public class Board
 
     public void GetKingMoves(Piece piece, Vector currentPosition, List<Move> result)
     {
-        var allPositions = kingDirections.Select(d => d + currentPosition).WithinBoard();
+        var allPositions = kingCenterDirections.Select(d => d + currentPosition).WithinBoard();
 
         foreach (var position in allPositions)
         {
