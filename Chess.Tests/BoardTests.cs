@@ -373,6 +373,7 @@ public class BoardTests
         var whiteMoves = board.GetAllPossibleMoves();
 
         Assert.True(whiteMoves.All(m => m.Piece.Type == PieceType.King));
+        Assert.DoesNotContain(whiteMoves, (m) => m.PieceNewPosition.X == 6);
     }
 
     [Fact]
@@ -394,5 +395,6 @@ public class BoardTests
         var whiteMoves = board.GetAllPossibleMoves();
 
         Assert.True(whiteMoves.All(m => m.Piece.Type == PieceType.King));
+        Assert.DoesNotContain(whiteMoves, (m) => m.PieceNewPosition == new Vector(7,5) || m.PieceNewPosition == new Vector(5,3));
     }
 }

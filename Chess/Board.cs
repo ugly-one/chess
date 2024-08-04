@@ -386,7 +386,7 @@ public class Board
                 if (pieceOnTheWay.Value.Color != piece.Color)
                 {
                     var move = new Move(piece, currentPosition, position);
-                    if (!IsFieldUnderAttack(position, oppositePlayer)) result.Add(move);
+                    if (IsValid(move)) result.Add(move);
                 }
             }
         }
@@ -622,9 +622,9 @@ public class Board
     public override string ToString()
     {
         var stringRepresentation = new StringBuilder();
-        for (int x = 0; x < 8; x++)
+        for (int y = 0; y < 8; y++)
         {
-            for (int y = 0; y < 8; y++)
+            for (int x = 0; x < 8; x++)
                 stringRepresentation.Append(board[x, y]?.ToString() ?? "\u00B7");
 
             stringRepresentation.Append('\n');
