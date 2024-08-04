@@ -516,7 +516,7 @@ public class Board
 
     public void GetPawnMoves(Piece piece, Vector position, List<Move> result)
     {
-        var direction = piece.Color == Color.WHITE ? Vector.Up : Vector.Down;
+        var direction = currentPlayer == Color.WHITE ? Vector.Up : Vector.Down;
 
         // one step forward if not blocked
         var forward = position + direction;
@@ -543,7 +543,7 @@ public class Board
         if (takeLeft.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
-            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != currentPlayer)
             {
                 var move = new Move(piece, position, takeLeft);
                 if (IsValid(move)) result.Add(move);
@@ -563,7 +563,7 @@ public class Board
         if (takeRight.IsWithinBoard())
         {
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
-            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != piece.Color)
+            if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != currentPlayer)
             {
                 var move = new Move(piece, position, takeRight);
                 if (IsValid(move)) result.Add(move);
