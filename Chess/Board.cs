@@ -12,12 +12,14 @@ public class Board
     private readonly Vector blackKing;
     private readonly Move? lastMove;
     private readonly Color currentPlayer;
+    private readonly Color oppositePlayer;
 
     public Color CurrentPlayer => currentPlayer;
 
     public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
     {
         this.currentPlayer = currentColor;
+        this.oppositePlayer = currentColor.GetOpposite();
         this.lastMove = lastMove;
         this.board = pieces;
         this.whiteKing = whiteKing;
@@ -27,6 +29,7 @@ public class Board
     public Board(IEnumerable<(Piece, Vector)> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
     {
         this.currentPlayer = currentPlayer;
+        this.oppositePlayer = currentPlayer.GetOpposite();
         this.board = new Piece?[8, 8];
         foreach (var (piece, position) in board)
         {
@@ -383,76 +386,81 @@ public class Board
                 if (pieceOnTheWay.Value.Color != piece.Color)
                 {
                     var move = new Move(piece, currentPosition, position);
-                    if (IsValid(move)) result.Add(move);
+                    if (!IsFieldUnderAttack(position, oppositePlayer)) result.Add(move);
                 }
             }
         }
 
         // short castle
-        var shortCastleMove = TryGetCastleMove(piece, currentPosition, Vector.Left, 2);
-        if (shortCastleMove != null)
+        if (piece.Moved)
+            return;
+
+        if (IsFieldUnderAttack(currentPosition, oppositePlayer))
         {
-            // this check should be done as part of castle-move generation
-            var moveVector = (shortCastleMove.PieceNewPosition - shortCastleMove.PieceOldPosition);
-            var oneStepVector = moveVector.Clamp(new Vector(-1, -1), new Vector(1, 1));
-            if (IsFieldUnderAttack(shortCastleMove.PieceOldPosition + oneStepVector, shortCastleMove.Piece.Color.GetOpposite()))
+            return;
+        }
+        var maybeRock = board[0, currentPosition.Y];
+        if (maybeRock is Piece shortRock && !shortRock.Moved)
+        {
+            var allFieldsInBetweenClean = true;
+            var fieldsToCheck = new Vector[]
             {
-                // castling not allowed
+                new Vector(1, currentPosition.Y),
+                new Vector(2, currentPosition.Y)
+            };
+            foreach (var fieldToCheck in fieldsToCheck)
+            {
+                if (board[fieldToCheck.X, fieldToCheck.Y] != null)
+                {
+                    allFieldsInBetweenClean = false;
+                    break;
+                }
+                if (IsFieldUnderAttack(fieldToCheck, oppositePlayer))
+                {
+                    allFieldsInBetweenClean = false;
+                    break;
+                }
             }
-            else
+
+            if (allFieldsInBetweenClean)
             {
-                if (IsValid(shortCastleMove))
-                    result.Add(shortCastleMove);
+                var move = new Move(piece, currentPosition, new Vector(1, currentPosition.Y));
+                result.Add(move);
             }
         }
-
+        
         // long castle
-        var longCastleMove = TryGetCastleMove(piece, currentPosition, Vector.Right, 3);
-        if (longCastleMove != null)
+        maybeRock = board[7, currentPosition.Y];
+        if (maybeRock is Piece longRock && !longRock.Moved)
         {
-            if (IsValid(longCastleMove))
-                result.Add(longCastleMove);
-        }
-    }
-
-    private Move? TryGetCastleMove(Piece king, Vector position, Vector kingMoveDirection, int rockSteps)
-    {
-        if (king.Moved)
-            return null;
-
-        var possibleRockPosition = position + kingMoveDirection * (rockSteps + 1);
-        if (!possibleRockPosition.IsWithinBoard())
-        {
-            // TODO I'm wasting time here. I shouldn't even consider such position. 
-            // finding both rocks for king's position should be as simple as doing 2 lookups in the board
-            // the position of rocks never change. And if it changed (and we can't find the rock where it should be) - no castling
-            // It may change for Chess960, but for now we could have 2 hardcoded positions to check
-            return null;
-        }
-
-        // TODO check that the piece we got here is actually a rock
-        var rock = board[possibleRockPosition.X, possibleRockPosition.Y];
-
-        if (rock == null || rock.Value.Moved)
-            return null;
-
-        var allFieldsInBetweenClean = true;
-
-        for (int i = 1; i <= 2; i++)
-        {
-            var fieldToCheck = position + kingMoveDirection * i;
-            if (board[fieldToCheck.X, fieldToCheck.Y] != null)
+            var allFieldsInBetweenClean = true;
+            var fieldsToCheck = new Vector[]
             {
-                allFieldsInBetweenClean = false;
-                break;
+                new Vector(6, currentPosition.Y),
+                new Vector(5, currentPosition.Y),
+                new Vector(4, currentPosition.Y)
+            };
+            foreach (var fieldToCheck in fieldsToCheck)
+            {
+                if (board[fieldToCheck.X, fieldToCheck.Y] != null)
+                {
+                    allFieldsInBetweenClean = false;
+                    break;
+                }
+                if (IsFieldUnderAttack(fieldToCheck, oppositePlayer))
+                {
+                    allFieldsInBetweenClean = false;
+                    break;
+                }
+            }
+
+            if (allFieldsInBetweenClean)
+            {
+                var move = new Move(piece, currentPosition, new Vector(5, currentPosition.Y));
+                result.Add(move);
             }
         }
-
-        if (!allFieldsInBetweenClean) return null;
-
-        return new Move(king, position, position + kingMoveDirection * 2);
     }
-
 
     private bool IsAttacked(Vector[] positions, Vector position, PieceType pieceType, Color color)
     {

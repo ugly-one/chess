@@ -272,6 +272,27 @@ public class BoardTests
     }
 
     [Fact]
+    public void CastlingDuringCheckIsNotPossible()
+    {
+        var board = new[]
+        {
+        //   01234567
+            "R  K   R",// 0
+            "        ",// 1
+            "        ",// 2
+            "   q    ",// 3
+            "        ",// 4
+            "        ",// 5
+            "        ",// 6
+            "   k    ",// 7
+        }.ToBoard();
+
+        var whiteMoves = board.GetAllPossibleMoves();
+        Assert.DoesNotContain(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0));
+        Assert.DoesNotContain(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 0));
+    }
+
+    [Fact]
     public void CastlingIsNotPossibleViaAttackedField()
     {
         var board = new[]
