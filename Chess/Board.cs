@@ -428,7 +428,7 @@ public class Board
                 result.Add(move);
             }
         }
-        
+
         // long castle
         maybeRock = board[7, currentPosition.Y];
         if (maybeRock is Piece longRock && !longRock.Moved)
@@ -520,7 +520,13 @@ public class Board
 
         // one step forward if not blocked
         var forward = position + direction;
-        if (forward.IsWithinBoard() && !IsBlocked(forward))
+        if (!forward.IsWithinBoard())
+            return;
+
+        var takeLeft = forward + Vector.Left;
+        var takeRight = forward + Vector.Right;
+
+        if (!IsBlocked(forward))
         {
             var move = new Move(piece, position, forward);
             if (IsValid(move)) result.Add(move);
@@ -528,7 +534,7 @@ public class Board
             // two steps forward if not moved yet and not blocked
             if (!piece.Moved)
             {
-                var forward2Steps = position + direction + direction;
+                var forward2Steps = forward + direction;
                 if (forward2Steps.IsWithinBoard() && !IsBlocked(forward2Steps))
                 {
                     move = new Move(piece, position, forward2Steps);
@@ -538,9 +544,7 @@ public class Board
         }
 
         // one down/left if there is an opponent's piece
-        var takeLeft = position + Vector.Left + direction;
-
-        if (takeLeft.IsWithinBoard())
+        if (takeLeft.X >= 0)
         {
             var possiblyCapturedPiece = board[takeLeft.X, takeLeft.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != currentPlayer)
@@ -559,8 +563,7 @@ public class Board
         }
 
         // one down/right if there is an opponent's piece
-        var takeRight = position + Vector.Right + direction;
-        if (takeRight.IsWithinBoard())
+        if (takeRight.X <= 7)
         {
             var possiblyCapturedPiece = board[takeRight.X, takeRight.Y];
             if (possiblyCapturedPiece != null && possiblyCapturedPiece.Value.Color != currentPlayer)
