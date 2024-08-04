@@ -343,20 +343,53 @@ public class Board
         GetMovesInDirections(piece, position, queenDirections, result);
     }
 
-    public void GetKnightMoves(Piece piece, Vector position, List<Move> result)
+    public void GetKnightMoves(Piece piece, Vector currentPosition, List<Move> result)
     {
-        var allPositions = knightDirections.Select(d => d + position).WithinBoard();
-        result.AddRange(ConvertToMoves(piece, position, allPositions).Where(m => IsValid(m)));
+        var allPositions = knightDirections.Select(d => d + currentPosition).WithinBoard();
+
+        foreach (var position in allPositions)
+        {
+            var pieceOnTheWay = board[position.X, position.Y];
+            if (pieceOnTheWay is null)
+            {
+                var move = new Move(piece, currentPosition, position);
+                if (IsValid(move)) result.Add(move);
+            }
+            else
+            {
+                if (pieceOnTheWay.Value.Color != piece.Color)
+                {
+                    var move = new Move(piece, currentPosition, position);
+                    if (IsValid(move)) result.Add(move);
+                }
+            }
+        }
     }
 
-    public void GetKingMoves(Piece king, Vector position, List<Move> result)
+    public void GetKingMoves(Piece piece, Vector currentPosition, List<Move> result)
     {
-        var allPositions = kingDirections.Select(d => d + position).WithinBoard();
+        var allPositions = kingDirections.Select(d => d + currentPosition).WithinBoard();
 
-        var allMoves = ConvertToMoves(king, position, allPositions).Where(m => IsValid(m));
-        result.AddRange(allMoves);
+        foreach (var position in allPositions)
+        {
+            var pieceOnTheWay = board[position.X, position.Y];
+            if (pieceOnTheWay is null)
+            {
+                var move = new Move(piece, currentPosition, position);
+                if (IsValid(move)) result.Add(move);
+            }
+            else
+            {
+                if (pieceOnTheWay.Value.Color != piece.Color)
+                {
+                    var move = new Move(piece, currentPosition, position);
+                    if (IsValid(move)) result.Add(move);
+                }
+            }
+        }
+
         // short castle
-        var shortCastleMove = TryGetCastleMove(king, position, Vector.Left, 2);
+        var shortCastleMove = TryGetCastleMove(piece, currentPosition, Vector.Left, 2);
         if (shortCastleMove != null)
         {
             // this check should be done as part of castle-move generation
@@ -374,7 +407,7 @@ public class Board
         }
 
         // long castle
-        var longCastleMove = TryGetCastleMove(king, position, Vector.Right, 3);
+        var longCastleMove = TryGetCastleMove(piece, currentPosition, Vector.Right, 3);
         if (longCastleMove != null)
         {
             if (IsValid(longCastleMove))
@@ -559,25 +592,6 @@ public class Board
     {
         if (board[position.X, position.Y] != null) return true;
         return false;
-    }
-
-    public IEnumerable<Move> ConvertToMoves(Piece piece, Vector currentPosition, IEnumerable<Vector> positions)
-    {
-        foreach (var position in positions)
-        {
-            var pieceOnTheWay = board[position.X, position.Y];
-            if (pieceOnTheWay is null)
-            {
-                yield return new Move(piece, currentPosition, position);
-            }
-            else
-            {
-                if (pieceOnTheWay.Value.Color != piece.Color)
-                {
-                    yield return new Move(piece, currentPosition, position);
-                }
-            }
-        }
     }
 
     public Piece? GetTargetPieceInDirection(
