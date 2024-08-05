@@ -131,9 +131,9 @@ public class Board
                     else if (piece.Type == PieceType.King)
                     {
                         if (piece.Color == currentPlayer)
-                            currentPlayerKing = new Vector(x,y);
+                            currentPlayerKing = new Vector(x, y);
                         else
-                            oppositePlayerKing = new Vector(x,y);
+                            oppositePlayerKing = new Vector(x, y);
 
                     }
                 }
@@ -266,11 +266,11 @@ public class Board
         return IsFieldUnderAttack(king, oppositeColor);
     }
 
-    ///CHecks if given field is under attack of current player's pieces. 
-    public bool IsFieldUnderAttack2(Vector field, Color color)
+    ///Checks if given field is under attack of current player's pieces. 
+    public bool IsFieldUnderAttack(Vector field, Color color)
     {
         var queen = color == currentPlayer ? currentPlayerQueen : oppositePlayerQueen;
-        var rocks = color == currentPlayer ?  currentPlayerRocks : oppositePlayerRocks;
+        var rocks = color == currentPlayer ? currentPlayerRocks : oppositePlayerRocks;
         var bishops = color == currentPlayer ? currentPlayerBishops : oppositePlayerBishops;
         var knights = color == currentPlayer ? currentPlayerKnights : oppositePlayerKnights;
         var king = color == currentPlayer ? currentPlayerKing : oppositePlayerKing;
@@ -348,7 +348,7 @@ public class Board
         }
 
         // knights
-        foreach(var (_, knightPosition) in knights)
+        foreach (var (_, knightPosition) in knights)
         {
             vector = (knightPosition - field).Abs();
             if ((vector.X == 2 && vector.Y == 1) || (vector.X == 1 && vector.Y == 2))
@@ -357,106 +357,34 @@ public class Board
 
         // king
         vector = (king - field).Abs();
-        if ((vector.X == 1 && vector.Y == 1) || (vector.X == 1 && vector.Y == 0) || (vector.X == 0 && vector.Y == 0)) 
+        if ((vector.X == 1 && vector.Y == 1) || (vector.X == 1 && vector.Y == 0) || (vector.X == 0 && vector.Y == 0))
             return true;
-        return false;
-    }
 
-    /// Check if given position is under attack from a piece of a given color
-    public bool IsFieldUnderAttack(Vector position, Color color)
-    {
-        // queen, rocks and bishops are done by the new method
-        if (IsFieldUnderAttack2(position, color))
+        // pawns
+        //
+        var y = color == Color.WHITE ? 1 : -1;
+
+        if (color == Color.WHITE && field.Y > 5) return false;  
+        if (color == Color.BLACK && field.Y < 2) return false;
+        Vector[] maybePawns;
+        if (field.X == 0)
         {
-            return true;
+            maybePawns = new Vector[] { field + new Vector(1, y) };
         }
-        //// check horizontal/vertical lines to see if there is a Queen or a Rock
-        //if (IsAttackedHorizontalyOrVerticaly(position, color))
-        //{
-        //    return true;
-        //}
-
-        //// check diagonal lines to see if there is a Queen or a Bishop
-        //if (IsAttackedDiagonally(position, color))
-        //{
-        //    return true;
-        //}
-
-        // check knights
-        //if (position.Y == 0)
-        //{
-        //    if (IsAttacked(knightTopRowAttackDirections, position, PieceType.Knight, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.Y == 7)
-        //{
-        //    if (IsAttacked(knightBottomRowAttackDirections, position, PieceType.Knight, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.X == 0)
-        //{
-        //    if (IsAttacked(knightLeftColumnAttackDirections, position, PieceType.Knight, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.X == 7)
-        //{
-        //    if (IsAttacked(knightRightColumnAttackDirections, position, PieceType.Knight, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (IsAttacked(knightInCenterAttackDirections, position, PieceType.Knight, color))
-        //{
-        //    return true;
-        //}
-
-        // check king
-        //if (position.Y == 0)
-        //{
-        //    if (IsAttacked(kingTopDirections, position, PieceType.King, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.Y == 7)
-        //{
-        //    if (IsAttacked(kingBottomDirections, position, PieceType.King, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.X == 0)
-        //{
-        //    if (IsAttacked(kingLeftDirections, position, PieceType.King, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (position.X == 7)
-        //{
-        //    if (IsAttacked(kingRightDirections, position, PieceType.King, color))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (IsAttacked(kingCenterDirections, position, PieceType.King, color))
-        //{
-        //    return true;
-        //}
-
-        // check pawns
-        var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
-        if (IsAttacked(attackPositions, position, PieceType.Pawn, color))
+        else if (field.X == 7)
         {
-            return true;
+            maybePawns = new Vector[] { field + new Vector(-1, y) };
+        }
+        else
+        {
+            maybePawns = new Vector[] { field + new Vector(-1, y), field + new Vector(1, y) };
         }
 
+        foreach (var maybePawn in maybePawns)
+        {
+            if (board[maybePawn.X, maybePawn.Y] is Piece piece && piece.Color == color && piece.Type == PieceType.Pawn)
+                return true;
+        }
         return false;
     }
 

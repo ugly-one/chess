@@ -267,7 +267,6 @@ public class BoardTests
         }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMoves();
-        Printer.Print(whiteMoves);
         Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 7));
         Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
     }
