@@ -197,12 +197,14 @@ public class Board
     {
         // queen
         var queen = GetPieces().Where(x => x.Item1.Type == PieceType.Queen && x.Item1.Color == color);
-        foreach(var (_, queenPosition) in queen)
+        foreach (var (_, queenPosition) in queen)
         {
-            var vector = (field - queenPosition).Clamp(new Vector(-1,-1), new Vector(1,1));
+            var vector = (queenPosition - field);
             var notAttackedByQueen = true;
-            if (vector.Abs() == new Vector(1, 1) || vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            var absVector = vector.Abs();
+            if (absVector.Y == absVector.X || (queenPosition.X == field.X || queenPosition.Y == field.Y))
             {
+                vector = vector.Clamp(new Vector(-1, -1), new Vector(1, 1));
                 var inBetweenField = field + vector;
                 notAttackedByQueen = false;
                 while (inBetweenField != queenPosition)
@@ -221,10 +223,10 @@ public class Board
         var rocks = GetPieces().Where(x => x.Item1.Type == PieceType.Rock && x.Item1.Color == color);
         foreach (var (_, rockPosition) in rocks)
         {
-            var vector = (rockPosition - field).Clamp(new Vector(-1,-1), new Vector(1,1));
             var notAttackedByRock = true;
-            if (vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            if (rockPosition.X == field.X || rockPosition.Y == field.Y)
             {
+                var vector = (rockPosition - field).Clamp(new Vector(-1, -1), new Vector(1, 1));
                 var inBetweenField = field + vector;
                 notAttackedByRock = false;
                 while (inBetweenField != rockPosition)
@@ -244,10 +246,12 @@ public class Board
         var bishops = GetPieces().Where(x => x.Item1.Type == PieceType.Bishop && x.Item1.Color == color);
         foreach (var (_, bishopPosition) in bishops)
         {
-            var vector = (bishopPosition - field).Clamp(new Vector(-1,-1), new Vector(1,1));
+            var vector = (bishopPosition - field);
+            var absVector = vector.Abs();
             var notAttackedByBishop = true;
-            if (vector.Abs() == new Vector(1, 0) || vector.Abs() == new Vector(0, 1))
+            if (absVector.X == absVector.Y)
             {
+                vector = vector.Clamp(new Vector(-1,-1), new Vector(1,1));
                 var inBetweenField = field + vector;
                 notAttackedByBishop = false;
                 while (inBetweenField != bishopPosition)
