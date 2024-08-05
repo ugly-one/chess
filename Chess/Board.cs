@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,13 @@ public class Board
 {
     private readonly Piece?[,] board;
     private (Piece, Vector)? currentPlayerQueen;
-    private List<(Piece, Vector)> currentPlayerRocks;
-    private List<(Piece, Vector)> currentPlayerBishops;
-    private List<(Piece, Vector)> currentPlayerKnights;
+    private Vector[] currentPlayerRocks;
+    private Vector[] currentPlayerBishops;
+    private Vector[] currentPlayerKnights;
     private (Piece, Vector)? oppositePlayerQueen;
-    private List<(Piece, Vector)> oppositePlayerRocks;
-    private List<(Piece, Vector)> oppositePlayerBishops;
-    private List<(Piece, Vector)> oppositePlayerKnights;
+    private Vector[] oppositePlayerRocks;
+    private Vector[] oppositePlayerBishops;
+    private Vector[] oppositePlayerKnights;
     private Vector currentPlayerKing;
     private Vector oppositePlayerKing;
     private readonly Vector whiteKing;
@@ -33,12 +34,12 @@ public class Board
         this.board = pieces;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
-        currentPlayerRocks = new List<(Piece, Vector)>();
-        currentPlayerBishops = new List<(Piece, Vector)>();
-        currentPlayerKnights = new List<(Piece, Vector)>();
-        this.oppositePlayerRocks = new List<(Piece, Vector)>();
-        this.oppositePlayerBishops = new List<(Piece, Vector)>();
-        this.oppositePlayerKnights = new List<(Piece, Vector)>();
+        currentPlayerBishops = new Vector[0];
+        currentPlayerKnights = new Vector[0];
+        currentPlayerRocks = new Vector[0];
+        oppositePlayerRocks = new Vector[0];
+        oppositePlayerBishops = new Vector[0];
+        oppositePlayerKnights = new Vector[0];
         SetPieces();
     }
 
@@ -67,12 +68,12 @@ public class Board
 
         }
         this.lastMove = lastMove;
-        currentPlayerRocks = new List<(Piece, Vector)>();
-        currentPlayerBishops = new List<(Piece, Vector)>();
-        currentPlayerKnights = new List<(Piece, Vector)>();
-        this.oppositePlayerRocks = new List<(Piece, Vector)>();
-        this.oppositePlayerBishops = new List<(Piece, Vector)>();
-        this.oppositePlayerKnights = new List<(Piece, Vector)>();
+        currentPlayerBishops = new Vector[0];
+        currentPlayerKnights = new Vector[0];
+        oppositePlayerBishops = new Vector[0];
+        oppositePlayerKnights = new Vector[0];
+        currentPlayerRocks = new Vector[0];
+        oppositePlayerRocks = new Vector[0];
         SetPieces();
     }
 
@@ -110,23 +111,56 @@ public class Board
                     else if (piece.Type == PieceType.Rock)
                     {
                         if (piece.Color == currentPlayer)
-                            currentPlayerRocks.Add((piece, new Vector(x, y)));
+                        {
+                            if (currentPlayerRocks.Length == 0)
+                                currentPlayerRocks = new[] { new Vector(x, y) };
+                            else
+                                currentPlayerRocks = new[] { currentPlayerRocks[0], new Vector(x, y) };
+                        }
+
                         else
-                            oppositePlayerRocks.Add((piece, new Vector(x, y)));
+                        {
+                            if (oppositePlayerRocks.Length == 0)
+                                oppositePlayerRocks = new[] { new Vector(x, y) };
+                            else
+                                oppositePlayerRocks = new[] { oppositePlayerRocks[0], new Vector(x, y) };
+                        }
                     }
                     else if (piece.Type == PieceType.Bishop)
                     {
                         if (piece.Color == currentPlayer)
-                            currentPlayerBishops.Add((piece, new Vector(x, y)));
+                        {
+                            if (currentPlayerBishops.Length == 0)
+                                currentPlayerBishops = new[] { new Vector(x, y) };
+                            else
+                                currentPlayerBishops = new[] { currentPlayerBishops[0], new Vector(x, y) };
+                        }
+
                         else
-                            oppositePlayerBishops.Add((piece, new Vector(x, y)));
+                        {
+                            if (oppositePlayerBishops.Length == 0)
+                                oppositePlayerBishops = new[] { new Vector(x, y) };
+                            else
+                                oppositePlayerBishops = new[] { oppositePlayerBishops[0], new Vector(x, y) };
+                        }
                     }
                     else if (piece.Type == PieceType.Knight)
                     {
                         if (piece.Color == currentPlayer)
-                            currentPlayerKnights.Add((piece, new Vector(x, y)));
+                        {
+                            if (currentPlayerKnights.Length == 0)
+                                currentPlayerKnights = new[] { new Vector(x, y) };
+                            else
+                                currentPlayerKnights = new[] { currentPlayerKnights[0], new Vector(x, y) };
+                        }
+
                         else
-                            oppositePlayerKnights.Add((piece, new Vector(x, y)));
+                        {
+                            if (oppositePlayerKnights.Length == 0)
+                                oppositePlayerKnights = new[] { new Vector(x, y) };
+                            else
+                                oppositePlayerKnights = new[] { oppositePlayerKnights[0], new Vector(x, y) };
+                        }
                     }
                     else if (piece.Type == PieceType.King)
                     {
@@ -302,7 +336,7 @@ public class Board
 
         }
         // rock
-        foreach (var (_, rockPosition) in rocks)
+        foreach (var rockPosition in rocks)
         {
             var notAttackedByRock = true;
             if (rockPosition.X == field.X || rockPosition.Y == field.Y)
@@ -324,7 +358,7 @@ public class Board
         }
 
         // bishop
-        foreach (var (_, bishopPosition) in bishops)
+        foreach (var bishopPosition in bishops)
         {
             vector = (bishopPosition - field);
             var absVector = vector.Abs();
@@ -348,7 +382,7 @@ public class Board
         }
 
         // knights
-        foreach (var (_, knightPosition) in knights)
+        foreach (var knightPosition in knights)
         {
             vector = (knightPosition - field).Abs();
             if ((vector.X == 2 && vector.Y == 1) || (vector.X == 1 && vector.Y == 2))
@@ -364,7 +398,7 @@ public class Board
         //
         var y = color == Color.WHITE ? 1 : -1;
 
-        if (color == Color.WHITE && field.Y > 5) return false;  
+        if (color == Color.WHITE && field.Y > 5) return false;
         if (color == Color.BLACK && field.Y < 2) return false;
         Vector[] maybePawns;
         if (field.X == 0)
