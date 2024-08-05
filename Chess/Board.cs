@@ -18,22 +18,18 @@ public class Board
     private Vector[] oppositePlayerKnights;
     private Vector currentPlayerKing;
     private Vector oppositePlayerKing;
-    private readonly Vector whiteKing;
-    private readonly Vector blackKing;
     private readonly Move? lastMove;
     private readonly Color currentPlayer;
     private readonly Color oppositePlayer;
 
     public Color CurrentPlayer => currentPlayer;
 
-    public Board(Piece?[,] pieces, Color currentColor, Move lastMove, Vector whiteKing, Vector blackKing)
+    public Board(Piece?[,] pieces, Color currentColor, Move lastMove)
     {
         this.currentPlayer = currentColor;
         this.oppositePlayer = currentColor.GetOpposite();
         this.lastMove = lastMove;
         this.board = pieces;
-        this.whiteKing = whiteKing;
-        this.blackKing = blackKing;
         currentPlayerBishops = new Vector[0];
         currentPlayerKnights = new Vector[0];
         currentPlayerRocks = new Vector[0];
@@ -51,21 +47,6 @@ public class Board
         foreach (var (piece, position) in board)
         {
             this.board[position.X, position.Y] = piece;
-            if (piece.Color == Color.WHITE)
-            {
-                if (piece.Type == PieceType.King)
-                {
-                    whiteKing = position;
-                }
-            }
-            else
-            {
-                if (piece.Type == PieceType.King)
-                {
-                    blackKing = position;
-                }
-            }
-
         }
         this.lastMove = lastMove;
         currentPlayerBishops = new Vector[0];
@@ -203,7 +184,7 @@ public class Board
 
     private bool IsValid(Move move)
     {
-        return !(Move(move, PieceType.Queen).IsKingUnderAttack(currentPlayer));
+        return !(Move(move, PieceType.Queen).IsOppositeKingUnderAttack());
     }
 
     public (bool, Board) TryMove(Move move, PieceType? promotedPiece = null)
@@ -283,21 +264,22 @@ public class Board
             }
         }
 
-        var newWhiteKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.WHITE) ? move.PieceNewPosition : whiteKing;
-        var newBlackKing = (movedPiece.Type == PieceType.King && currentPlayer == Color.BLACK) ? move.PieceNewPosition : blackKing;
-
         return new Board(newPieces,
             currentPlayer.GetOpposite(),
-            move,
-            newWhiteKing,
-            newBlackKing);
+            move
+            );
     }
 
-    public bool IsKingUnderAttack(Color kingColor)
+    private bool IsOppositeKingUnderAttack()
     {
-        Vector king = kingColor == Color.WHITE ? whiteKing : blackKing;
-        var oppositeColor = kingColor.GetOpposite();
-        return IsFieldUnderAttack(king, oppositeColor);
+        return IsFieldUnderAttack(oppositePlayerKing, currentPlayer);
+    }
+    
+    public bool IsKingUnderAttack(bool currentKing)
+    {
+        Vector king = currentKing ? currentPlayerKing : oppositePlayerKing;
+        Color color = currentKing ? oppositePlayer : currentPlayer;
+        return IsFieldUnderAttack(king, color);
     }
 
     ///Checks if given field is under attack of current player's pieces. 

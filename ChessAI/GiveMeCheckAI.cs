@@ -18,9 +18,9 @@ public class GiveMeCheckAI  : IPlayer
         {
             var (success, newBoard) = board.TryMove(moveRequest.PieceOldPosition, moveRequest.PieceNewPosition, PieceType.Queen);
             if (!success)
-                throw new Exception("The engine game me a move that is not valid :/");
-
-            if (newBoard.IsKingUnderAttack(color.GetOpposite()))
+                throw new Exception("The engine gave me a move that is not valid :/");
+            
+            if (newBoard.IsKingUnderAttack(currentKing: false))
                 return new MoveWithPromotion(moveRequest.Piece, moveRequest.PieceOldPosition, moveRequest.PieceNewPosition, PieceType.Queen);
         }
         return new MoveWithPromotion(moveRequests[0].Piece, moveRequests[0].PieceOldPosition, moveRequests[0].PieceNewPosition, PieceType.Queen);

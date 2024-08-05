@@ -71,7 +71,7 @@ public class Game
 
         var possibleMovesForOpponent = Board.GetAllPossibleMoves();
 
-        if (Board.IsKingUnderAttack(opponentsColor) && !possibleMovesForOpponent.Any())
+        if (Board.IsKingUnderAttack(currentKing: true) && !possibleMovesForOpponent.Any())
         {
             State = pieceToMove.Color == Color.WHITE ? GameState.WhiteWin : GameState.BlackWin;
             return true;
