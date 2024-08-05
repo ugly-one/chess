@@ -11,6 +11,10 @@ public class Board
     private (Piece, Vector)? currentPlayerQueen;
     private List<(Piece, Vector)> currentPlayerRocks;
     private List<(Piece, Vector)> currentPlayerBishops;
+    private (Piece, Vector)? oppositePlayerQueen;
+    private List<(Piece, Vector)> oppositePlayerRocks;
+    private List<(Piece, Vector)> oppositePlayerBishops;
+
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? lastMove;
@@ -29,7 +33,9 @@ public class Board
         this.blackKing = blackKing;
         currentPlayerRocks = new List<(Piece, Vector)>();
         currentPlayerBishops = new List<(Piece, Vector)>();
-        SetCurrentPlayerPieces();
+        this.oppositePlayerRocks = new List<(Piece, Vector)>();
+        this.oppositePlayerBishops = new List<(Piece, Vector)>();
+        SetPieces();
     }
 
     public Board(IEnumerable<(Piece, Vector)> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
@@ -59,7 +65,9 @@ public class Board
         this.lastMove = lastMove;
         currentPlayerRocks = new List<(Piece, Vector)>();
         currentPlayerBishops = new List<(Piece, Vector)>();
-        SetCurrentPlayerPieces();
+        this.oppositePlayerRocks = new List<(Piece, Vector)>();
+        this.oppositePlayerBishops = new List<(Piece, Vector)>();
+        SetPieces();
     }
 
     public IEnumerable<(Piece, Vector)> GetPieces()
@@ -77,26 +85,35 @@ public class Board
         }
     }
 
-    public void SetCurrentPlayerPieces()
+    public void SetPieces()
     {
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
             {
                 var maybePiece = board[x, y];
-                if (maybePiece is Piece piece && piece.Color == currentPlayer)
+                if (maybePiece is Piece piece)
                 {
                     if (piece.Type == PieceType.Queen)
                     {
-                        currentPlayerQueen = (piece, new Vector(x, y));
+                        if (piece.Color == currentPlayer)
+                            currentPlayerQueen = (piece, new Vector(x, y));
+                        else
+                            oppositePlayerQueen = (piece, new Vector(x, y));
                     }
                     else if (piece.Type == PieceType.Rock)
                     {
-                        currentPlayerRocks.Add((piece, new Vector(x, y)));
+                        if (piece.Color == currentPlayer)
+                            currentPlayerRocks.Add((piece, new Vector(x, y)));
+                        else
+                            oppositePlayerRocks.Add((piece, new Vector(x, y)));
                     }
                     else if (piece.Type == PieceType.Bishop)
                     {
-                        currentPlayerBishops.Add((piece, new Vector(x, y)));
+                        if (piece.Color == currentPlayer)
+                            currentPlayerBishops.Add((piece, new Vector(x, y)));
+                        else
+                            oppositePlayerBishops.Add((piece, new Vector(x, y)));
                     }
                 }
             }
@@ -229,12 +246,13 @@ public class Board
     }
 
     ///CHecks if given field is under attack of current player's pieces. 
-    ///Yes, it seems odd, but this is what we need to verify if a move we are about to generate is valid (because we try to play this move and validate it on the new board position)
-    public bool IsFieldUnderAttack2(Vector field)
+    public bool IsFieldUnderAttack2(Vector field, Color color)
     {
-
+        var queen = color == currentPlayer ? currentPlayerQueen : oppositePlayerQueen;
+        var rocks = color == currentPlayer ?  currentPlayerRocks : oppositePlayerRocks;
+        var bishops = color == currentPlayer ? currentPlayerBishops : oppositePlayerBishops;
         // queen
-        if (currentPlayerQueen is (Piece, Vector) a)
+        if (queen is (Piece, Vector) a)
         {
             var queenPosition = a.Item2;
             var vector = (queenPosition - field);
@@ -259,7 +277,6 @@ public class Board
 
         }
         // rock
-        var rocks = currentPlayerRocks;
         foreach (var (_, rockPosition) in rocks)
         {
             var notAttackedByRock = true;
@@ -282,7 +299,6 @@ public class Board
         }
 
         // bishop
-        var bishops = currentPlayerBishops;
         foreach (var (_, bishopPosition) in bishops)
         {
             var vector = (bishopPosition - field);
@@ -313,7 +329,7 @@ public class Board
     public bool IsFieldUnderAttack(Vector position, Color color)
     {
         // queen, rocks and bishops are done by the new method
-        if (IsFieldUnderAttack2(position))
+        if (IsFieldUnderAttack2(position, color))
         {
             return true;
         }
