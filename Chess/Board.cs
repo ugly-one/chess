@@ -15,6 +15,8 @@ public class Board
     private List<(Piece, Vector)> oppositePlayerRocks;
     private List<(Piece, Vector)> oppositePlayerBishops;
     private List<(Piece, Vector)> oppositePlayerKnights;
+    private Vector currentPlayerKing;
+    private Vector oppositePlayerKing;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? lastMove;
@@ -125,6 +127,14 @@ public class Board
                             currentPlayerKnights.Add((piece, new Vector(x, y)));
                         else
                             oppositePlayerKnights.Add((piece, new Vector(x, y)));
+                    }
+                    else if (piece.Type == PieceType.King)
+                    {
+                        if (piece.Color == currentPlayer)
+                            currentPlayerKing = new Vector(x,y);
+                        else
+                            oppositePlayerKing = new Vector(x,y);
+
                     }
                 }
             }
@@ -263,11 +273,14 @@ public class Board
         var rocks = color == currentPlayer ?  currentPlayerRocks : oppositePlayerRocks;
         var bishops = color == currentPlayer ? currentPlayerBishops : oppositePlayerBishops;
         var knights = color == currentPlayer ? currentPlayerKnights : oppositePlayerKnights;
+        var king = color == currentPlayer ? currentPlayerKing : oppositePlayerKing;
+
+        Vector vector;
         // queen
         if (queen is (Piece, Vector) a)
         {
             var queenPosition = a.Item2;
-            var vector = (queenPosition - field);
+            vector = (queenPosition - field);
             var notAttackedByQueen = true;
             var absVector = vector.Abs();
             if (absVector.Y == absVector.X || (queenPosition.X == field.X || queenPosition.Y == field.Y))
@@ -294,7 +307,7 @@ public class Board
             var notAttackedByRock = true;
             if (rockPosition.X == field.X || rockPosition.Y == field.Y)
             {
-                var vector = (rockPosition - field).Clamp(new Vector(-1, -1), new Vector(1, 1));
+                vector = (rockPosition - field).Clamp(new Vector(-1, -1), new Vector(1, 1));
                 var inBetweenField = field + vector;
                 notAttackedByRock = false;
                 while (inBetweenField != rockPosition)
@@ -313,7 +326,7 @@ public class Board
         // bishop
         foreach (var (_, bishopPosition) in bishops)
         {
-            var vector = (bishopPosition - field);
+            vector = (bishopPosition - field);
             var absVector = vector.Abs();
             var notAttackedByBishop = true;
             if (absVector.X == absVector.Y)
@@ -337,10 +350,15 @@ public class Board
         // knights
         foreach(var (_, knightPosition) in knights)
         {
-            var vector = (knightPosition - field).Abs();
+            vector = (knightPosition - field).Abs();
             if ((vector.X == 2 && vector.Y == 1) || (vector.X == 1 && vector.Y == 2))
                 return true;
         }
+
+        // king
+        vector = (king - field).Abs();
+        if ((vector.X == 1 && vector.Y == 1) || (vector.X == 1 && vector.Y == 0) || (vector.X == 0 && vector.Y == 0)) 
+            return true;
         return false;
     }
 
@@ -399,38 +417,38 @@ public class Board
         //}
 
         // check king
-        if (position.Y == 0)
-        {
-            if (IsAttacked(kingTopDirections, position, PieceType.King, color))
-            {
-                return true;
-            }
-        }
-        else if (position.Y == 7)
-        {
-            if (IsAttacked(kingBottomDirections, position, PieceType.King, color))
-            {
-                return true;
-            }
-        }
-        else if (position.X == 0)
-        {
-            if (IsAttacked(kingLeftDirections, position, PieceType.King, color))
-            {
-                return true;
-            }
-        }
-        else if (position.X == 7)
-        {
-            if (IsAttacked(kingRightDirections, position, PieceType.King, color))
-            {
-                return true;
-            }
-        }
-        else if (IsAttacked(kingCenterDirections, position, PieceType.King, color))
-        {
-            return true;
-        }
+        //if (position.Y == 0)
+        //{
+        //    if (IsAttacked(kingTopDirections, position, PieceType.King, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.Y == 7)
+        //{
+        //    if (IsAttacked(kingBottomDirections, position, PieceType.King, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.X == 0)
+        //{
+        //    if (IsAttacked(kingLeftDirections, position, PieceType.King, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.X == 7)
+        //{
+        //    if (IsAttacked(kingRightDirections, position, PieceType.King, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (IsAttacked(kingCenterDirections, position, PieceType.King, color))
+        //{
+        //    return true;
+        //}
 
         // check pawns
         var attackPositions = color == Color.WHITE ? blackPawnAttackDirections : whitePawnAttackDirections;
