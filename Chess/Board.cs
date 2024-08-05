@@ -313,7 +313,7 @@ public class Board
     public bool IsFieldUnderAttack(Vector position, Color color)
     {
         // queen, rocks and bishops are done by the new method
-        if (IsFieldUnderAttack2(position, color))
+        if (IsFieldUnderAttack2(position))
         {
             return true;
         }

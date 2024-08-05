@@ -256,19 +256,20 @@ public class BoardTests
         var board = new[]
         {
         //   01234567
-            "R  K   R",// 0
+            "   k    ",// 0
             "        ",// 1
             "        ",// 2
             "        ",// 3
             "        ",// 4
             "        ",// 5
             "        ",// 6
-            "   k    ",// 7
+            "R  K   R",// 7
         }.ToBoard();
 
         var whiteMoves = board.GetAllPossibleMoves();
-        Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 0));
-        Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 0));
+        Printer.Print(whiteMoves);
+        Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(5, 7));
+        Assert.Contains(whiteMoves, m => m.Piece.Type == PieceType.King && m.PieceNewPosition == new Vector(1, 7));
     }
 
     [Fact]
