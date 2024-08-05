@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,10 +10,11 @@ public class Board
     private (Piece, Vector)? currentPlayerQueen;
     private List<(Piece, Vector)> currentPlayerRocks;
     private List<(Piece, Vector)> currentPlayerBishops;
+    private List<(Piece, Vector)> currentPlayerKnights;
     private (Piece, Vector)? oppositePlayerQueen;
     private List<(Piece, Vector)> oppositePlayerRocks;
     private List<(Piece, Vector)> oppositePlayerBishops;
-
+    private List<(Piece, Vector)> oppositePlayerKnights;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? lastMove;
@@ -33,8 +33,10 @@ public class Board
         this.blackKing = blackKing;
         currentPlayerRocks = new List<(Piece, Vector)>();
         currentPlayerBishops = new List<(Piece, Vector)>();
+        currentPlayerKnights = new List<(Piece, Vector)>();
         this.oppositePlayerRocks = new List<(Piece, Vector)>();
         this.oppositePlayerBishops = new List<(Piece, Vector)>();
+        this.oppositePlayerKnights = new List<(Piece, Vector)>();
         SetPieces();
     }
 
@@ -65,8 +67,10 @@ public class Board
         this.lastMove = lastMove;
         currentPlayerRocks = new List<(Piece, Vector)>();
         currentPlayerBishops = new List<(Piece, Vector)>();
+        currentPlayerKnights = new List<(Piece, Vector)>();
         this.oppositePlayerRocks = new List<(Piece, Vector)>();
         this.oppositePlayerBishops = new List<(Piece, Vector)>();
+        this.oppositePlayerKnights = new List<(Piece, Vector)>();
         SetPieces();
     }
 
@@ -114,6 +118,13 @@ public class Board
                             currentPlayerBishops.Add((piece, new Vector(x, y)));
                         else
                             oppositePlayerBishops.Add((piece, new Vector(x, y)));
+                    }
+                    else if (piece.Type == PieceType.Knight)
+                    {
+                        if (piece.Color == currentPlayer)
+                            currentPlayerKnights.Add((piece, new Vector(x, y)));
+                        else
+                            oppositePlayerKnights.Add((piece, new Vector(x, y)));
                     }
                 }
             }
@@ -251,6 +262,7 @@ public class Board
         var queen = color == currentPlayer ? currentPlayerQueen : oppositePlayerQueen;
         var rocks = color == currentPlayer ?  currentPlayerRocks : oppositePlayerRocks;
         var bishops = color == currentPlayer ? currentPlayerBishops : oppositePlayerBishops;
+        var knights = color == currentPlayer ? currentPlayerKnights : oppositePlayerKnights;
         // queen
         if (queen is (Piece, Vector) a)
         {
@@ -322,6 +334,13 @@ public class Board
             if (!notAttackedByBishop) return true;
         }
 
+        // knights
+        foreach(var (_, knightPosition) in knights)
+        {
+            var vector = (knightPosition - field).Abs();
+            if ((vector.X == 2 && vector.Y == 1) || (vector.X == 1 && vector.Y == 2))
+                return true;
+        }
         return false;
     }
 
@@ -346,38 +365,38 @@ public class Board
         //}
 
         // check knights
-        if (position.Y == 0)
-        {
-            if (IsAttacked(knightTopRowAttackDirections, position, PieceType.Knight, color))
-            {
-                return true;
-            }
-        }
-        else if (position.Y == 7)
-        {
-            if (IsAttacked(knightBottomRowAttackDirections, position, PieceType.Knight, color))
-            {
-                return true;
-            }
-        }
-        else if (position.X == 0)
-        {
-            if (IsAttacked(knightLeftColumnAttackDirections, position, PieceType.Knight, color))
-            {
-                return true;
-            }
-        }
-        else if (position.X == 7)
-        {
-            if (IsAttacked(knightRightColumnAttackDirections, position, PieceType.Knight, color))
-            {
-                return true;
-            }
-        }
-        else if (IsAttacked(knightInCenterAttackDirections, position, PieceType.Knight, color))
-        {
-            return true;
-        }
+        //if (position.Y == 0)
+        //{
+        //    if (IsAttacked(knightTopRowAttackDirections, position, PieceType.Knight, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.Y == 7)
+        //{
+        //    if (IsAttacked(knightBottomRowAttackDirections, position, PieceType.Knight, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.X == 0)
+        //{
+        //    if (IsAttacked(knightLeftColumnAttackDirections, position, PieceType.Knight, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (position.X == 7)
+        //{
+        //    if (IsAttacked(knightRightColumnAttackDirections, position, PieceType.Knight, color))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (IsAttacked(knightInCenterAttackDirections, position, PieceType.Knight, color))
+        //{
+        //    return true;
+        //}
 
         // check king
         if (position.Y == 0)
