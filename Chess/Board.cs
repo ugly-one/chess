@@ -8,6 +8,9 @@ namespace Chess;
 public class Board
 {
     private readonly Piece?[,] board;
+    private (Piece, Vector)? currentPlayerQueen;
+    private List<(Piece, Vector)> currentPlayerRocks;
+    private List<(Piece, Vector)> currentPlayerBishops;
     private readonly Vector whiteKing;
     private readonly Vector blackKing;
     private readonly Move? lastMove;
@@ -24,6 +27,9 @@ public class Board
         this.board = pieces;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
+        currentPlayerRocks = new List<(Piece, Vector)>();
+        currentPlayerBishops = new List<(Piece, Vector)>();
+        SetCurrentPlayerPieces();
     }
 
     public Board(IEnumerable<(Piece, Vector)> board, Color currentPlayer = Color.WHITE, Move? lastMove = null)
@@ -51,6 +57,9 @@ public class Board
 
         }
         this.lastMove = lastMove;
+        currentPlayerRocks = new List<(Piece, Vector)>();
+        currentPlayerBishops = new List<(Piece, Vector)>();
+        SetCurrentPlayerPieces();
     }
 
     public IEnumerable<(Piece, Vector)> GetPieces()
@@ -63,6 +72,32 @@ public class Board
                 if (piece != null)
                 {
                     yield return (piece.Value, new Vector(x, y));
+                }
+            }
+        }
+    }
+
+    public void SetCurrentPlayerPieces()
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                var maybePiece = board[x, y];
+                if (maybePiece is Piece piece && piece.Color == currentPlayer)
+                {
+                    if (piece.Type == PieceType.Queen)
+                    {
+                        currentPlayerQueen = (piece, new Vector(x, y));
+                    }
+                    else if (piece.Type == PieceType.Rock)
+                    {
+                        currentPlayerRocks.Add((piece, new Vector(x, y)));
+                    }
+                    else if (piece.Type == PieceType.Bishop)
+                    {
+                        currentPlayerBishops.Add((piece, new Vector(x, y)));
+                    }
                 }
             }
         }
@@ -193,12 +228,15 @@ public class Board
         return IsFieldUnderAttack(king, oppositeColor);
     }
 
-    public bool IsFieldUnderAttack2(Vector field, Color color)
+    ///CHecks if given field is under attack of current player's pieces. 
+    ///Yes, it seems odd, but this is what we need to verify if a move we are about to generate is valid (because we try to play this move and validate it on the new board position)
+    public bool IsFieldUnderAttack2(Vector field)
     {
+
         // queen
-        var queen = GetPieces().Where(x => x.Item1.Type == PieceType.Queen && x.Item1.Color == color);
-        foreach (var (_, queenPosition) in queen)
+        if (currentPlayerQueen is (Piece, Vector) a)
         {
+            var queenPosition = a.Item2;
             var vector = (queenPosition - field);
             var notAttackedByQueen = true;
             var absVector = vector.Abs();
@@ -218,9 +256,10 @@ public class Board
                 }
             }
             if (!notAttackedByQueen) return true;
+
         }
         // rock
-        var rocks = GetPieces().Where(x => x.Item1.Type == PieceType.Rock && x.Item1.Color == color);
+        var rocks = currentPlayerRocks;
         foreach (var (_, rockPosition) in rocks)
         {
             var notAttackedByRock = true;
@@ -243,7 +282,7 @@ public class Board
         }
 
         // bishop
-        var bishops = GetPieces().Where(x => x.Item1.Type == PieceType.Bishop && x.Item1.Color == color);
+        var bishops = currentPlayerBishops;
         foreach (var (_, bishopPosition) in bishops)
         {
             var vector = (bishopPosition - field);
@@ -251,7 +290,7 @@ public class Board
             var notAttackedByBishop = true;
             if (absVector.X == absVector.Y)
             {
-                vector = vector.Clamp(new Vector(-1,-1), new Vector(1,1));
+                vector = vector.Clamp(new Vector(-1, -1), new Vector(1, 1));
                 var inBetweenField = field + vector;
                 notAttackedByBishop = false;
                 while (inBetweenField != bishopPosition)
